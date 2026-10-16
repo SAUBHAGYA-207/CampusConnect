@@ -77,10 +77,12 @@ exports.getCreateService = (req, res) => {
     res.render('provider/create-service', { error: null });
 };
 
+const storageService = require('../services/storageService');
+
 exports.postCreateService = async (req, res, next) => {
     try {
         const { title, description, price, category } = req.body;
-        const image = req.file ? `/uploads/services/${req.file.filename}` : null;
+        const image = req.file ? await storageService.uploadMulterFile(req.file, 'services') : null;
         
         await serviceService.createService(req.session.user.id, {
             title, description, price: parseFloat(price), category, image
@@ -108,7 +110,7 @@ exports.postEditService = async (req, res, next) => {
         const { title, description, price, category } = req.body;
         const updates = { title, description, price: parseFloat(price), category };
         if (req.file) {
-            updates.image = `/uploads/services/${req.file.filename}`;
+            updates.image = await storageService.uploadMulterFile(req.file, 'services');
         }
         
         await serviceService.updateService(req.params.id, req.session.user.id, updates);
@@ -132,7 +134,7 @@ const adminService = require('../services/adminService');
 exports.postPayoutQr = async (req, res, next) => {
     try {
         const { partnerUpiId } = req.body;
-        const partnerQrImage = req.file ? `/uploads/partner-qr/${req.file.filename}` : undefined;
+        const partnerQrImage = req.file ? await storageService.uploadMulterFile(req.file, 'partner-qr') : undefined;
         
         await adminService.updatePartnerPayoutDetails(req.session.user.id, {
             partnerUpiId: partnerUpiId ? partnerUpiId.trim() : null,

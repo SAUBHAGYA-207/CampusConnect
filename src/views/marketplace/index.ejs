@@ -10,7 +10,7 @@
     <div class="carousel-inner">
         <!-- Slide 1: Peer Mentorship & Tutoring -->
         <div class="carousel-item active" style="height: 360px; position: relative;">
-            <img src="/images/banners/banner-teach.jpg" class="d-block w-100 h-100" alt="Peer Mentoring & Tutoring" style="object-fit: cover;">
+            <img src="<%= (typeof banners !== 'undefined' && banners.teach) ? banners.teach : '/images/banners/banner-teach.jpg' %>" class="d-block w-100 h-100" alt="Peer Mentoring & Tutoring" style="object-fit: cover;">
             <div class="carousel-overlay" style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(15, 23, 42, 0.88) 0%, rgba(15, 23, 42, 0.65) 55%, rgba(15, 23, 42, 0.25) 100%);"></div>
             <div class="carousel-caption text-start d-flex flex-column justify-content-center h-100" style="left: 6%; right: 25%; bottom: 0; top: 0;">
                 <span class="badge bg-primary px-3 py-2 text-uppercase fw-bold mb-2 align-self-start" style="letter-spacing: 0.8px; font-size: 0.75rem;">
@@ -32,7 +32,7 @@
 
         <!-- Slide 2: Coding, Web & Tech Support -->
         <div class="carousel-item" style="height: 360px; position: relative;">
-            <img src="/images/banners/banner-tech.jpg" class="d-block w-100 h-100" alt="Tech & Coding Support" style="object-fit: cover;">
+            <img src="<%= (typeof banners !== 'undefined' && banners.tech) ? banners.tech : '/images/banners/banner-tech.jpg' %>" class="d-block w-100 h-100" alt="Tech & Coding Support" style="object-fit: cover;">
             <div class="carousel-overlay" style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(15, 23, 42, 0.88) 0%, rgba(15, 23, 42, 0.65) 55%, rgba(15, 23, 42, 0.25) 100%);"></div>
             <div class="carousel-caption text-start d-flex flex-column justify-content-center h-100" style="left: 6%; right: 25%; bottom: 0; top: 0;">
                 <span class="badge bg-info text-dark px-3 py-2 text-uppercase fw-bold mb-2 align-self-start" style="letter-spacing: 0.8px; font-size: 0.75rem;">
@@ -54,7 +54,7 @@
 
         <!-- Slide 3: Creative Arts & Media -->
         <div class="carousel-item" style="height: 360px; position: relative;">
-            <img src="/images/banners/banner-arts.jpg" class="d-block w-100 h-100" alt="Creative Arts & Media" style="object-fit: cover;">
+            <img src="<%= (typeof banners !== 'undefined' && banners.arts) ? banners.arts : '/images/banners/banner-arts.jpg' %>" class="d-block w-100 h-100" alt="Creative Arts & Media" style="object-fit: cover;">
             <div class="carousel-overlay" style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(15, 23, 42, 0.88) 0%, rgba(15, 23, 42, 0.65) 55%, rgba(15, 23, 42, 0.25) 100%);"></div>
             <div class="carousel-caption text-start d-flex flex-column justify-content-center h-100" style="left: 6%; right: 25%; bottom: 0; top: 0;">
                 <span class="badge bg-warning text-dark px-3 py-2 text-uppercase fw-bold mb-2 align-self-start" style="letter-spacing: 0.8px; font-size: 0.75rem;">
@@ -76,7 +76,7 @@
 
         <!-- Slide 4: Become a Partner & Earn -->
         <div class="carousel-item" style="height: 360px; position: relative;">
-            <img src="/images/banners/banner-partner.jpg" class="d-block w-100 h-100" alt="Become a Partner" style="object-fit: cover;">
+            <img src="<%= (typeof banners !== 'undefined' && banners.partner) ? banners.partner : '/images/banners/banner-partner.jpg' %>" class="d-block w-100 h-100" alt="Become a Partner" style="object-fit: cover;">
             <div class="carousel-overlay" style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(15, 23, 42, 0.88) 0%, rgba(15, 23, 42, 0.65) 55%, rgba(15, 23, 42, 0.25) 100%);"></div>
             <div class="carousel-caption text-start d-flex flex-column justify-content-center h-100" style="left: 6%; right: 25%; bottom: 0; top: 0;">
                 <span class="badge bg-success text-white px-3 py-2 text-uppercase fw-bold mb-2 align-self-start" style="letter-spacing: 0.8px; font-size: 0.75rem;">

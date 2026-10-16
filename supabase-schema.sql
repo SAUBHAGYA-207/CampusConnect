@@ -110,3 +110,66 @@ ALTER TABLE "payouts" DISABLE ROW LEVEL SECURITY;
 ALTER TABLE "messages" DISABLE ROW LEVEL SECURITY;
 ALTER TABLE "admin_messages" DISABLE ROW LEVEL SECURITY;
 ALTER TABLE "notifications" DISABLE ROW LEVEL SECURITY;
+
+-- ==============================================================================
+-- 8. STORAGE BUCKET CONFIGURATION FOR ASSETS & IMAGES
+-- ==============================================================================
+-- Creates a public bucket named 'campusconnect' for services, payments, & QR codes
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+    'campusconnect', 
+    'campusconnect', 
+    true, 
+    10485760, 
+    ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- Allow public read access to all objects in campusconnect bucket
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND policyname = 'Public Access campusconnect'
+    ) THEN
+        CREATE POLICY "Public Access campusconnect" 
+        ON storage.objects FOR SELECT 
+        USING (bucket_id = 'campusconnect');
+    END IF;
+END $$;
+
+-- Allow uploads to campusconnect bucket
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND policyname = 'Allow Uploads campusconnect'
+    ) THEN
+        CREATE POLICY "Allow Uploads campusconnect" 
+        ON storage.objects FOR INSERT 
+        WITH CHECK (bucket_id = 'campusconnect');
+    END IF;
+END $$;
+
+-- Allow updates
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND policyname = 'Allow Updates campusconnect'
+    ) THEN
+        CREATE POLICY "Allow Updates campusconnect" 
+        ON storage.objects FOR UPDATE 
+        USING (bucket_id = 'campusconnect');
+    END IF;
+END $$;
+
+-- Allow deletes
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies WHERE tablename = 'objects' AND policyname = 'Allow Deletes campusconnect'
+    ) THEN
+        CREATE POLICY "Allow Deletes campusconnect" 
+        ON storage.objects FOR DELETE 
+        USING (bucket_id = 'campusconnect');
+    END IF;
+END $$;
+

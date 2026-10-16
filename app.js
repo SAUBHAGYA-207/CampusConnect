@@ -12,6 +12,7 @@ const appointmentRoutes = require('./src/routes/appointmentRoutes');
 const chatRoutes = require('./src/routes/chatRoutes');
 const notificationRoutes = require('./src/routes/notificationRoutes');
 const { requireAuth, requireRole, requireVerifiedEmail } = require('./src/middleware/auth');
+const storageService = require('./src/services/storageService');
 
 const app = express();
 
@@ -43,6 +44,12 @@ app.use((req, res, next) => {
     res.locals.upiId = process.env.UPI_ID || 'campusconnect.payments@upi';
     res.locals.upiPayeeName = process.env.UPI_PAYEE_NAME || 'CampusConnect';
     res.locals.upiQrImage = process.env.UPI_QR_IMAGE || '';
+    res.locals.banners = {
+        teach: storageService.getBannerUrl('banner-teach.jpg'),
+        tech: storageService.getBannerUrl('banner-tech.jpg'),
+        arts: storageService.getBannerUrl('banner-arts.jpg'),
+        partner: storageService.getBannerUrl('banner-partner.jpg')
+    };
     next();
 });
 

@@ -285,13 +285,15 @@ exports.postRemoveService = async (req, res, next) => {
     }
 };
 
+const storageService = require('../services/storageService');
+
 exports.postClearPayout = async (req, res, next) => {
     try {
         const { id } = req.params;
         const transactionId = (req.body.transactionId && req.body.transactionId.trim()) 
             ? req.body.transactionId.trim() 
             : `UPI-SETTLED-${Date.now()}`;
-        const paymentProof = req.file ? `/uploads/payouts/${req.file.filename}` : null;
+        const paymentProof = req.file ? await storageService.uploadMulterFile(req.file, 'payouts') : null;
 
         await adminService.clearPayoutByAdmin(id, transactionId, paymentProof);
         req.flash('success', 'Payout cleared successfully! Settlement receipt sent to partner.');

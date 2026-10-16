@@ -28,6 +28,8 @@ exports.getMyBookings = async (req, res, next) => {
     }
 };
 
+const storageService = require('../services/storageService');
+
 exports.postBookAppointment = async (req, res, next) => {
     try {
         const { serviceId, date, time, notes, transactionId } = req.body;
@@ -37,8 +39,9 @@ exports.postBookAppointment = async (req, res, next) => {
             return res.redirect('/marketplace/' + serviceId);
         }
 
+        const screenshotUrl = await storageService.uploadMulterFile(req.file, 'payments');
         const paymentData = {
-            paymentScreenshot: `/uploads/payments/${req.file.filename}`,
+            paymentScreenshot: screenshotUrl,
             transactionId: transactionId ? transactionId.trim() : null
         };
 
