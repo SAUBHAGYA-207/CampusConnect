@@ -100,9 +100,59 @@ async function sendViaBrevo({ to, subject, html, text }) {
 
     const data = await res.json();
     if (!res.ok) {
+        if (data.message && data.message.includes('unrecognised IP address')) {
+            console.error('\n⚠️  [Brevo Action Required] IP Blocking is active in your Brevo account:');
+            console.error('   👉 Go to: https://app.brevo.com/security/authorised_ips');
+            console.error('   👉 Turn OFF "Block unknown IP addresses" so Render can send emails freely without IP blocking.\n');
+        }
         throw new Error(data.message || JSON.stringify(data));
     }
     return { messageId: data.messageId, provider: 'brevo' };
+}
+
+/**
+ * Dispatch email via SendGrid HTTP API (Port 443 - Never blocked by Render/AWS/Cloud)
+ * Zero IP restrictions out of the box. Sends to any recipient.
+ */
+async function sendViaSendGrid({ to, subject, html, text }) {
+    const apiKey = (process.env.SENDGRID_API_KEY || '').trim();
+    if (!apiKey) return null;
+
+    let fromEmail = process.env.SENDGRID_FROM_EMAIL ? process.env.SENDGRID_FROM_EMAIL.trim() : null;
+    let fromName = process.env.SENDGRID_FROM_NAME || 'CampusConnect';
+
+    if (!fromEmail) {
+        const mailFrom = (process.env.MAIL_FROM || '').trim();
+        const match = mailFrom.match(/<([^>]+)>/);
+        fromEmail = match ? match[1].trim() : (process.env.SMTP_USER ? process.env.SMTP_USER.trim() : 'campusconnect216@gmail.com');
+        const nameMatch = mailFrom.match(/"([^"]+)"/);
+        if (nameMatch) fromName = nameMatch[1].trim();
+    }
+
+    const res = await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            personalizations: [{
+                to: [{ email: to }]
+            }],
+            from: { email: fromEmail, name: fromName },
+            subject,
+            content: [
+                { type: 'text/plain', value: text },
+                { type: 'text/html', value: html }
+            ]
+        })
+    });
+
+    if (!res.ok) {
+        const errText = await res.text();
+        throw new Error(errText || `SendGrid error status: ${res.status}`);
+    }
+    return { messageId: 'sendgrid-' + Date.now(), provider: 'sendgrid' };
 }
 
 async function getTransporter() {
@@ -239,7 +289,20 @@ async function sendMailUniversal({ to, subject, text, html }) {
         }
     }
 
-    // 2. Try Resend HTTP API (Port 443 HTTPS - bypasses Render SMTP firewall)
+    // 2. Try SendGrid HTTP API (Port 443 HTTPS - zero IP restrictions, sends to any recipient)
+    if (process.env.SENDGRID_API_KEY) {
+        try {
+            const sendgridResult = await sendViaSendGrid({ to, subject, html, text });
+            if (sendgridResult) {
+                console.log(`✅ [EmailService] Email delivered via SendGrid API to: ${to}`);
+                return { success: true, isRealDelivery: true, previewUrl: null };
+            }
+        } catch (sgErr) {
+            console.error('❌ [EmailService] SendGrid API Error:', sgErr.message);
+        }
+    }
+
+    // 3. Try Resend HTTP API (Port 443 HTTPS - bypasses Render SMTP firewall)
     if (process.env.RESEND_API_KEY) {
         try {
             const resendResult = await sendViaResend({ to, subject, html, text });
