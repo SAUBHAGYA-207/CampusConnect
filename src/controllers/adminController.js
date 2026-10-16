@@ -2,11 +2,12 @@ const bcrypt = require('bcryptjs');
 const adminService = require('../services/adminService');
 const chatService = require('../services/chatService');
 const JsonStorage = require('../storage/jsonStorage');
+const { isSuperAdminEmail } = require('../utils/adminConfig');
 
 const usersStorage = new JsonStorage('users');
 
 exports.getLogin = (req, res) => {
-    if (req.session.user && req.session.user.role === 'admin') {
+    if (req.session.user && req.session.user.role === 'admin' && isSuperAdminEmail(req.session.user.email)) {
         return res.redirect('/admin/dashboard');
     }
     res.render('admin/login', { error: null });
@@ -15,10 +16,25 @@ exports.getLogin = (req, res) => {
 exports.postLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await usersStorage.find(u => u.email === email && u.role === 'admin');
+        const normalizedEmail = (email || '').toLowerCase().trim();
+
+        // 1. Enforce Super Admin Email Whitelist from environment
+        if (!isSuperAdminEmail(normalizedEmail)) {
+            return res.render('admin/login', { 
+                error: 'Access Denied: This email address is not authorized for Super Admin access.' 
+            });
+        }
+
+        // 2. Locate user in storage
+        const user = await usersStorage.find(u => u.email.toLowerCase() === normalizedEmail);
 
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.render('admin/login', { error: 'Invalid Super Admin credentials' });
+        }
+
+        // 3. Ensure user role is updated to admin if whitelisted
+        if (user.role !== 'admin') {
+            await usersStorage.update(user.id, { role: 'admin' });
         }
 
         req.session.user = { id: user.id, email: user.email, role: 'admin', isVerified: true };

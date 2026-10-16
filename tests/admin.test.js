@@ -88,6 +88,16 @@ describe('Super Admin Portal, Revenue, Moderation & Payout Settlements', () => {
         expect(res.text).toContain('admin@campusconnect.com');
     });
 
+    it('should reject Super Admin login if email is NOT in SUPERADMIN_EMAILS whitelist', async () => {
+        const unauthAgent = request.agent(app);
+        const res = await unauthAgent
+            .post('/admin/login')
+            .send({ email: 'unauthorized_stranger@example.com', password: 'Password123!' });
+
+        expect(res.statusCode).toEqual(200);
+        expect(res.text).toContain('Access Denied');
+    });
+
     it('should authenticate super admin and redirect to /admin/dashboard', async () => {
         const loginRes = await adminAgent
             .post('/admin/login')

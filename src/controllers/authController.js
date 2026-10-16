@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const JsonStorage = require('../storage/jsonStorage');
 const { generateOTP } = require('../utils/otp');
 const { sendOTP } = require('../services/emailService');
+const { isSuperAdminEmail } = require('../utils/adminConfig');
 
 const usersStorage = new JsonStorage('users');
 
@@ -93,7 +94,7 @@ exports.postLogin = async (req, res) => {
                 console.error('Session save error on login:', err);
                 return res.render('auth/login', { error: 'Failed to initialize session' });
             }
-            if (user.role === 'admin') {
+            if (user.role === 'admin' && isSuperAdminEmail(user.email)) {
                 return res.redirect('/admin/dashboard');
             }
             res.redirect('/');

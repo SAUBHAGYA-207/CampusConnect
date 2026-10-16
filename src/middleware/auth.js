@@ -1,3 +1,5 @@
+const { isSuperAdminEmail } = require('../utils/adminConfig');
+
 exports.requireAuth = (req, res, next) => {
     if (!req.session.user) {
         return res.redirect('/auth/login');
@@ -22,7 +24,7 @@ exports.requireVerifiedEmail = (req, res, next) => {
 };
 
 exports.requireSuperAdmin = (req, res, next) => {
-    if (!req.session.user || req.session.user.role !== 'admin') {
+    if (!req.session.user || req.session.user.role !== 'admin' || !isSuperAdminEmail(req.session.user.email)) {
         return res.redirect('/admin/login');
     }
     next();
