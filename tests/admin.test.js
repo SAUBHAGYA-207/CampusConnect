@@ -105,7 +105,7 @@ describe('Super Admin Portal, Revenue, Moderation & Payout Settlements', () => {
             .send({ email: adminEmail, password: 'admin123' });
 
         expect(loginRes.statusCode).toEqual(302);
-        expect(loginRes.headers.location).toEqual('/admin/verify-otp');
+        expect(loginRes.headers.location).toContain('/admin/verify-otp');
 
         // Check that OTP page loads
         const verifyPageRes = await adminAgent.get('/admin/verify-otp');

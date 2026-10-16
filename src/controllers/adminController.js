@@ -50,7 +50,7 @@ exports.postLogin = async (req, res) => {
                 console.error('Admin session save error:', err);
                 return res.render('admin/login', { error: 'Failed to initialize session' });
             }
-            res.redirect('/admin/verify-otp');
+            res.redirect('/admin/verify-otp?sent=1');
         });
     } catch (error) {
         console.error('Super Admin login error:', error);
@@ -71,7 +71,8 @@ exports.getVerifyOtp = async (req, res) => {
     res.render('admin/verify-otp', {
         error: null,
         userEmail: user.email,
-        resent: req.query.resent === '1'
+        resent: req.query.resent === '1',
+        sent: req.query.sent === '1'
     });
 };
 
