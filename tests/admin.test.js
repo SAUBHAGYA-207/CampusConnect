@@ -98,13 +98,30 @@ describe('Super Admin Portal, Revenue, Moderation & Payout Settlements', () => {
         expect(res.text).toContain('Access Denied');
     });
 
-    it('should authenticate super admin and redirect to /admin/dashboard', async () => {
+    it('should authenticate super admin, send OTP, verify OTP, and redirect to /admin/dashboard', async () => {
         const loginRes = await adminAgent
             .post('/admin/login')
             .send({ email: adminEmail, password: 'admin123' });
 
         expect(loginRes.statusCode).toEqual(302);
-        expect(loginRes.headers.location).toEqual('/admin/dashboard');
+        expect(loginRes.headers.location).toEqual('/admin/verify-otp');
+
+        // Check that OTP page loads
+        const verifyPageRes = await adminAgent.get('/admin/verify-otp');
+        expect(verifyPageRes.statusCode).toEqual(200);
+        expect(verifyPageRes.text).toContain('Verify Admin Identity');
+
+        // Retrieve generated OTP from users storage
+        const adminUserRecord = await usersStorage.find(u => u.email === adminEmail);
+        expect(adminUserRecord.otp).toBeDefined();
+
+        // Post OTP
+        const otpRes = await adminAgent
+            .post('/admin/verify-otp')
+            .send({ otp: adminUserRecord.otp });
+
+        expect(otpRes.statusCode).toEqual(302);
+        expect(otpRes.headers.location).toEqual('/admin/dashboard');
 
         // Follow redirect to dashboard
         const dashRes = await adminAgent.get('/admin/dashboard');

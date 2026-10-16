@@ -7,6 +7,9 @@ const { payoutUpload } = require('../middleware/upload');
 // Public Admin Auth Routes
 router.get('/login', adminController.getLogin);
 router.post('/login', adminController.postLogin);
+router.get('/verify-otp', adminController.getVerifyOtp);
+router.post('/verify-otp', adminController.postVerifyOtp);
+router.get('/resend-otp', adminController.resendOtp);
 router.get('/logout', adminController.logout);
 
 // Protected Super Admin Portal Routes

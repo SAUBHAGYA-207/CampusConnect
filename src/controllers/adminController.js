@@ -3,6 +3,8 @@ const adminService = require('../services/adminService');
 const chatService = require('../services/chatService');
 const JsonStorage = require('../storage/jsonStorage');
 const { isSuperAdminEmail } = require('../utils/adminConfig');
+const { generateOTP } = require('../utils/otp');
+const { sendOTP } = require('../services/emailService');
 
 const usersStorage = new JsonStorage('users');
 
@@ -32,22 +34,114 @@ exports.postLogin = async (req, res) => {
             return res.render('admin/login', { error: 'Invalid Super Admin credentials' });
         }
 
-        // 3. Ensure user role is updated to admin if whitelisted
-        if (user.role !== 'admin') {
-            await usersStorage.update(user.id, { role: 'admin' });
-        }
+        // 3. Generate 6-digit OTP and dispatch to authorized Super Admin email
+        const otp = generateOTP();
+        await usersStorage.update(user.id, {
+            otp,
+            otpExpires: Date.now() + 10 * 60 * 1000 // 10 minutes
+        });
 
-        req.session.user = { id: user.id, email: user.email, role: 'admin', isVerified: true };
+        await sendOTP(user.email, otp);
+
+        // Store pending admin login in session
+        req.session.adminPendingUserId = user.id;
         req.session.save((err) => {
             if (err) {
                 console.error('Admin session save error:', err);
                 return res.render('admin/login', { error: 'Failed to initialize session' });
             }
-            res.redirect('/admin/dashboard');
+            res.redirect('/admin/verify-otp');
         });
     } catch (error) {
         console.error('Super Admin login error:', error);
         res.render('admin/login', { error: 'Authentication failed' });
+    }
+};
+
+exports.getVerifyOtp = async (req, res) => {
+    const userId = req.session.adminPendingUserId;
+    if (!userId) return res.redirect('/admin/login');
+
+    const user = await usersStorage.getById(userId);
+    if (!user || !isSuperAdminEmail(user.email)) {
+        delete req.session.adminPendingUserId;
+        return res.redirect('/admin/login');
+    }
+
+    res.render('admin/verify-otp', {
+        error: null,
+        userEmail: user.email,
+        resent: req.query.resent === '1'
+    });
+};
+
+exports.postVerifyOtp = async (req, res) => {
+    try {
+        const { otp } = req.body;
+        const userId = req.session.adminPendingUserId;
+        if (!userId) return res.redirect('/admin/login');
+
+        const user = await usersStorage.getById(userId);
+        if (!user || !isSuperAdminEmail(user.email)) {
+            delete req.session.adminPendingUserId;
+            return res.redirect('/admin/login');
+        }
+
+        const trimmedOtp = (otp || '').trim();
+        if (!user.otp || user.otp !== trimmedOtp || Date.now() > user.otpExpires) {
+            return res.render('admin/verify-otp', {
+                error: 'Invalid or expired OTP code. Please try again.',
+                userEmail: user.email,
+                resent: false
+            });
+        }
+
+        // Elevate to verified Super Admin and clear OTP
+        await usersStorage.update(user.id, {
+            role: 'admin',
+            isVerified: true,
+            otp: null,
+            otpExpires: null
+        });
+
+        delete req.session.adminPendingUserId;
+        req.session.user = { id: user.id, email: user.email, role: 'admin', isVerified: true };
+
+        req.session.save((err) => {
+            if (err) {
+                console.error('Admin session save error:', err);
+                return res.render('admin/verify-otp', { error: 'Failed to initialize session', userEmail: user.email, resent: false });
+            }
+            res.redirect('/admin/dashboard');
+        });
+    } catch (error) {
+        console.error('Super Admin OTP verification error:', error);
+        res.render('admin/verify-otp', { error: 'Verification failed. Please try again.', userEmail: '', resent: false });
+    }
+};
+
+exports.resendOtp = async (req, res) => {
+    try {
+        const userId = req.session.adminPendingUserId;
+        if (!userId) return res.redirect('/admin/login');
+
+        const user = await usersStorage.getById(userId);
+        if (!user || !isSuperAdminEmail(user.email)) {
+            delete req.session.adminPendingUserId;
+            return res.redirect('/admin/login');
+        }
+
+        const otp = generateOTP();
+        await usersStorage.update(user.id, {
+            otp,
+            otpExpires: Date.now() + 10 * 60 * 1000
+        });
+
+        await sendOTP(user.email, otp);
+        res.redirect('/admin/verify-otp?resent=1');
+    } catch (error) {
+        console.error('Error resending Super Admin OTP:', error);
+        res.redirect('/admin/verify-otp');
     }
 };
 
