@@ -5,6 +5,8 @@ const { requireSuperAdmin } = require('../middleware/auth');
 const { payoutUpload } = require('../middleware/upload');
 
 // Public Admin Auth Routes
+router.get('/register', adminController.getRegister);
+router.post('/register', adminController.postRegister);
 router.get('/login', adminController.getLogin);
 router.post('/login', adminController.postLogin);
 router.get('/verify-otp', adminController.getVerifyOtp);

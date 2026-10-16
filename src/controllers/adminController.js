@@ -8,6 +8,91 @@ const { sendOTP } = require('../services/emailService');
 
 const usersStorage = new JsonStorage('users');
 
+exports.getRegister = (req, res) => {
+    if (req.session.user && req.session.user.role === 'admin' && isSuperAdminEmail(req.session.user.email)) {
+        return res.redirect('/admin/dashboard');
+    }
+    res.render('admin/register', { error: null });
+};
+
+exports.postRegister = async (req, res) => {
+    try {
+        const { email, password, confirmPassword } = req.body;
+        const normalizedEmail = (email || '').toLowerCase().trim();
+
+        if (!normalizedEmail || !password) {
+            return res.render('admin/register', { error: 'Please enter all required fields.' });
+        }
+
+        if (confirmPassword && password !== confirmPassword) {
+            return res.render('admin/register', { error: 'Passwords do not match. Please verify both passwords.' });
+        }
+
+        if (password.length < 6) {
+            return res.render('admin/register', { error: 'Password must be at least 6 characters long.' });
+        }
+
+        // 1. Strict whitelist validation against SUPERADMIN_EMAILS
+        if (!isSuperAdminEmail(normalizedEmail)) {
+            return res.render('admin/register', {
+                error: 'Access Denied: This email address is not authorized for Super Admin registration.'
+            });
+        }
+
+        // 2. Check existing record
+        const existingUser = await usersStorage.find(u => (u.email || '').toLowerCase() === normalizedEmail);
+        if (existingUser) {
+            if (existingUser.isVerified && existingUser.role === 'admin') {
+                return res.render('admin/register', {
+                    error: 'Super Admin account is already registered. Please sign in.'
+                });
+            } else {
+                // Issue fresh OTP for existing unverified record
+                const hashedPassword = await bcrypt.hash(password, 10);
+                const otp = generateOTP();
+                await usersStorage.update(existingUser.id, {
+                    password: hashedPassword,
+                    role: 'admin',
+                    otp,
+                    otpExpires: Date.now() + 10 * 60 * 1000
+                });
+                await sendOTP(existingUser.email, otp);
+                req.session.adminPendingUserId = existingUser.id;
+                return req.session.save(() => {
+                    res.redirect('/admin/verify-otp?sent=1');
+                });
+            }
+        }
+
+        // 3. Register brand new Super Admin
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const otp = generateOTP();
+
+        const newAdmin = await usersStorage.add({
+            email: normalizedEmail,
+            password: hashedPassword,
+            role: 'admin',
+            isVerified: false,
+            otp,
+            otpExpires: Date.now() + 10 * 60 * 1000
+        });
+
+        await sendOTP(newAdmin.email, otp);
+
+        req.session.adminPendingUserId = newAdmin.id;
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session save error on admin registration:', err);
+                return res.render('admin/register', { error: 'Failed to initialize session' });
+            }
+            res.redirect('/admin/verify-otp?sent=1');
+        });
+    } catch (error) {
+        console.error('Super Admin registration error:', error);
+        res.render('admin/register', { error: 'Registration failed. Please try again.' });
+    }
+};
+
 exports.getLogin = (req, res) => {
     if (req.session.user && req.session.user.role === 'admin' && isSuperAdminEmail(req.session.user.email)) {
         return res.redirect('/admin/dashboard');

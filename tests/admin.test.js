@@ -87,6 +87,54 @@ describe('Super Admin Portal, Revenue, Moderation & Payout Settlements', () => {
         expect(res.text).toContain('Super Admin Portal');
         expect(res.text).toContain('Super Admin Email');
         expect(res.text).toContain('Authenticate Super Admin');
+        expect(res.text).toContain('/admin/register');
+    });
+
+    it('should load dedicated super admin register page at /admin/register', async () => {
+        const res = await request(app).get('/admin/register');
+        expect(res.statusCode).toEqual(200);
+        expect(res.text).toContain('Super Admin Registration');
+        expect(res.text).toContain('Authorized Super Admin Email');
+        expect(res.text).toContain('Register & Send 2FA Code');
+    });
+
+    it('should reject admin registration if email is NOT in SUPERADMIN_EMAILS whitelist', async () => {
+        const res = await request(app)
+            .post('/admin/register')
+            .send({
+                email: 'unauthorized_admin_' + Date.now() + '@example.com',
+                password: 'MasterPassword123!',
+                confirmPassword: 'MasterPassword123!'
+            });
+        expect(res.statusCode).toEqual(200);
+        expect(res.text).toContain('Access Denied');
+    });
+
+    it('should allow registration for whitelisted admin email and redirect to /admin/verify-otp', async () => {
+        const testNewAdminEmail = 'whitelisted_admin_' + Date.now() + '@campusconnect.local';
+        const origEnv = process.env.SUPERADMIN_EMAILS || '';
+        process.env.SUPERADMIN_EMAILS = origEnv ? `${origEnv},${testNewAdminEmail}` : testNewAdminEmail;
+
+        const regRes = await request(app)
+            .post('/admin/register')
+            .send({
+                email: testNewAdminEmail,
+                password: 'SecureAdminPass123!',
+                confirmPassword: 'SecureAdminPass123!'
+            });
+
+        expect(regRes.statusCode).toEqual(302);
+        expect(regRes.headers.location).toContain('/admin/verify-otp');
+
+        // Verify record created in storage
+        const createdAdmin = await usersStorage.find(u => u.email === testNewAdminEmail);
+        expect(createdAdmin).toBeDefined();
+        expect(createdAdmin.role).toEqual('admin');
+        expect(createdAdmin.otp).toBeDefined();
+
+        // Cleanup
+        await usersStorage.delete(createdAdmin.id);
+        process.env.SUPERADMIN_EMAILS = origEnv;
     });
 
     it('should reject Super Admin login if email is NOT in SUPERADMIN_EMAILS whitelist', async () => {
