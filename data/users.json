@@ -19,14 +19,5 @@
     "otp": null,
     "otpExpires": null,
     "createdAt": 1792093177531
-  },
-  {
-    "email": "sjijaiswal4@gmail.com",
-    "password": "$2a$10$fIV1OLVzyKUwwr97AgY.SOSjIGouRk1ERpDZdDaGIErSSAYf9ylGC",
-    "role": "customer",
-    "isVerified": true,
-    "otp": null,
-    "otpExpires": null,
-    "id": "17921512369202zj1f"
   }
 ]

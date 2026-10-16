@@ -202,10 +202,30 @@ async function getTransporter() {
     }
 }
 
+function isTestOrDummyEmail(email) {
+    if (!email || typeof email !== 'string') return true;
+    const lower = email.toLowerCase().trim();
+    return lower.endsWith('.local') || 
+           lower.endsWith('.test') || 
+           lower.endsWith('.example') || 
+           lower.endsWith('.invalid') ||
+           lower.includes('campusconnect.local') ||
+           lower.includes('@test.') ||
+           lower.includes('testpartner_') ||
+           lower.includes('customertick_') ||
+           lower.includes('partnertick_');
+}
+
 /**
  * Universal email dispatcher (tries HTTP APIs first, then SMTP)
  */
 async function sendMailUniversal({ to, subject, text, html }) {
+    // Intercept automated test/dummy accounts so they never bounce on public mail servers
+    if (isTestOrDummyEmail(to)) {
+        console.log(`⏩ [EmailService] Test domain detected (${to}). Skipping outbound SMTP/API dispatch.`);
+        return { success: true, isRealDelivery: false, previewUrl: null };
+    }
+
     // 1. Try Brevo HTTP API (Port 443 HTTPS - sends to ANY student email without custom domain requirement)
     if (process.env.BREVO_API_KEY) {
         try {
