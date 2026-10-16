@@ -1,16 +1,1 @@
-[
-  {
-    "partnerId": "1792091905484norvhl",
-    "partnerEmail": "saubhagya_2401me72@iitp.ac.in",
-    "amount": 169.15,
-    "status": "cleared",
-    "partnerUpiId": "sjijaiswal4@oksbi",
-    "partnerQrImage": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/partner-qr/1792144482748-860170614.png",
-    "notes": "",
-    "adminPaymentProof": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/payouts/1792151382300-527150766.png",
-    "adminTransactionId": "UPI-SETTLED-1792151382314",
-    "clearedAt": 1792151382317,
-    "createdAt": 1792144502156,
-    "id": "17921445021576y6p93"
-  }
-]
+[]
