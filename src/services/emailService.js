@@ -117,16 +117,18 @@ async function getTransporter() {
                     (process.env.SMTP_HOST || '').toLowerCase().includes('gmail');
 
     if (user && pass && !user.toLowerCase().endsWith('@ethereal.email') && isGmail) {
-        console.log(`[EmailService] Initializing real Gmail SMTP delivery for: ${user}`);
+        console.log(`[EmailService] Initializing real Gmail SMTP delivery (Port 465 SSL/TLS) for: ${user}`);
         cachedTransporter = nodemailer.createTransport({
-            service: 'gmail',
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true, // Port 465 direct SSL/TLS is optimal for Vercel & serverless environments
             auth: {
                 user,
                 pass
             },
-            connectionTimeout: 5000,
-            greetingTimeout: 5000,
-            socketTimeout: 8000
+            connectionTimeout: 10000,
+            greetingTimeout: 10000,
+            socketTimeout: 15000
         });
         return cachedTransporter;
     }

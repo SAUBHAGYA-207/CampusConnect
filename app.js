@@ -23,7 +23,11 @@ app.set('layout', 'layouts/main');
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+const os = require('os');
+const uploadsStaticPath = process.env.VERCEL
+    ? path.join(os.tmpdir(), 'campusconnect-uploads')
+    : path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(uploadsStaticPath));
 app.use(express.static(path.join(__dirname, 'public')));
 
 sessionSetup(app);
