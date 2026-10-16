@@ -31,7 +31,10 @@
                     <input type="email" class="form-control form-control-lg text-white border-secondary" id="email" name="email" value="admin@campusconnect.com" style="background-color: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" required>
                 </div>
                 <div class="mb-4">
-                    <label for="password" class="form-label text-white-50 fw-semibold small">Master Secret Key / Password</label>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label for="password" class="form-label text-white-50 fw-semibold small mb-0">Master Secret Key / Password</label>
+                        <a href="/auth/forgot-password" class="small text-decoration-none" style="color: var(--amber); font-size: 0.8rem;">Forgot password?</a>
+                    </div>
                     <input type="password" class="form-control form-control-lg text-white border-secondary" id="password" name="password" placeholder="••••••••" style="background-color: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15);" required>
                 </div>
                 <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold shadow">

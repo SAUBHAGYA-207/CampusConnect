@@ -102,4 +102,107 @@ describe('Auth Endpoints', () => {
         // Cleanup
         await usersStorage.delete(createdUser.id);
     });
+
+    it('should handle complete forgot-password and reset-password flow', async () => {
+        const agent = request.agent(app);
+        const usersStorage = new JsonStorage('users');
+        const bcrypt = require('bcryptjs');
+
+        const testEmail = 'resetflow_' + Date.now() + '@campusconnect.local';
+        const initialPassword = 'InitialPassword123!';
+        const newPassword = 'NewSecretPassword456!';
+        const hashedPassword = await bcrypt.hash(initialPassword, 10);
+
+        const createdUser = await usersStorage.add({
+            email: testEmail,
+            password: hashedPassword,
+            role: 'customer',
+            isVerified: true
+        });
+
+        // 1. GET /auth/forgot-password renders page
+        const getForgotRes = await agent.get('/auth/forgot-password');
+        expect(getForgotRes.statusCode).toEqual(200);
+        expect(getForgotRes.text).toContain('Forgot Password?');
+
+        // 2. POST /auth/forgot-password with invalid email returns error
+        const invalidEmailRes = await agent
+            .post('/auth/forgot-password')
+            .send({ email: 'nonexistent_' + Date.now() + '@campusconnect.local' });
+        expect(invalidEmailRes.statusCode).toEqual(200);
+        expect(invalidEmailRes.text).toContain('No account found');
+
+        // 3. POST /auth/forgot-password with valid email sets OTP and redirects
+        const validForgotRes = await agent
+            .post('/auth/forgot-password')
+            .send({ email: testEmail });
+        expect(validForgotRes.statusCode).toEqual(302);
+        expect(validForgotRes.headers.location).toEqual('/auth/reset-password');
+
+        // Verify user in storage has OTP generated
+        const userWithOtp = await usersStorage.getById(createdUser.id);
+        expect(userWithOtp.otp).toBeDefined();
+        expect(userWithOtp.otp.length).toEqual(6);
+
+        // 4. GET /auth/reset-password renders with email
+        const getResetRes = await agent.get('/auth/reset-password');
+        expect(getResetRes.statusCode).toEqual(200);
+        expect(getResetRes.text).toContain('Set New Password');
+        expect(getResetRes.text).toContain(testEmail);
+
+        // 5. POST /auth/reset-password with mismatched passwords fails
+        const mismatchRes = await agent
+            .post('/auth/reset-password')
+            .send({
+                otp: userWithOtp.otp,
+                newPassword: newPassword,
+                confirmPassword: 'WrongPasswordMismatch!'
+            });
+        expect(mismatchRes.statusCode).toEqual(200);
+        expect(mismatchRes.text).toContain('Passwords do not match');
+
+        // 6. POST /auth/reset-password with invalid OTP fails
+        const invalidOtpRes = await agent
+            .post('/auth/reset-password')
+            .send({
+                otp: '000000',
+                newPassword: newPassword,
+                confirmPassword: newPassword
+            });
+        expect(invalidOtpRes.statusCode).toEqual(200);
+        expect(invalidOtpRes.text).toContain('Invalid or expired OTP');
+
+        // 7. POST /auth/reset-password with correct OTP resets password
+        const successResetRes = await agent
+            .post('/auth/reset-password')
+            .send({
+                otp: userWithOtp.otp,
+                newPassword: newPassword,
+                confirmPassword: newPassword
+            });
+        expect(successResetRes.statusCode).toEqual(302);
+        expect(successResetRes.headers.location).toContain('/auth/login?reset=success');
+
+        // Follow redirect to login page - should show reset success banner
+        const loginPageRes = await agent.get('/auth/login?reset=success');
+        expect(loginPageRes.statusCode).toEqual(200);
+        expect(loginPageRes.text).toContain('Password reset successfully');
+
+        // 8. Sign in with OLD password must FAIL
+        const oldLoginRes = await request(app)
+            .post('/auth/login')
+            .send({ email: testEmail, password: initialPassword });
+        expect(oldLoginRes.statusCode).toEqual(200);
+        expect(oldLoginRes.text).toContain('Invalid credentials');
+
+        // 9. Sign in with NEW password must SUCCEED
+        const newLoginRes = await request(app)
+            .post('/auth/login')
+            .send({ email: testEmail, password: newPassword });
+        expect(newLoginRes.statusCode).toEqual(302);
+        expect(newLoginRes.headers.location).toEqual('/');
+
+        // Cleanup
+        await usersStorage.delete(createdUser.id);
+    }, 20000);
 });

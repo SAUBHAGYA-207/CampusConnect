@@ -14,6 +14,14 @@ router.post('/verify-email', authController.postVerifyEmail);
 router.get('/resend-otp', authController.resendOTP);
 router.post('/resend-otp', authController.resendOTP);
 
+// Forgot & Reset Password
+router.get('/forgot-password', authController.getForgotPassword);
+router.post('/forgot-password', authController.postForgotPassword);
+router.get('/forgot-password/resend', authController.resendResetOTP);
+router.post('/forgot-password/resend', authController.resendResetOTP);
+router.get('/reset-password', authController.getResetPassword);
+router.post('/reset-password', authController.postResetPassword);
+
 router.post('/logout', authController.logout);
 router.get('/logout', authController.logout);
 

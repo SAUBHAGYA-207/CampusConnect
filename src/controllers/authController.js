@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const JsonStorage = require('../storage/jsonStorage');
 const { generateOTP } = require('../utils/otp');
-const { sendOTP } = require('../services/emailService');
+const { sendOTP, sendPasswordResetOTP } = require('../services/emailService');
 const { isSuperAdminEmail } = require('../utils/adminConfig');
 
 const usersStorage = new JsonStorage('users');
@@ -62,7 +62,10 @@ exports.postRegister = async (req, res) => {
 };
 
 exports.getLogin = (req, res) => {
-    res.render('auth/login', { error: null });
+    res.render('auth/login', { 
+        error: null,
+        resetSuccess: req.query.reset === 'success'
+    });
 };
 
 exports.postLogin = async (req, res) => {
@@ -176,4 +179,161 @@ exports.logout = (req, res) => {
         res.clearCookie('connect.sid');
         res.redirect('/');
     });
+};
+
+exports.getForgotPassword = (req, res) => {
+    res.render('auth/forgot-password', { error: null });
+};
+
+exports.postForgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email || !email.trim()) {
+            return res.render('auth/forgot-password', { error: 'Please enter your registered email address.' });
+        }
+
+        const cleanEmail = email.trim().toLowerCase();
+        const user = await usersStorage.find(u => (u.email || '').toLowerCase() === cleanEmail);
+
+        if (!user) {
+            return res.render('auth/forgot-password', { error: 'No account found with this email address.' });
+        }
+
+        const otp = generateOTP();
+        await usersStorage.update(user.id, {
+            otp,
+            otpExpires: Date.now() + 10 * 60 * 1000 // 10 minutes
+        });
+
+        await sendPasswordResetOTP(user.email, otp);
+
+        req.session.resetUserId = user.id;
+        req.session.resetEmail = user.email;
+
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session save error on forgot-password:', err);
+                return res.render('auth/forgot-password', { error: 'Failed to initialize password reset session.' });
+            }
+            res.redirect('/auth/reset-password');
+        });
+    } catch (error) {
+        console.error('Error in postForgotPassword:', error);
+        res.render('auth/forgot-password', { error: 'Failed to process request. Please try again.' });
+    }
+};
+
+exports.getResetPassword = (req, res) => {
+    if (!req.session.resetUserId) {
+        return res.redirect('/auth/forgot-password');
+    }
+
+    res.render('auth/reset-password', {
+        error: null,
+        resetEmail: req.session.resetEmail || '',
+        resent: req.query.resent === '1'
+    });
+};
+
+exports.postResetPassword = async (req, res) => {
+    try {
+        const resetUserId = req.session.resetUserId;
+        if (!resetUserId) {
+            return res.redirect('/auth/forgot-password');
+        }
+
+        const { otp, newPassword, confirmPassword } = req.body;
+        const resetEmail = req.session.resetEmail || '';
+
+        if (!otp || !newPassword || !confirmPassword) {
+            return res.render('auth/reset-password', {
+                error: 'All fields are required.',
+                resetEmail,
+                resent: false
+            });
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.render('auth/reset-password', {
+                error: 'Passwords do not match. Please ensure both fields are identical.',
+                resetEmail,
+                resent: false
+            });
+        }
+
+        if (newPassword.length < 6) {
+            return res.render('auth/reset-password', {
+                error: 'Password must be at least 6 characters long.',
+                resetEmail,
+                resent: false
+            });
+        }
+
+        const user = await usersStorage.getById(resetUserId);
+        if (!user) {
+            return res.redirect('/auth/forgot-password');
+        }
+
+        const cleanOtp = String(otp).trim();
+        if (user.otp !== cleanOtp || Date.now() > Number(user.otpExpires)) {
+            return res.render('auth/reset-password', {
+                error: 'Invalid or expired OTP code. Please request a new code if needed.',
+                resetEmail,
+                resent: false
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await usersStorage.update(resetUserId, {
+            password: hashedPassword,
+            otp: null,
+            otpExpires: null,
+            isVerified: true // resetting via verified email confirms the email
+        });
+
+        delete req.session.resetUserId;
+        delete req.session.resetEmail;
+
+        req.session.save((err) => {
+            if (err) console.error('Session save error on reset-password:', err);
+            res.redirect('/auth/login?reset=success');
+        });
+    } catch (error) {
+        console.error('Error in postResetPassword:', error);
+        res.render('auth/reset-password', {
+            error: 'Failed to reset password. Please try again.',
+            resetEmail: req.session.resetEmail || '',
+            resent: false
+        });
+    }
+};
+
+exports.resendResetOTP = async (req, res) => {
+    try {
+        const resetUserId = req.session.resetUserId;
+        if (!resetUserId) {
+            return res.redirect('/auth/forgot-password');
+        }
+
+        const user = await usersStorage.getById(resetUserId);
+        if (!user) {
+            return res.redirect('/auth/forgot-password');
+        }
+
+        const otp = generateOTP();
+        await usersStorage.update(resetUserId, {
+            otp,
+            otpExpires: Date.now() + 10 * 60 * 1000
+        });
+
+        await sendPasswordResetOTP(user.email, otp);
+        res.redirect('/auth/reset-password?resent=1');
+    } catch (error) {
+        console.error('Error in resendResetOTP:', error);
+        res.render('auth/reset-password', {
+            error: 'Failed to resend reset code. Please try again.',
+            resetEmail: req.session.resetEmail || '',
+            resent: false
+        });
+    }
 };

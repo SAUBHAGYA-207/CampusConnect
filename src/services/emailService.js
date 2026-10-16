@@ -389,6 +389,47 @@ exports.sendOTP = async (email, otp) => {
     return { previewUrl: result.previewUrl, otp, isRealDelivery: result.isRealDelivery };
 };
 
+exports.sendPasswordResetOTP = async (email, otp) => {
+    const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 500px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; margin: 0 auto;">
+            <div style="background: #963D24; color: white; padding: 12px 18px; border-radius: 8px; font-weight: bold; font-size: 16px;">
+                CampusConnect • Password Reset Request
+            </div>
+            <h3 style="color: #2c1810; margin-top: 20px;">Reset Your Password</h3>
+            <p style="color: #475569; font-size: 15px;">We received a request to reset your password. Use the verification code below to authorize the change:</p>
+            <div style="background: #FBF0EB; color: #963D24; font-size: 32px; font-weight: bold; letter-spacing: 6px; padding: 14px 20px; border-radius: 8px; text-align: center; margin: 16px 0; border: 1px dashed #963D24;">
+                ${otp}
+            </div>
+            <p style="color: #64748b; font-size: 13px;">This OTP expires in 10 minutes. If you did not make this request, please disregard this email — your existing password remains safe and unchanged.</p>
+        </div>
+    `;
+    const text = `Your CampusConnect password reset verification code is: ${otp}. It is valid for 10 minutes. If you did not request this, ignore this email.`;
+
+    const result = await sendMailUniversal({
+        to: email,
+        subject: 'Password Reset OTP Code - CampusConnect',
+        text,
+        html
+    });
+
+    console.log('\n============================================================');
+    console.log('🔑  [CAMPUSCONNECT] PASSWORD RESET OTP DISPATCHED');
+    console.log('------------------------------------------------------------');
+    console.log(`👤  Recipient:   ${email}`);
+    console.log(`🔐  Reset Code:  \x1b[33m\x1b[1m${otp}\x1b[0m  (Valid for 10 minutes)`);
+    if (result.isRealDelivery) {
+        console.log(`📨  Status:      \x1b[32mSent to real email inbox (${email})\x1b[0m`);
+    } else if (result.previewUrl) {
+        console.log('🔗  Ethereal Web Preview:');
+        console.log(`    \x1b[36m\x1b[4m${result.previewUrl}\x1b[0m`);
+    } else {
+        console.log('ℹ️   Use the OTP code above to complete password reset.');
+    }
+    console.log('============================================================\n');
+
+    return { previewUrl: result.previewUrl, otp, isRealDelivery: result.isRealDelivery };
+};
+
 exports.sendStatusEmail = async (email, status) => {
     const subject = `Appointment Status Update: ${status} - CampusConnect`;
     const text = `Your appointment status has been updated to: ${status}. Log in to view details.`;

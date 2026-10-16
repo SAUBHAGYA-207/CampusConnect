@@ -10,6 +10,11 @@
                 <h3 class="fw-bold mb-1" style="color: var(--espresso); letter-spacing: -0.5px;">Welcome Back</h3>
                 <p class="text-muted small">Sign in to continue to CampusConnect</p>
             </div>
+            <% if (typeof resetSuccess !== 'undefined' && resetSuccess) { %>
+                <div class="alert alert-success py-2 px-3 small rounded-3 mb-3 d-flex align-items-center gap-2" style="background-color: var(--emerald-light); border-color: #A7F3D0; color: var(--emerald);">
+                    <span>✓</span> Password reset successfully! Please sign in with your new password.
+                </div>
+            <% } %>
             <% if (error) { %>
                 <div class="alert alert-danger py-2 px-3 small rounded-3 mb-3" style="background-color: #FDF2F2; border-color: #F8B4B4; color: #9B1C1C;"><%= error %></div>
             <% } %>
@@ -19,7 +24,10 @@
                     <input type="email" class="form-control form-control-lg" id="email" name="email" placeholder="name@domain.com" required>
                 </div>
                 <div class="mb-4">
-                    <label for="password" class="form-label text-muted fw-semibold small">Password</label>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label for="password" class="form-label text-muted fw-semibold small mb-0">Password</label>
+                        <a href="/auth/forgot-password" class="small text-decoration-none fw-medium" style="color: var(--cognac); font-size: 0.8rem;">Forgot password?</a>
+                    </div>
                     <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="••••••••" required>
                 </div>
                 <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm fw-bold">Sign In</button>
