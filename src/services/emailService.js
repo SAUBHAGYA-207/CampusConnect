@@ -30,7 +30,15 @@ async function sendViaResend({ to, subject, html, text }) {
     const apiKey = (process.env.RESEND_API_KEY || '').trim();
     if (!apiKey) return null;
 
-    const fromAddress = (process.env.RESEND_FROM || process.env.MAIL_FROM || 'CampusConnect <onboarding@resend.dev>').trim();
+    let fromAddress = process.env.RESEND_FROM ? process.env.RESEND_FROM.trim() : null;
+    if (!fromAddress) {
+        const mailFrom = (process.env.MAIL_FROM || '').trim();
+        if (mailFrom && !/@(gmail|googlemail|yahoo|hotmail|outlook|ethereal)\.com/i.test(mailFrom)) {
+            fromAddress = mailFrom;
+        } else {
+            fromAddress = 'CampusConnect <onboarding@resend.dev>';
+        }
+    }
     const cleanFrom = fromAddress.includes('<') ? fromAddress : `CampusConnect <${fromAddress}>`;
 
     const res = await fetch('https://api.resend.com/emails', {
