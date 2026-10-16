@@ -71,8 +71,17 @@ class JsonStorage {
                     ...item,
                     id: item.id || (Date.now().toString() + Math.random().toString(36).substring(7))
                 };
-                const { data, error } = await client.from(this.tableName).insert([newItem]).select().single();
+                let { data, error } = await client.from(this.tableName).insert([newItem]).select().single();
                 if (error) {
+                    const match = error.message.match(/Could not find the '(\w+)' column/);
+                    if (match && match[1] && newItem[match[1]] !== undefined) {
+                        const fallbackItem = { ...newItem };
+                        delete fallbackItem[match[1]];
+                        const retry = await client.from(this.tableName).insert([fallbackItem]).select().single();
+                        if (!retry.error) {
+                            return { ...retry.data, [match[1]]: newItem[match[1]] };
+                        }
+                    }
                     console.error(`[Supabase Storage Error] add on ${this.tableName}:`, error.message);
                     throw error;
                 }
@@ -98,8 +107,17 @@ class JsonStorage {
         if (isSupabaseConfigured()) {
             const client = getSupabaseClient();
             if (client) {
-                const { data, error } = await client.from(this.tableName).update(updates).eq('id', id).select().maybeSingle();
+                let { data, error } = await client.from(this.tableName).update(updates).eq('id', id).select().maybeSingle();
                 if (error) {
+                    const match = error.message.match(/Could not find the '(\w+)' column/);
+                    if (match && match[1] && updates[match[1]] !== undefined) {
+                        const fallbackUpdates = { ...updates };
+                        delete fallbackUpdates[match[1]];
+                        const retry = await client.from(this.tableName).update(fallbackUpdates).eq('id', id).select().maybeSingle();
+                        if (!retry.error) {
+                            return retry.data || null;
+                        }
+                    }
                     console.error(`[Supabase Storage Error] update on ${this.tableName}:`, error.message);
                     throw error;
                 }

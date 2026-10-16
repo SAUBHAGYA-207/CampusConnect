@@ -3,6 +3,7 @@ const nodemailer = require('nodemailer');
 let cachedTransporter = null;
 
 function isUsingRealSMTP() {
+    if (process.env.RESEND_API_KEY || process.env.BREVO_API_KEY) return true;
     if (!process.env.SMTP_USER || !process.env.SMTP_PASS) return false;
     const user = (process.env.SMTP_USER || '').toLowerCase().trim();
     if (user.endsWith('@ethereal.email')) return false;
@@ -16,10 +17,74 @@ function getFromAddress() {
     if (process.env.MAIL_FROM && process.env.MAIL_FROM.trim()) {
         return process.env.MAIL_FROM.trim();
     }
-    if (isUsingRealSMTP() && process.env.SMTP_USER) {
+    if (process.env.SMTP_USER && process.env.SMTP_USER.trim()) {
         return `"CampusConnect" <${process.env.SMTP_USER.trim()}>`;
     }
     return '"CampusConnect" <noreply@campusconnect.com>';
+}
+
+/**
+ * Dispatch email via Resend HTTP API (Port 443 - Never blocked by Render/AWS/Cloud)
+ */
+async function sendViaResend({ to, subject, html, text }) {
+    const apiKey = (process.env.RESEND_API_KEY || '').trim();
+    if (!apiKey) return null;
+
+    const fromAddress = (process.env.RESEND_FROM || process.env.MAIL_FROM || 'CampusConnect <onboarding@resend.dev>').trim();
+    const cleanFrom = fromAddress.includes('<') ? fromAddress : `CampusConnect <${fromAddress}>`;
+
+    const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            from: cleanFrom,
+            to: Array.isArray(to) ? to : [to],
+            subject,
+            html,
+            text
+        })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+        throw new Error(data.message || JSON.stringify(data));
+    }
+    return { messageId: data.id, provider: 'resend' };
+}
+
+/**
+ * Dispatch email via Brevo HTTP API (Port 443 - Never blocked by Render/AWS/Cloud)
+ */
+async function sendViaBrevo({ to, subject, html, text }) {
+    const apiKey = (process.env.BREVO_API_KEY || '').trim();
+    if (!apiKey) return null;
+
+    const fromEmail = (process.env.BREVO_FROM_EMAIL || process.env.SMTP_USER || 'campusconnect216@gmail.com').trim();
+    const fromName = process.env.BREVO_FROM_NAME || 'CampusConnect';
+
+    const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+            'api-key': apiKey,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            sender: { name: fromName, email: fromEmail },
+            to: [{ email: to }],
+            subject,
+            htmlContent: html,
+            textContent: text
+        })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+        throw new Error(data.message || JSON.stringify(data));
+    }
+    return { messageId: data.messageId, provider: 'brevo' };
 }
 
 async function getTransporter() {
@@ -40,7 +105,10 @@ async function getTransporter() {
             auth: {
                 user,
                 pass
-            }
+            },
+            connectionTimeout: 5000,
+            greetingTimeout: 5000,
+            socketTimeout: 8000
         });
         return cachedTransporter;
     }
@@ -51,7 +119,10 @@ async function getTransporter() {
             console.log(`[EmailService] Initializing real SMTP using service: ${process.env.SMTP_SERVICE}`);
             cachedTransporter = nodemailer.createTransport({
                 service: process.env.SMTP_SERVICE.trim(),
-                auth: { user, pass }
+                auth: { user, pass },
+                connectionTimeout: 5000,
+                greetingTimeout: 5000,
+                socketTimeout: 8000
             });
             return cachedTransporter;
         }
@@ -65,6 +136,9 @@ async function getTransporter() {
             port,
             secure,
             auth: { user, pass },
+            connectionTimeout: 5000,
+            greetingTimeout: 5000,
+            socketTimeout: 8000,
             tls: {
                 rejectUnauthorized: process.env.NODE_ENV === 'production'
             }
@@ -79,7 +153,10 @@ async function getTransporter() {
             host: 'smtp.ethereal.email',
             port: 587,
             secure: false,
-            auth: { user, pass }
+            auth: { user, pass },
+            connectionTimeout: 5000,
+            greetingTimeout: 5000,
+            socketTimeout: 8000
         });
         return cachedTransporter;
     }
@@ -95,7 +172,10 @@ async function getTransporter() {
             auth: {
                 user: testAccount.user,
                 pass: testAccount.pass
-            }
+            },
+            connectionTimeout: 5000,
+            greetingTimeout: 5000,
+            socketTimeout: 8000
         });
         return cachedTransporter;
     } catch (err) {
@@ -104,172 +184,175 @@ async function getTransporter() {
     }
 }
 
-exports.sendOTP = async (email, otp) => {
-    const fromAddress = getFromAddress();
-    const mailOptions = {
-        from: fromAddress,
-        to: email,
-        subject: 'Your Verification OTP - CampusConnect',
-        text: `Your OTP for CampusConnect verification is: ${otp}. It is valid for 10 minutes.`,
-        html: `
-            <div style="font-family: Arial, sans-serif; max-width: 500px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; margin: 0 auto;">
-                <h2 style="color: #2563eb; margin-top: 0;">CampusConnect Verification</h2>
-                <p style="color: #475569; font-size: 15px;">Your one-time verification code is:</p>
-                <div style="background: #eff6ff; color: #1d4ed8; font-size: 32px; font-weight: bold; letter-spacing: 6px; padding: 14px 20px; border-radius: 8px; text-align: center; margin: 16px 0;">
-                    ${otp}
-                </div>
-                <p style="color: #64748b; font-size: 13px; margin-bottom: 0;">This OTP expires in 10 minutes. If you did not request this, you can safely ignore this message.</p>
-            </div>
-        `
-    };
-
-    let previewUrl = null;
-    let isRealDelivery = false;
-
-    try {
-        const transport = await getTransporter();
-        if (transport) {
-            const info = await transport.sendMail(mailOptions);
-            if (isUsingRealSMTP()) {
-                isRealDelivery = true;
-                console.log(`✅ [EmailService] OTP email successfully delivered to real inbox: ${email} (MessageID: ${info.messageId})`);
-            } else {
-                previewUrl = nodemailer.getTestMessageUrl(info);
+/**
+ * Universal email dispatcher (tries HTTP APIs first, then SMTP)
+ */
+async function sendMailUniversal({ to, subject, text, html }) {
+    // 1. Try Resend HTTP API (Port 443 HTTPS - bypasses Render SMTP firewall)
+    if (process.env.RESEND_API_KEY) {
+        try {
+            const resendResult = await sendViaResend({ to, subject, html, text });
+            if (resendResult) {
+                console.log(`✅ [EmailService] Email delivered via Resend API to: ${to} (ID: ${resendResult.messageId})`);
+                return { success: true, isRealDelivery: true, previewUrl: null };
             }
-        }
-    } catch (error) {
-        console.error('❌ [EmailService] Error dispatching OTP email:', error.message || error);
-        if (isUsingRealSMTP()) {
-            console.error('⚠️  Real SMTP delivery failed! Please verify your SMTP_USER, SMTP_PASS (App Password for Gmail), and firewall/port permissions in .env');
+        } catch (resendErr) {
+            console.error('❌ [EmailService] Resend API Error:', resendErr.message);
         }
     }
 
-    // Always print high-visibility notification block to terminal
+    // 2. Try Brevo HTTP API (Port 443 HTTPS)
+    if (process.env.BREVO_API_KEY) {
+        try {
+            const brevoResult = await sendViaBrevo({ to, subject, html, text });
+            if (brevoResult) {
+                console.log(`✅ [EmailService] Email delivered via Brevo API to: ${to} (ID: ${brevoResult.messageId})`);
+                return { success: true, isRealDelivery: true, previewUrl: null };
+            }
+        } catch (brevoErr) {
+            console.error('❌ [EmailService] Brevo API Error:', brevoErr.message);
+        }
+    }
+
+    // 3. Fall back to standard SMTP (Gmail / Custom SMTP / Ethereal)
+    const mailOptions = {
+        from: getFromAddress(),
+        to,
+        subject,
+        text,
+        html
+    };
+
+    const transport = await getTransporter();
+    if (!transport) {
+        return { success: false, isRealDelivery: false, previewUrl: null };
+    }
+
+    try {
+        const info = await transport.sendMail(mailOptions);
+        if (isUsingRealSMTP()) {
+            console.log(`✅ [EmailService] Email successfully delivered to real inbox: ${to} (MessageID: ${info.messageId})`);
+            return { success: true, isRealDelivery: true, previewUrl: null };
+        } else {
+            const previewUrl = nodemailer.getTestMessageUrl(info);
+            return { success: true, isRealDelivery: false, previewUrl };
+        }
+    } catch (smtpErr) {
+        console.error('❌ [EmailService] Error dispatching email via SMTP:', smtpErr.message || smtpErr);
+        if (smtpErr.message && (smtpErr.message.includes('timeout') || smtpErr.message.includes('ETIMEDOUT') || smtpErr.message.includes('ECONNREFUSED'))) {
+            console.error('\n⚠️  RENDER / CLOUD SMTP PORT BLOCK DETECTED:');
+            console.error('   Render Free Tier blocks outbound SMTP ports 25, 465, and 587.');
+            console.error('   👉 Quick Fix 1: Check your Render service Logs tab to view the OTP code!');
+            console.error('   👉 Quick Fix 2: Add RESEND_API_KEY to Render Environment to send via HTTPS (Port 443).\n');
+        }
+        return { success: false, isRealDelivery: false, previewUrl: null };
+    }
+}
+
+exports.sendOTP = async (email, otp) => {
+    const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 500px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; margin: 0 auto;">
+            <h2 style="color: #2563eb; margin-top: 0;">CampusConnect Verification</h2>
+            <p style="color: #475569; font-size: 15px;">Your one-time verification code is:</p>
+            <div style="background: #eff6ff; color: #1d4ed8; font-size: 32px; font-weight: bold; letter-spacing: 6px; padding: 14px 20px; border-radius: 8px; text-align: center; margin: 16px 0;">
+                ${otp}
+            </div>
+            <p style="color: #64748b; font-size: 13px; margin-bottom: 0;">This OTP expires in 10 minutes. If you did not request this, you can safely ignore this message.</p>
+        </div>
+    `;
+    const text = `Your OTP for CampusConnect verification is: ${otp}. It is valid for 10 minutes.`;
+
+    const result = await sendMailUniversal({
+        to: email,
+        subject: 'Your Verification OTP - CampusConnect',
+        text,
+        html
+    });
+
+    // Always print high-visibility notification block to terminal (vital for Render logs!)
     console.log('\n============================================================');
     console.log('📬  [CAMPUSCONNECT] OTP DISPATCHED');
     console.log('------------------------------------------------------------');
     console.log(`👤  Recipient:   ${email}`);
     console.log(`🔑  OTP Code:    \x1b[32m\x1b[1m${otp}\x1b[0m  (Valid for 10 minutes)`);
-    if (isRealDelivery) {
+    if (result.isRealDelivery) {
         console.log(`📨  Status:      \x1b[32mSent to real email inbox (${email})\x1b[0m`);
-    } else if (previewUrl) {
+    } else if (result.previewUrl) {
         console.log('🔗  Ethereal Web Preview:');
-        console.log(`    \x1b[36m\x1b[4m${previewUrl}\x1b[0m`);
+        console.log(`    \x1b[36m\x1b[4m${result.previewUrl}\x1b[0m`);
     } else {
         console.log('ℹ️   Use the OTP code above to verify.');
     }
     console.log('============================================================\n');
 
-    return { previewUrl, otp, isRealDelivery };
+    return { previewUrl: result.previewUrl, otp, isRealDelivery: result.isRealDelivery };
 };
 
 exports.sendStatusEmail = async (email, status) => {
-    const mailOptions = {
-        from: getFromAddress(),
-        to: email,
-        subject: `Appointment Status Update: ${status} - CampusConnect`,
-        text: `Your appointment status has been updated to: ${status}. Log in to view details.`
-    };
-    try {
-        const transport = await getTransporter();
-        if (transport) {
-            const info = await transport.sendMail(mailOptions);
-            const previewUrl = nodemailer.getTestMessageUrl(info);
-            if (previewUrl) {
-                console.log(`[EmailService] Status email dispatched to ${email}. Preview: ${previewUrl}`);
-            } else {
-                console.log(`[EmailService] Status email delivered to real inbox: ${email}`);
-            }
-        }
-    } catch (error) {
-        console.error('Error sending status email:', error);
-    }
+    const subject = `Appointment Status Update: ${status} - CampusConnect`;
+    const text = `Your appointment status has been updated to: ${status}. Log in to view details.`;
+    await sendMailUniversal({ to: email, subject, text, html: `<p>${text}</p>` });
 };
 
 exports.sendServiceRemovalEmail = async (email, serviceTitle, feedback) => {
-    const mailOptions = {
-        from: getFromAddress(),
-        to: email,
-        subject: `Service Listing Moderation Notice: "${serviceTitle}" - CampusConnect`,
-        text: `Your service "${serviceTitle}" has been removed from CampusConnect by the Super Admin.\n\nFeedback & Reason:\n${feedback}\n\nPlease review our community guidelines before creating a new listing.`,
-        html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 24px; border: 1px solid #fed7aa; border-radius: 12px; background: #fffaf5;">
-                <div style="background: #ea580c; color: white; padding: 12px 18px; border-radius: 8px; font-weight: bold; font-size: 16px;">
-                    CampusConnect • Service Moderation Notice
-                </div>
-                <h3 style="color: #9a3412; margin-top: 20px;">Your service listing has been removed</h3>
-                <p style="color: #431407; font-size: 15px;">
-                    Super Admin has reviewed and removed your service listing: <strong>"${serviceTitle}"</strong>.
-                </p>
-                <div style="background: #ffffff; border-left: 4px solid #ea580c; padding: 16px; margin: 16px 0; border-radius: 4px;">
-                    <div style="font-weight: bold; color: #7c2d12; font-size: 13px; text-transform: uppercase; margin-bottom: 6px;">Admin Feedback & Reason:</div>
-                    <div style="color: #334155; font-size: 14px; white-space: pre-wrap;">${feedback}</div>
-                </div>
-                <p style="color: #78716c; font-size: 13px;">
-                    You are welcome to create a new revised service listing addressing the feedback above from your Partner Portal.
-                </p>
+    const subject = `Service Listing Moderation Notice: "${serviceTitle}" - CampusConnect`;
+    const text = `Your service "${serviceTitle}" has been removed from CampusConnect by the Super Admin.\n\nFeedback & Reason:\n${feedback}\n\nPlease review our community guidelines before creating a new listing.`;
+    const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 24px; border: 1px solid #fed7aa; border-radius: 12px; background: #fffaf5;">
+            <div style="background: #ea580c; color: white; padding: 12px 18px; border-radius: 8px; font-weight: bold; font-size: 16px;">
+                CampusConnect • Service Moderation Notice
             </div>
-        `
-    };
+            <h3 style="color: #9a3412; margin-top: 20px;">Your service listing has been removed</h3>
+            <p style="color: #431407; font-size: 15px;">
+                Super Admin has reviewed and removed your service listing: <strong>"${serviceTitle}"</strong>.
+            </p>
+            <div style="background: #ffffff; border-left: 4px solid #ea580c; padding: 16px; margin: 16px 0; border-radius: 4px;">
+                <div style="font-weight: bold; color: #7c2d12; font-size: 13px; text-transform: uppercase; margin-bottom: 6px;">Admin Feedback & Reason:</div>
+                <div style="color: #334155; font-size: 14px; white-space: pre-wrap;">${feedback}</div>
+            </div>
+            <p style="color: #78716c; font-size: 13px;">
+                You are welcome to create a new revised service listing addressing the feedback above from your Partner Portal.
+            </p>
+        </div>
+    `;
 
-    try {
-        const transport = await getTransporter();
-        if (transport) {
-            const info = await transport.sendMail(mailOptions);
-            const previewUrl = nodemailer.getTestMessageUrl(info);
-            console.log('\n============================================================');
-            console.log('🚨 [ADMIN] SERVICE REMOVAL FEEDBACK DISPATCHED');
-            console.log(`To:        ${email}`);
-            console.log(`Service:   ${serviceTitle}`);
-            console.log(`Feedback:  ${feedback}`);
-            if (previewUrl) console.log(`🔗 Preview: ${previewUrl}`);
-            console.log('============================================================\n');
-        }
-    } catch (error) {
-        console.error('Error sending service removal email:', error);
-    }
+    console.log('\n============================================================');
+    console.log('🚨 [ADMIN] SERVICE REMOVAL FEEDBACK DISPATCHED');
+    console.log(`To:        ${email}`);
+    console.log(`Service:   ${serviceTitle}`);
+    console.log(`Feedback:  ${feedback}`);
+    console.log('============================================================\n');
+
+    await sendMailUniversal({ to: email, subject, text, html });
 };
 
 exports.sendPayoutClearedEmail = async (email, amount, utr, proofUrl) => {
-    const mailOptions = {
-        from: getFromAddress(),
-        to: email,
-        subject: `Partner Payout Cleared: ₹${amount} - CampusConnect`,
-        text: `Your payout request of ₹${amount} has been cleared by Super Admin.\nUTR/Reference: ${utr || 'Direct UPI Transfer'}`,
-        html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 24px; border: 1px solid #bbf7d0; border-radius: 12px; background: #f0fdf4;">
-                <div style="background: #16a34a; color: white; padding: 12px 18px; border-radius: 8px; font-weight: bold; font-size: 16px;">
-                    ✓ Partner Payout Settled
-                </div>
-                <h3 style="color: #14532d; margin-top: 20px;">Funds Sent Directly to Your UPI</h3>
-                <p style="color: #166534; font-size: 15px;">
-                    Super Admin has processed your payout of <strong>₹${amount}</strong>.
-                </p>
-                <div style="background: #ffffff; border: 1px solid #dcfce7; padding: 16px; margin: 16px 0; border-radius: 8px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="color: #64748b;">Amount Paid:</span>
-                        <strong style="color: #15803d; font-size: 18px;">₹${amount}</strong>
-                    </div>
-                    <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #64748b;">Bank UTR / Ref:</span>
-                        <span style="font-family: monospace; font-weight: bold;">${utr || 'N/A'}</span>
-                    </div>
-                </div>
-                <p style="color: #15803d; font-size: 13px;">
-                    Thank you for partnering with CampusConnect! You can review your payout history in your Partner Portal.
-                </p>
+    const subject = `Partner Payout Cleared: ₹${amount} - CampusConnect`;
+    const text = `Your payout request of ₹${amount} has been cleared by Super Admin.\nUTR/Reference: ${utr || 'Direct UPI Transfer'}`;
+    const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 24px; border: 1px solid #bbf7d0; border-radius: 12px; background: #f0fdf4;">
+            <div style="background: #16a34a; color: white; padding: 12px 18px; border-radius: 8px; font-weight: bold; font-size: 16px;">
+                ✓ Partner Payout Settled
             </div>
-        `
-    };
+            <h3 style="color: #14532d; margin-top: 20px;">Funds Sent Directly to Your UPI</h3>
+            <p style="color: #166534; font-size: 15px;">
+                Super Admin has processed your payout of <strong>₹${amount}</strong>.
+            </p>
+            <div style="background: #ffffff; border: 1px solid #dcfce7; padding: 16px; margin: 16px 0; border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: #64748b;">Amount Paid:</span>
+                    <strong style="color: #15803d; font-size: 18px;">₹${amount}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #64748b;">Bank UTR / Ref:</span>
+                    <span style="font-family: monospace; font-weight: bold;">${utr || 'N/A'}</span>
+                </div>
+            </div>
+            <p style="color: #15803d; font-size: 13px;">
+                Thank you for partnering with CampusConnect! You can review your payout history in your Partner Portal.
+            </p>
+        </div>
+    `;
 
-    try {
-        const transport = await getTransporter();
-        if (transport) {
-            const info = await transport.sendMail(mailOptions);
-            const previewUrl = nodemailer.getTestMessageUrl(info);
-            console.log(`[EmailService] Payout cleared email sent to ${email}. Preview: ${previewUrl}`);
-        }
-    } catch (error) {
-        console.error('Error sending payout email:', error);
-    }
+    await sendMailUniversal({ to: email, subject, text, html });
 };

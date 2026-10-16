@@ -26,8 +26,11 @@ CREATE TABLE IF NOT EXISTS "services" (
     "category" TEXT,
     "image" TEXT,
     "providerId" TEXT,
+    "status" TEXT DEFAULT 'published',
     "createdAt" BIGINT
 );
+ALTER TABLE "services" ADD COLUMN IF NOT EXISTS "status" TEXT DEFAULT 'published';
+
 
 -- 3. APPOINTMENTS TABLE
 CREATE TABLE IF NOT EXISTS "appointments" (
