@@ -19,19 +19,53 @@ exports.getMessagesForAppointment = async (appointmentId) => {
 };
 
 // Admin direct communication with each user/partner
-exports.saveAdminMessage = async (targetUserId, senderId, senderRole, text) => {
-    return await adminMessagesStorage.add({
-        targetUserId, // the customer or partner user ID
-        senderId,
+exports.saveAdminMessage = async (targetUserId, senderId, senderRole, text, senderName, senderEmail) => {
+    // In Supabase admin_messages table: id, partnerId, senderId, senderRole, text, timestamp
+    // When senderRole is admin, persist the admin's email or name into senderId for zero-migration attribution
+    const effectiveSenderId = (senderRole === 'admin' && (senderEmail || senderName))
+        ? (senderEmail || senderName)
+        : senderId;
+
+    const payload = {
+        partnerId: targetUserId,
+        senderId: effectiveSenderId,
         senderRole,
         text,
         timestamp: Date.now()
-    });
+    };
+
+    const saved = await adminMessagesStorage.add(payload);
+
+    return {
+        ...saved,
+        targetUserId,
+        partnerId: targetUserId,
+        senderId: saved.senderId,
+        senderRole: saved.senderRole,
+        senderName: senderName || (senderRole === 'admin' ? (saved.senderId || 'Super Admin') : 'User'),
+        senderEmail: senderEmail || (senderRole === 'admin' && saved.senderId && saved.senderId.includes('@') ? saved.senderId : ''),
+        text: saved.text,
+        timestamp: saved.timestamp
+    };
 };
 
 exports.getAdminMessagesForUser = async (targetUserId) => {
     const all = await adminMessagesStorage.getAll();
-    return all.filter(m => m.targetUserId === targetUserId).sort((a, b) => a.timestamp - b.timestamp);
+    return all
+        .filter(m => (m.targetUserId === targetUserId || m.partnerId === targetUserId))
+        .map(m => {
+            const isEmail = m.senderId && m.senderId.includes('@');
+            const adminEmail = m.senderEmail || (m.senderRole === 'admin' && isEmail ? m.senderId : '');
+            const adminName = m.senderName || (m.senderRole === 'admin' ? (m.senderId || 'Super Admin') : 'User');
+            return {
+                ...m,
+                targetUserId: m.targetUserId || m.partnerId,
+                partnerId: m.partnerId || m.targetUserId,
+                senderEmail: adminEmail,
+                senderName: adminName
+            };
+        })
+        .sort((a, b) => a.timestamp - b.timestamp);
 };
 
 exports.getAdminChatUsers = async () => {
@@ -41,9 +75,15 @@ exports.getAdminChatUsers = async () => {
 
     const userLastMsgMap = new Map();
     all.forEach(m => {
-        const existing = userLastMsgMap.get(m.targetUserId);
+        const uid = m.targetUserId || m.partnerId;
+        if (!uid) return;
+        const existing = userLastMsgMap.get(uid);
         if (!existing || m.timestamp > existing.timestamp) {
-            userLastMsgMap.set(m.targetUserId, m);
+            userLastMsgMap.set(uid, {
+                ...m,
+                targetUserId: uid,
+                partnerId: uid
+            });
         }
     });
 

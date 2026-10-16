@@ -22,5 +22,6 @@ router.post('/payouts/:id/clear', requireSuperAdmin, payoutUpload.single('paymen
 // Super Admin Direct Chat
 router.get('/chat', requireSuperAdmin, adminController.getChat);
 router.get('/api/chat/:userId', requireSuperAdmin, adminController.getMessagesApi);
+router.post('/api/chat/:userId', requireSuperAdmin, adminController.postSendMessageApi);
 
 module.exports = router;

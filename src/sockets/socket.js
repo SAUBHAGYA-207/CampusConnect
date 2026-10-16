@@ -66,25 +66,24 @@ module.exports = (io) => {
         });
 
         socket.on('admin_send_message', async (data) => {
-            const { targetUserId, senderId, senderRole, text } = data;
+            const { targetUserId, senderId, senderRole, senderName, senderEmail, text } = data;
             if (!targetUserId || !text) return;
 
             try {
-                const msg = await chatService.saveAdminMessage(targetUserId, senderId, senderRole, text);
+                const msg = await chatService.saveAdminMessage(targetUserId, senderId, senderRole, text, senderName, senderEmail);
                 io.to(`admin_chat_${targetUserId}`).emit('new_admin_message', msg);
 
                 // If sent by admin, notify user; if sent by user, notify admin
                 if (senderRole === 'admin') {
                     await notificationService.createNotification(
                         targetUserId,
-                        'New support message from Super Admin',
+                        `New support message from Admin (${senderEmail || senderName || 'Super Admin'})`,
                         '/support/chat'
                     );
                 } else {
-                    // Find any admin user or notify admin
                     io.to('admin_room').emit('new_admin_notification', {
                         title: 'New User Message',
-                        text: `User message from ${senderId}`,
+                        text: `User message from ${senderEmail || senderName || senderId}`,
                         targetUserId
                     });
                 }

@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const adminService = require('../services/adminService');
 const chatService = require('../services/chatService');
+const notificationService = require('../services/notificationService');
 const JsonStorage = require('../storage/jsonStorage');
 const { isSuperAdminEmail } = require('../utils/adminConfig');
 const { generateOTP } = require('../utils/otp');
@@ -323,7 +324,8 @@ exports.getChat = async (req, res, next) => {
             allUsers,
             targetUser,
             targetUserId,
-            messages
+            messages,
+            adminUser: req.session.user
         });
     } catch (error) {
         next(error);
@@ -337,5 +339,46 @@ exports.getMessagesApi = async (req, res, next) => {
         res.json(messages);
     } catch (error) {
         next(error);
+    }
+};
+
+exports.postSendMessageApi = async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        const { text } = req.body;
+        if (!text || !text.trim()) {
+            return res.status(400).json({ error: 'Message text cannot be empty' });
+        }
+
+        const adminUser = req.session.user;
+        const senderName = adminUser && adminUser.email ? adminUser.email.split('@')[0] : 'Super Admin';
+        const senderEmail = adminUser && adminUser.email ? adminUser.email : 'admin@campusconnect.com';
+        const senderId = adminUser ? adminUser.id : 'super_admin_001';
+
+        const msg = await chatService.saveAdminMessage(
+            userId,
+            senderId,
+            'admin',
+            text.trim(),
+            senderName,
+            senderEmail
+        );
+
+        const io = notificationService.getIO();
+        if (io) {
+            io.to(`admin_chat_${userId}`).emit('new_admin_message', msg);
+        }
+
+        // Send instant notification to customer or partner
+        await notificationService.createNotification(
+            userId,
+            `New support message from Admin (${senderEmail})`,
+            '/support/chat'
+        );
+
+        res.json({ success: true, message: msg });
+    } catch (error) {
+        console.error('Error in postSendMessageApi:', error);
+        res.status(500).json({ error: 'Failed to send message' });
     }
 };

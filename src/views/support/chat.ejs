@@ -2,36 +2,38 @@
     <div class="col-md-9 col-lg-8">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                <h3 class="fw-bold mb-0">Help & Support • Direct Admin Chat</h3>
-                <p class="text-muted small mb-0">Need assistance or have questions about services or payouts? Talk directly to CampusConnect Super Admin.</p>
+                <h3 class="fw-bold mb-0" style="color: var(--espresso);">Help & Support • Direct Admin Chat</h3>
+                <p class="text-muted small mb-0">Need assistance or have questions about bookings or payouts? Talk directly with CampusConnect Super Admin.</p>
             </div>
-            <a href="/dashboard" class="btn btn-outline-secondary" onclick="if (window.history.length > 1) { history.back(); return false; }">← Back</a>
+            <a href="/dashboard" class="btn btn-outline-secondary shadow-sm" onclick="if (window.history.length > 1) { history.back(); return false; }">← Back to Dashboard</a>
         </div>
 
-        <div class="card border-0 shadow-sm" style="border-radius: 16px; height: 580px; display: flex; flex-direction: column; overflow: hidden;">
+        <div class="card border-0 shadow-sm" style="border-radius: 16px; height: 600px; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border-warm) !important;">
             <!-- Header -->
             <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3 px-4 border-0">
                 <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
-                        ★
+                    <div class="rounded-circle text-white d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 42px; height: 42px; background-color: var(--cognac);">
+                        🛡️
                     </div>
                     <div>
-                        <div class="fw-bold">CampusConnect Super Admin Support</div>
+                        <div class="fw-bold">CampusConnect Admin Support Team</div>
                         <small class="text-white-50">Verified Administrative Help Desk</small>
                     </div>
                 </div>
-                <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-1">Online</span>
+                <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-1">
+                    🟢 Live Channel
+                </span>
             </div>
 
             <!-- Messages Box -->
-            <div class="card-body p-4 flex-grow-1 overflow-auto" id="user-support-chat-box" style="background-color: #efeae2; display: flex; flex-direction: column;">
+            <div class="card-body p-4 flex-grow-1 overflow-auto" id="user-support-chat-box" style="background-color: #f8fafc; display: flex; flex-direction: column; gap: 8px;">
             </div>
 
             <!-- Input Footer -->
-            <div class="card-footer border-0 p-3" style="background-color: #f0f2f5;">
+            <div class="card-footer border-0 p-3" style="background-color: #ffffff; border-top: 1px solid #e2e8f0 !important;">
                 <form id="user-support-chat-form" class="d-flex align-items-center gap-2">
-                    <input type="text" id="user-support-chat-input" class="form-control rounded-pill border-0 shadow-sm px-4 py-2" placeholder="Write a message to Super Admin..." autocomplete="off" required>
-                    <button type="submit" class="btn btn-primary rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                    <input type="text" id="user-support-chat-input" class="form-control rounded-pill border shadow-sm px-4 py-2" placeholder="Write a message to Super Admin..." autocomplete="off" required>
+                    <button type="submit" id="btnUserSend" class="btn btn-primary rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; flex-shrink: 0;" title="Send Message">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
                             <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
                         </svg>
@@ -45,25 +47,28 @@
 <style>
     .support-bubble {
         max-width: 80%;
-        padding: 8px 14px;
-        margin-bottom: 12px;
-        border-radius: 12px;
+        padding: 10px 16px;
+        margin-bottom: 6px;
+        border-radius: 14px;
         word-wrap: break-word;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
         display: inline-block;
         clear: both;
+        line-height: 1.45;
     }
     .support-user {
         background-color: #d9fdd3;
         color: #111b21;
+        border: 1px solid #bbf7d0;
         align-self: flex-end;
-        border-top-right-radius: 0;
+        border-top-right-radius: 2px;
     }
     .support-admin {
         background-color: #ffffff;
-        color: #111b21;
+        color: #1e293b;
+        border: 1px solid #e2e8f0;
         align-self: flex-start;
-        border-top-left-radius: 0;
+        border-top-left-radius: 2px;
     }
 </style>
 
@@ -74,63 +79,129 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('user-support-chat-input');
     const currentUserId = "<%= user.id %>";
     const currentUserRole = "<%= user.role %>";
+    const currentUserEmail = "<%= user.email %>";
+
+    const renderedMsgIds = new Set();
 
     function appendMessage(msg) {
-        const isMe = msg.senderId === currentUserId;
+        if (!msg || !msg.text) return;
+
+        // Deduplication
+        if (msg.id && renderedMsgIds.has(msg.id)) return;
+        if (msg.id) renderedMsgIds.add(msg.id);
+
+        const isMe = (msg.senderId === currentUserId) || (msg.senderRole !== 'admin');
         const date = new Date(msg.timestamp);
-        const timeStr = isNaN(date) ? '' : date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        const timeStr = isNaN(date.getTime()) ? '' : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         const div = document.createElement('div');
         div.className = `support-bubble ${isMe ? 'support-user' : 'support-admin'}`;
 
         const senderLabel = document.createElement('div');
-        senderLabel.className = 'small fw-bold mb-1';
-        senderLabel.style.fontSize = '0.7rem';
-        senderLabel.innerText = isMe ? 'You' : 'Super Admin';
-        senderLabel.style.color = isMe ? '#15803d' : '#b91c1c';
+        senderLabel.className = 'small fw-bold mb-1 d-flex justify-content-between align-items-center gap-2';
+        senderLabel.style.fontSize = '0.72rem';
 
-        const textSpan = document.createElement('span');
-        textSpan.innerText = msg.text;
+        const labelText = document.createElement('span');
+        if (isMe) {
+            labelText.innerText = 'You';
+            labelText.style.color = '#15803d';
+        } else {
+            const adminIdentifier = msg.senderEmail || msg.senderName || 'Super Admin';
+            labelText.innerText = `🛡️ Support Admin (${adminIdentifier})`;
+            labelText.style.color = '#b91c1c';
+        }
 
         const timeSpan = document.createElement('span');
-        timeSpan.className = 'small text-muted ms-2';
+        timeSpan.className = 'text-muted';
         timeSpan.style.fontSize = '0.65rem';
         timeSpan.innerText = timeStr;
 
+        senderLabel.appendChild(labelText);
+        senderLabel.appendChild(timeSpan);
+
+        const textDiv = document.createElement('div');
+        textDiv.style.fontSize = '0.92rem';
+        textDiv.innerText = msg.text;
+
         div.appendChild(senderLabel);
-        div.appendChild(textSpan);
-        div.appendChild(timeSpan);
+        div.appendChild(textDiv);
 
         chatBox.appendChild(div);
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    if (window.socket) {
-        window.socket.emit('join_admin_chat', { targetUserId: currentUserId });
-
-        window.socket.on('new_admin_message', (msg) => {
-            appendMessage(msg);
-        });
+    // Connect socket
+    function setupSocket() {
+        if (window.socket) {
+            window.socket.emit('join_admin_chat', { targetUserId: currentUserId });
+            window.socket.off('new_admin_message');
+            window.socket.on('new_admin_message', (msg) => {
+                appendMessage(msg);
+            });
+        }
     }
 
-    fetch('/support/api/messages')
-        .then(r => r.json())
-        .then(messages => {
-            if (Array.isArray(messages)) messages.forEach(appendMessage);
-        });
+    setupSocket();
+    window.addEventListener('load', setupSocket);
 
+    // Initial load from database
+    function loadMessages() {
+        fetch('/support/api/messages')
+            .then(r => r.json())
+            .then(messages => {
+                if (Array.isArray(messages)) {
+                    messages.forEach(appendMessage);
+                }
+            })
+            .catch(err => console.error('Error loading support messages:', err));
+    }
+    loadMessages();
+
+    // 3-Second smart polling fallback (guarantees incoming messages are never missed)
+    setInterval(() => {
+        fetch('/support/api/messages')
+            .then(r => r.json())
+            .then(messages => {
+                if (Array.isArray(messages)) {
+                    messages.forEach(appendMessage);
+                }
+            })
+            .catch(() => {});
+    }, 3000);
+
+    // Form submission via robust HTTP POST + Socket broadcast
     if (chatForm && chatInput) {
-        chatForm.addEventListener('submit', (e) => {
+        chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const text = chatInput.value.trim();
-            if (text && window.socket) {
-                window.socket.emit('admin_send_message', {
-                    targetUserId: currentUserId,
-                    senderId: currentUserId,
-                    senderRole: currentUserRole,
-                    text
+            if (!text) return;
+
+            chatInput.value = '';
+            chatInput.focus();
+
+            try {
+                const res = await fetch('/support/api/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
                 });
-                chatInput.value = '';
+
+                const data = await res.json();
+                if (data && data.success && data.message) {
+                    appendMessage(data.message);
+                }
+            } catch (httpErr) {
+                console.error('HTTP send failed, falling back to socket:', httpErr);
+                if (window.socket) {
+                    window.socket.emit('admin_send_message', {
+                        targetUserId: currentUserId,
+                        senderId: currentUserId,
+                        senderRole: currentUserRole,
+                        senderName: currentUserEmail,
+                        senderEmail: currentUserEmail,
+                        text
+                    });
+                }
             }
         });
     }

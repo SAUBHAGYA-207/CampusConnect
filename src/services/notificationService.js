@@ -6,6 +6,8 @@ exports.setIO = (socketIO) => {
     io = socketIO;
 };
 
+exports.getIO = () => io;
+
 exports.createNotification = async (userId, message, link) => {
     const notif = await notificationsStorage.add({
         userId,

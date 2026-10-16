@@ -231,11 +231,116 @@ describe('Super Admin Portal, Revenue, Moderation & Payout Settlements', () => {
         await payoutsStorage.delete(pendingPayout.id).catch(() => {});
     });
 
-    it('should load Super Admin direct chat messenger', async () => {
-        const res = await adminAgent.get('/admin/chat');
-        expect(res.statusCode).toEqual(200);
-        expect(res.text).toContain('Super Admin • Live Support Messenger');
-    });
+    it('should handle direct admin-to-user messaging with shared history across all admins and admin name attribution', async () => {
+        const adminMessagesStorage = new JsonStorage('admin_messages');
+        const testUserEmail = 'chatclient_' + Date.now() + '@campusconnect.local';
+        const bcrypt = require('bcryptjs');
+
+        // 1. Create a customer
+        const clientUser = await usersStorage.add({
+            email: testUserEmail,
+            password: await bcrypt.hash('ClientPass123!', 10),
+            role: 'customer',
+            isVerified: true
+        });
+
+        // 2. Admin loads chat page with this user
+        const chatPageRes = await adminAgent.get(`/admin/chat?userId=${clientUser.id}`);
+        expect(chatPageRes.statusCode).toEqual(200);
+        expect(chatPageRes.text).toContain('Super Admin • Live Support Messenger');
+        expect(chatPageRes.text).toContain(testUserEmail);
+
+        // 3. Admin sends direct message to customer
+        const adminSendRes = await adminAgent
+            .post(`/admin/api/chat/${clientUser.id}`)
+            .send({ text: 'Hello from Super Admin! How can we help you today?' });
+
+        expect(adminSendRes.statusCode).toEqual(200);
+        expect(adminSendRes.body.success).toBe(true);
+        expect(adminSendRes.body.message.text).toEqual('Hello from Super Admin! How can we help you today?');
+        expect(adminSendRes.body.message.senderRole).toEqual('admin');
+        expect(adminSendRes.body.message.senderEmail).toEqual(adminEmail);
+
+        // 4. Customer logs in and views support chat
+        const clientAgent = request.agent(app);
+        await clientAgent.post('/auth/login').send({ email: testUserEmail, password: 'ClientPass123!' });
+
+        const supportPageRes = await clientAgent.get('/support/chat');
+        expect(supportPageRes.statusCode).toEqual(200);
+        expect(supportPageRes.text).toContain('Help & Support • Direct Admin Chat');
+
+        // Customer fetches support messages API
+        const clientMsgRes = await clientAgent.get('/support/api/messages');
+        expect(clientMsgRes.statusCode).toEqual(200);
+        expect(clientMsgRes.body.length).toBeGreaterThanOrEqual(1);
+        const receivedAdminMsg = clientMsgRes.body.find(m => m.text === 'Hello from Super Admin! How can we help you today?');
+        expect(receivedAdminMsg).toBeDefined();
+        expect(receivedAdminMsg.senderEmail).toEqual(adminEmail);
+
+        // 5. Customer sends a reply to Super Admin
+        const clientReplyRes = await clientAgent
+            .post('/support/api/messages')
+            .send({ text: 'Thanks Admin, I have a question about my booking.' });
+
+        expect(clientReplyRes.statusCode).toEqual(200);
+        expect(clientReplyRes.body.success).toBe(true);
+        expect(clientReplyRes.body.message.text).toEqual('Thanks Admin, I have a question about my booking.');
+
+        // 6. A SECOND / DIFFERENT Super Admin logs in
+        const secondAdminEmail = 'second_admin_' + Date.now() + '@campusconnect.local';
+        const origEnv = process.env.SUPERADMIN_EMAILS || '';
+        process.env.SUPERADMIN_EMAILS = origEnv ? `${origEnv},${secondAdminEmail}` : secondAdminEmail;
+
+        const secondAdminUser = await usersStorage.add({
+            email: secondAdminEmail,
+            password: await bcrypt.hash('Admin2Secret123!', 10),
+            role: 'admin',
+            isVerified: true
+        });
+
+        const secondAdminAgent = request.agent(app);
+        // Direct session simulation for second admin
+        const login2Res = await secondAdminAgent
+            .post('/admin/login')
+            .send({ email: secondAdminEmail, password: 'Admin2Secret123!' });
+        expect(login2Res.statusCode).toEqual(302);
+
+        // Get second admin user to get OTP
+        const u2 = await usersStorage.getById(secondAdminUser.id);
+        await secondAdminAgent.post('/admin/verify-otp').send({ otp: u2.otp });
+
+        // Second admin retrieves the messages for the customer -> MUST SEE THE EXACT SAME THREAD!
+        const admin2HistoryRes = await secondAdminAgent.get(`/admin/api/chat/${clientUser.id}`);
+        expect(admin2HistoryRes.statusCode).toEqual(200);
+        expect(admin2HistoryRes.body.length).toBeGreaterThanOrEqual(2);
+
+        // Verify the first admin's message with their email attribution is present in the shared history
+        const sharedFirstAdminMsg = admin2HistoryRes.body.find(m => m.text === 'Hello from Super Admin! How can we help you today?');
+        expect(sharedFirstAdminMsg).toBeDefined();
+        expect(sharedFirstAdminMsg.senderEmail).toEqual(adminEmail);
+
+        // Verify customer's reply is also present in the shared history
+        const sharedClientReply = admin2HistoryRes.body.find(m => m.text === 'Thanks Admin, I have a question about my booking.');
+        expect(sharedClientReply).toBeDefined();
+
+        // 7. Second admin sends a response
+        const secondAdminReply = await secondAdminAgent
+            .post(`/admin/api/chat/${clientUser.id}`)
+            .send({ text: 'This is Admin Two assisting as well!' });
+        expect(secondAdminReply.statusCode).toEqual(200);
+        expect(secondAdminReply.body.message.senderEmail).toEqual(secondAdminEmail);
+
+        // Cleanup
+        const allMsgs = await adminMessagesStorage.getAll();
+        for (const m of allMsgs) {
+            if (m.targetUserId === clientUser.id || m.partnerId === clientUser.id) {
+                await adminMessagesStorage.delete(m.id).catch(() => {});
+            }
+        }
+        await usersStorage.delete(clientUser.id).catch(() => {});
+        await usersStorage.delete(secondAdminUser.id).catch(() => {});
+        process.env.SUPERADMIN_EMAILS = origEnv;
+    }, 25000);
 
     afterAll(async () => {
         if (testServiceId) await servicesStorage.delete(testServiceId).catch(() => {});

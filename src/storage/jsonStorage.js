@@ -71,21 +71,28 @@ class JsonStorage {
                     ...item,
                     id: item.id || (Date.now().toString() + Math.random().toString(36).substring(7))
                 };
-                let { data, error } = await client.from(this.tableName).insert([newItem]).select().single();
-                if (error) {
+                let currentItem = { ...newItem };
+                let { data, error } = await client.from(this.tableName).insert([currentItem]).select().single();
+                
+                while (error && error.message) {
                     const match = error.message.match(/Could not find the '(\w+)' column/);
-                    if (match && match[1] && newItem[match[1]] !== undefined) {
-                        const fallbackItem = { ...newItem };
-                        delete fallbackItem[match[1]];
-                        const retry = await client.from(this.tableName).insert([fallbackItem]).select().single();
+                    if (match && match[1] && currentItem[match[1]] !== undefined) {
+                        delete currentItem[match[1]];
+                        const retry = await client.from(this.tableName).insert([currentItem]).select().single();
                         if (!retry.error) {
-                            return { ...retry.data, [match[1]]: newItem[match[1]] };
+                            return { ...newItem, ...retry.data };
                         }
+                        error = retry.error;
+                    } else {
+                        break;
                     }
+                }
+
+                if (error) {
                     console.error(`[Supabase Storage Error] add on ${this.tableName}:`, error.message);
                     throw error;
                 }
-                return data || newItem;
+                return { ...newItem, ...(data || {}) };
             }
         }
         return new Promise((resolve, reject) => {
@@ -107,17 +114,24 @@ class JsonStorage {
         if (isSupabaseConfigured()) {
             const client = getSupabaseClient();
             if (client) {
-                let { data, error } = await client.from(this.tableName).update(updates).eq('id', id).select().maybeSingle();
-                if (error) {
+                let currentUpdates = { ...updates };
+                let { data, error } = await client.from(this.tableName).update(currentUpdates).eq('id', id).select().maybeSingle();
+                
+                while (error && error.message) {
                     const match = error.message.match(/Could not find the '(\w+)' column/);
-                    if (match && match[1] && updates[match[1]] !== undefined) {
-                        const fallbackUpdates = { ...updates };
-                        delete fallbackUpdates[match[1]];
-                        const retry = await client.from(this.tableName).update(fallbackUpdates).eq('id', id).select().maybeSingle();
+                    if (match && match[1] && currentUpdates[match[1]] !== undefined) {
+                        delete currentUpdates[match[1]];
+                        const retry = await client.from(this.tableName).update(currentUpdates).eq('id', id).select().maybeSingle();
                         if (!retry.error) {
                             return retry.data || null;
                         }
+                        error = retry.error;
+                    } else {
+                        break;
                     }
+                }
+
+                if (error) {
                     console.error(`[Supabase Storage Error] update on ${this.tableName}:`, error.message);
                     throw error;
                 }

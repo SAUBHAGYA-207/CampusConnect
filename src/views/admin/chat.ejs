@@ -1,28 +1,32 @@
 <div class="row mb-3 align-items-center">
     <div class="col-8">
-        <h3 class="fw-bold m-0">Super Admin • Live Support Messenger</h3>
-        <p class="text-muted small m-0">Direct 1-on-1 real-time communication channel with every customer and partner on CampusConnect.</p>
+        <h3 class="fw-bold m-0" style="color: var(--espresso);">Super Admin • Live Support Messenger</h3>
+        <p class="text-muted small m-0">Direct 1-on-1 real-time support channel with customers and partners. Shared across the entire Super Admin team.</p>
     </div>
     <div class="col-4 text-end">
-        <a href="/admin/dashboard" class="btn btn-outline-secondary" onclick="if (window.history.length > 1) { history.back(); return false; }">← Back</a>
+        <a href="/admin/dashboard" class="btn btn-outline-secondary shadow-sm" onclick="if (window.history.length > 1) { history.back(); return false; }">← Back to Dashboard</a>
     </div>
 </div>
 
 <div class="row g-3">
     <!-- Left Column: User / Partner Selector -->
     <div class="col-md-4 col-lg-4">
-        <div class="card border-0 shadow-sm" style="border-radius: 16px; height: 600px; display: flex; flex-direction: column;">
+        <div class="card border-0 shadow-sm" style="border-radius: 16px; height: 620px; display: flex; flex-direction: column;">
             <div class="p-3 border-bottom">
-                <input type="text" id="userSearchInput" class="form-control bg-light border-0" placeholder="Search user or partner..." onkeyup="filterUsers()">
+                <input type="text" id="userSearchInput" class="form-control bg-light border-0" placeholder="Search customer or partner..." onkeyup="filterUsers()">
             </div>
             <div class="overflow-auto flex-grow-1 p-2" id="usersListContainer">
-                <% if (allUsers.filter(u => u.role !== 'admin').length === 0) { %>
-                    <div class="p-4 text-center text-muted small">No users found.</div>
+                <% const nonAdmins = allUsers.filter(u => u.role !== 'admin'); %>
+                <% if (nonAdmins.length === 0) { %>
+                    <div class="p-4 text-center text-muted small">No customers or partners found.</div>
                 <% } else { %>
-                    <% allUsers.filter(u => u.role !== 'admin').forEach(u => { %>
-                        <a href="/admin/chat?userId=<%= u.id %>" class="d-flex align-items-center gap-3 p-3 rounded-3 text-decoration-none user-list-item <%= targetUserId === u.id ? 'active-chat-user' : 'text-dark' %>" style="transition: all 0.2s;" data-email="<%= u.email.toLowerCase() %>">
-                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold <%= u.role === 'provider' ? 'bg-primary text-white' : 'bg-secondary bg-opacity-25 text-dark' %>" style="width: 42px; height: 42px; font-size: 1rem;">
-                                <%= u.email.charAt(0).toUpperCase() %>
+                    <% nonAdmins.forEach(u => { %>
+                        <a href="/admin/chat?userId=<%= u.id %>" 
+                           class="d-flex align-items-center gap-3 p-3 rounded-3 text-decoration-none user-list-item <%= targetUserId === u.id ? 'active-chat-user' : 'text-dark' %>" 
+                           style="transition: all 0.2s;" 
+                           data-email="<%= (u.email || '').toLowerCase() %>">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white <%= u.role === 'provider' ? 'bg-primary' : 'bg-secondary' %>" style="width: 42px; height: 42px; font-size: 1rem; flex-shrink: 0;">
+                                <%= (u.email || '?').charAt(0).toUpperCase() %>
                             </div>
                             <div class="flex-grow-1 overflow-hidden">
                                 <div class="d-flex justify-content-between align-items-center">
@@ -31,7 +35,14 @@
                                         <%= u.role === 'provider' ? 'PARTNER' : 'CUSTOMER' %>
                                     </span>
                                 </div>
-                                <small class="text-muted text-truncate d-block" style="font-size: 0.75rem;">Click to chat directly</small>
+                                <small class="text-muted text-truncate d-block" style="font-size: 0.75rem;">
+                                    <% const userSummary = chatUsers.find(cu => cu.user && cu.user.id === u.id); %>
+                                    <% if (userSummary && userSummary.lastMessage) { %>
+                                        <%= userSummary.lastMessage.text %>
+                                    <% } else { %>
+                                        Click to start conversation
+                                    <% } %>
+                                </small>
                             </div>
                         </a>
                     <% }) %>
@@ -43,43 +54,56 @@
     <!-- Right Column: Live Chat Window -->
     <div class="col-md-8 col-lg-8">
         <% if (!targetUser) { %>
-            <div class="card border-0 shadow-sm h-100 d-flex align-items-center justify-content-center p-5 text-center" style="border-radius: 16px; min-height: 600px;">
+            <div class="card border-0 shadow-sm h-100 d-flex align-items-center justify-content-center p-5 text-center" style="border-radius: 16px; min-height: 620px;">
                 <div class="text-muted">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" class="bi bi-chat-heart text-secondary mb-3 opacity-50" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M2.965 12.695a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2 Barlow"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="currentColor" class="bi bi-chat-dots text-secondary mb-3 opacity-50" viewBox="0 0 16 16">
+                        <path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                        <path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.278.892zM8 2a7 7 0 0 1 7 6c0 3.309-3.134 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2 Barlow"/>
                     </svg>
                     <h5 class="fw-bold">Select a user or partner</h5>
-                    <p class="small text-muted mb-0">Choose anyone from the left directory to start a direct support session.</p>
+                    <p class="small text-muted mb-0">Choose any contact from the directory on the left to review message history or reply.</p>
                 </div>
             </div>
         <% } else { %>
-            <div class="card border-0 shadow-sm" style="border-radius: 16px; height: 600px; display: flex; flex-direction: column; overflow: hidden;">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px; height: 620px; display: flex; flex-direction: column; overflow: hidden;">
                 <!-- Header -->
                 <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3 px-4 border-0">
                     <div class="d-flex align-items-center gap-3">
-                        <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
-                            <%= targetUser.email.charAt(0).toUpperCase() %>
+                        <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center fw-bold" style="width: 42px; height: 42px;">
+                            <%= (targetUser.email || '?').charAt(0).toUpperCase() %>
                         </div>
                         <div>
                             <div class="fw-bold"><%= targetUser.email %></div>
-                            <span class="badge bg-<%= targetUser.role === 'provider' ? 'primary' : 'secondary' %>" style="font-size: 0.7rem;">
-                                <%= targetUser.role === 'provider' ? 'PARTNER' : 'CUSTOMER' %>
-                            </span>
+                            <div class="d-flex align-items-center gap-2 mt-1">
+                                <span class="badge bg-<%= targetUser.role === 'provider' ? 'primary' : 'secondary' %>" style="font-size: 0.68rem;">
+                                    <%= targetUser.role === 'provider' ? 'PARTNER / SERVICE PROVIDER' : 'CUSTOMER' %>
+                                </span>
+                                <span class="badge bg-light text-dark font-monospace" style="font-size: 0.65rem;">
+                                    ID: <%= targetUser.id %>
+                                </span>
+                            </div>
                         </div>
                     </div>
-                    <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-1">Direct Secure Session</span>
+                    <div class="text-end">
+                        <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-1 d-block mb-1">
+                            Team Thread (All Admins)
+                        </span>
+                        <small class="text-white-50" style="font-size: 0.72rem;">
+                            Replying as: <strong class="text-warning"><%= typeof adminUser !== 'undefined' && adminUser ? adminUser.email : 'Admin' %></strong>
+                        </small>
+                    </div>
                 </div>
 
                 <!-- Chat Messages Body -->
-                <div class="card-body p-4 flex-grow-1 overflow-auto" id="admin-chat-box" style="background-color: #efeae2; display: flex; flex-direction: column;">
+                <div class="card-body p-4 flex-grow-1 overflow-auto" id="admin-chat-box" style="background-color: #f8fafc; display: flex; flex-direction: column; gap: 8px;">
                     <!-- Appended dynamically -->
                 </div>
 
                 <!-- Footer Input -->
-                <div class="card-footer border-0 p-3" style="background-color: #f0f2f5;">
+                <div class="card-footer border-0 p-3" style="background-color: #ffffff; border-top: 1px solid #e2e8f0 !important;">
                     <form id="admin-chat-form" class="d-flex align-items-center gap-2">
-                        <input type="text" id="admin-chat-input" class="form-control rounded-pill border-0 shadow-sm px-4 py-2" placeholder="Write reply to <%= targetUser.email %>..." autocomplete="off" required>
-                        <button type="submit" class="btn btn-primary rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                        <input type="text" id="admin-chat-input" class="form-control rounded-pill border shadow-sm px-4 py-2" placeholder="Write reply to <%= targetUser.email %>..." autocomplete="off" required>
+                        <button type="submit" id="btnAdminSend" class="btn btn-primary rounded-circle shadow-sm d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; flex-shrink: 0;" title="Send Message">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
                                 <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
                             </svg>
@@ -94,6 +118,7 @@
 <style>
     .active-chat-user {
         background-color: #e0f2fe !important;
+        border-left: 4px solid var(--cognac) !important;
         font-weight: bold;
     }
     .user-list-item:hover {
@@ -101,34 +126,37 @@
     }
     .msg-bubble {
         max-width: 80%;
-        padding: 8px 14px;
-        margin-bottom: 12px;
-        border-radius: 12px;
+        padding: 10px 16px;
+        margin-bottom: 6px;
+        border-radius: 14px;
         word-wrap: break-word;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
         display: inline-block;
         clear: both;
+        line-height: 1.45;
     }
     .msg-admin {
         background-color: #dbeafe;
         color: #1e3a8a;
+        border: 1px solid #bfdbfe;
         align-self: flex-end;
-        border-top-right-radius: 0;
+        border-top-right-radius: 2px;
     }
     .msg-user {
         background-color: #ffffff;
         color: #1e293b;
+        border: 1px solid #e2e8f0;
         align-self: flex-start;
-        border-top-left-radius: 0;
+        border-top-left-radius: 2px;
     }
 </style>
 
 <script>
 function filterUsers() {
-    const q = document.getElementById('userSearchInput').value.toLowerCase();
+    const q = document.getElementById('userSearchInput').value.toLowerCase().trim();
     const items = document.querySelectorAll('.user-list-item');
     items.forEach(el => {
-        const email = el.getAttribute('data-email');
+        const email = el.getAttribute('data-email') || '';
         if (email.includes(q)) {
             el.style.display = 'flex';
         } else {
@@ -142,68 +170,139 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatBox = document.getElementById('admin-chat-box');
     const chatForm = document.getElementById('admin-chat-form');
     const chatInput = document.getElementById('admin-chat-input');
+    const btnSend = document.getElementById('btnAdminSend');
+
     const targetUserId = "<%= targetUser.id %>";
-    const currentAdminId = "super_admin_001";
+    const targetUserEmail = "<%= targetUser.email %>";
+    const currentAdminId = "<%= typeof adminUser !== 'undefined' && adminUser ? adminUser.id : '' %>";
+    const currentAdminEmail = "<%= typeof adminUser !== 'undefined' && adminUser ? adminUser.email : 'admin@campusconnect.com' %>";
+
+    const renderedMsgIds = new Set();
 
     function appendMessage(msg) {
-        const isAdmin = msg.senderRole === 'admin';
+        if (!msg || !msg.text) return;
+
+        // Deduplication
+        if (msg.id && renderedMsgIds.has(msg.id)) return;
+        if (msg.id) renderedMsgIds.add(msg.id);
+
+        const isAdmin = (msg.senderRole === 'admin');
         const date = new Date(msg.timestamp);
-        const timeStr = isNaN(date) ? '' : date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        const timeStr = isNaN(date.getTime()) ? '' : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         const div = document.createElement('div');
         div.className = `msg-bubble ${isAdmin ? 'msg-admin' : 'msg-user'}`;
 
+        // Header label with specific admin attribution
         const senderLabel = document.createElement('div');
-        senderLabel.className = 'small fw-bold mb-1';
-        senderLabel.style.fontSize = '0.7rem';
-        senderLabel.innerText = isAdmin ? 'Super Admin' : '<%= targetUser.email %>';
+        senderLabel.className = 'small fw-bold mb-1 d-flex justify-content-between align-items-center gap-2';
+        senderLabel.style.fontSize = '0.72rem';
 
-        const textSpan = document.createElement('span');
-        textSpan.innerText = msg.text;
+        const labelText = document.createElement('span');
+        if (isAdmin) {
+            const isMe = (msg.senderEmail === currentAdminEmail) || (msg.senderId === currentAdminId);
+            const adminIdentifier = msg.senderEmail || msg.senderName || 'Super Admin';
+            labelText.innerText = isMe ? `🛡️ You (${adminIdentifier})` : `🛡️ Admin: ${adminIdentifier}`;
+            labelText.style.color = '#1e40af';
+        } else {
+            labelText.innerText = `👤 ${targetUserEmail}`;
+            labelText.style.color = '#334155';
+        }
 
         const timeSpan = document.createElement('span');
-        timeSpan.className = 'small text-muted ms-2';
+        timeSpan.className = 'text-muted';
         timeSpan.style.fontSize = '0.65rem';
         timeSpan.innerText = timeStr;
 
+        senderLabel.appendChild(labelText);
+        senderLabel.appendChild(timeSpan);
+
+        const textDiv = document.createElement('div');
+        textDiv.style.fontSize = '0.92rem';
+        textDiv.innerText = msg.text;
+
         div.appendChild(senderLabel);
-        div.appendChild(textSpan);
-        div.appendChild(timeSpan);
+        div.appendChild(textDiv);
 
         chatBox.appendChild(div);
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    // Connect socket
-    if (window.socket) {
-        window.socket.emit('join_admin_chat', { targetUserId });
-
-        window.socket.on('new_admin_message', (msg) => {
-            if (msg.targetUserId === targetUserId) {
-                appendMessage(msg);
-            }
-        });
+    // Connect socket if present
+    function setupSocket() {
+        if (window.socket) {
+            window.socket.emit('join_admin_chat', { targetUserId });
+            window.socket.off('new_admin_message');
+            window.socket.on('new_admin_message', (msg) => {
+                if (msg.targetUserId === targetUserId) {
+                    appendMessage(msg);
+                }
+            });
+        }
     }
 
-    // Load initial messages
-    fetch(`/admin/api/chat/${targetUserId}`)
-        .then(r => r.json())
-        .then(messages => {
-            if (Array.isArray(messages)) messages.forEach(appendMessage);
-        });
+    // Try socket setup immediately and on window load/reconnect
+    setupSocket();
+    window.addEventListener('load', setupSocket);
 
+    // Initial load from server database
+    function loadMessages() {
+        fetch(`/admin/api/chat/${targetUserId}`)
+            .then(r => r.json())
+            .then(messages => {
+                if (Array.isArray(messages)) {
+                    messages.forEach(appendMessage);
+                }
+            })
+            .catch(err => console.error('Error loading chat messages:', err));
+    }
+    loadMessages();
+
+    // 3-Second smart polling fallback (guarantees incoming messages are never missed)
+    setInterval(() => {
+        fetch(`/admin/api/chat/${targetUserId}`)
+            .then(r => r.json())
+            .then(messages => {
+                if (Array.isArray(messages)) {
+                    messages.forEach(appendMessage);
+                }
+            })
+            .catch(() => {});
+    }, 3000);
+
+    // Form submission via robust HTTP POST + Socket broadcast
     if (chatForm && chatInput) {
-        chatForm.addEventListener('submit', (e) => {
+        chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const text = chatInput.value.trim();
-            if (text && window.socket) {
-                window.socket.emit('admin_send_message', {
-                    targetUserId,
-                    senderId: currentAdminId,
-                    senderRole: 'admin',
-                    text
+            if (!text) return;
+
+            chatInput.value = '';
+            chatInput.focus();
+
+            try {
+                const res = await fetch(`/admin/api/chat/${targetUserId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
                 });
-                chatInput.value = '';
+
+                const data = await res.json();
+                if (data && data.success && data.message) {
+                    appendMessage(data.message);
+                }
+            } catch (httpErr) {
+                console.error('HTTP send failed, falling back to socket:', httpErr);
+                if (window.socket) {
+                    window.socket.emit('admin_send_message', {
+                        targetUserId,
+                        senderId: currentAdminId,
+                        senderRole: 'admin',
+                        senderName: currentAdminEmail,
+                        senderEmail: currentAdminEmail,
+                        text
+                    });
+                }
             }
         });
     }
