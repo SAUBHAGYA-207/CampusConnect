@@ -85,7 +85,8 @@ describe('Super Admin Portal, Revenue, Moderation & Payout Settlements', () => {
         const res = await request(app).get('/admin/login');
         expect(res.statusCode).toEqual(200);
         expect(res.text).toContain('Super Admin Portal');
-        expect(res.text).toContain('admin@campusconnect.com');
+        expect(res.text).toContain('Super Admin Email');
+        expect(res.text).toContain('Authenticate Super Admin');
     });
 
     it('should reject Super Admin login if email is NOT in SUPERADMIN_EMAILS whitelist', async () => {
