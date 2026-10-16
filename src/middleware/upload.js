@@ -2,15 +2,10 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const os = require('os');
-
 const createStorage = (subfolder) => {
     return multer.diskStorage({
         destination: (req, file, cb) => {
-            const isVercel = Boolean(process.env.VERCEL);
-            const dest = isVercel
-                ? path.join(os.tmpdir(), 'campusconnect-uploads', subfolder)
-                : path.join(__dirname, `../../uploads/${subfolder}`);
+            const dest = path.join(__dirname, `../../uploads/${subfolder}`);
             fs.mkdirSync(dest, { recursive: true });
             cb(null, dest);
         },
