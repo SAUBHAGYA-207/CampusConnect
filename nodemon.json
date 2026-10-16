@@ -1,0 +1,16 @@
+{
+  "watch": [
+    "app.js",
+    "server.js",
+    "src/"
+  ],
+  "ignore": [
+    "data/*",
+    "data/sessions/*",
+    "uploads/*",
+    "tests/*",
+    "*.test.js",
+    "node_modules/*"
+  ],
+  "ext": "js,json,ejs,html,css"
+}

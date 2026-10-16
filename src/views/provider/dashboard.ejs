@@ -1,0 +1,98 @@
+<div class="row mb-4 mt-2">
+    <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <h2 class="fw-bold mb-1">Partner Dashboard</h2>
+            <p class="text-muted mb-0">Overview of your service listings, bookings, and earnings.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="/services/create" class="btn btn-primary shadow-sm">+ Add New Service</a>
+            <a href="/appointments/provider" class="btn btn-outline-secondary">View Schedule</a>
+        </div>
+    </div>
+</div>
+
+<!-- Financial Summary: Partner Earnings -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card stat-card border-0 shadow-sm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff;">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="stat-card-title fw-bold text-white-50">Realized Earnings</span>
+                <span class="badge bg-white text-success fw-bold px-2 py-1">Completed Only</span>
+            </div>
+            <div class="stat-card-value text-white">₹<%= stats.totalEarnings %></div>
+            <small class="text-white-50 mt-1 d-block">Settled revenue from <%= stats.completedAppointments %> completed orders</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card border-0 shadow-sm" style="background-color: #f8fafc; border: 1px solid #e2e8f0 !important;">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="stat-card-title fw-bold text-muted">In-Progress Escrow</span>
+                <span class="badge bg-warning-subtle text-warning-emphasis fw-bold px-2 py-1">Pending Completion</span>
+            </div>
+            <div class="stat-card-value text-dark">₹<%= stats.pendingEarnings %></div>
+            <small class="text-muted mt-1 d-block">Will reflect once you mark appointments completed</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card border-0 shadow-sm" style="background-color: <%= stats.pendingPaymentApprovals > 0 ? '#fffbeb' : '#f0fdf4' %>; color: <%= stats.pendingPaymentApprovals > 0 ? '#b45309' : '#15803d' %>;">
+            <div class="stat-card-title fw-bold">Payments Under Review</div>
+            <div class="stat-card-value"><%= stats.pendingPaymentApprovals %></div>
+            <small class="mt-1 d-block"><%= stats.verifiedPaymentsCount %> payments verified | Gross: ₹<%= stats.totalGross %></small>
+        </div>
+    </div>
+</div>
+
+<!-- Operational Summary -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card stat-card border-0" style="background-color: #eff6ff; color: #1e3a8a;">
+            <div class="stat-card-title fw-bold">Active Services</div>
+            <div class="stat-card-value"><%= stats.totalServices %></div>
+            <small class="mt-1 d-block">Published & live on marketplace</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card border-0" style="background-color: #faf5ff; color: #6b21a8;">
+            <div class="stat-card-title fw-bold">Total Appointments</div>
+            <div class="stat-card-value"><%= stats.totalAppointments %></div>
+            <small class="mt-1 d-block"><%= stats.completedAppointments %> marked completed</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card border-0" style="background-color: #fff7ed; color: #9a3412;">
+            <div class="stat-card-title fw-bold">Pending Booking Requests</div>
+            <div class="stat-card-value"><%= stats.pendingAppointments %></div>
+            <small class="mt-1 d-block">Awaiting your approval</small>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 p-4 border-0 shadow-sm card-hover">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold m-0">Your Services</h4>
+                <span class="badge bg-primary-subtle text-primary fw-medium px-3 py-2"><%= stats.totalServices %> Listed</span>
+            </div>
+            <p class="text-muted mb-4">Manage your service listings, upload images, adjust pricing, and add new offerings.</p>
+            <div class="mt-auto d-flex gap-2">
+                <a href="/services/my-services" class="btn btn-primary px-4">Manage Services</a>
+                <a href="/services/create" class="btn btn-outline-primary px-3">+ Add Service</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 p-4 border-0 shadow-sm card-hover">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold m-0">Appointments & Payments</h4>
+                <% if (stats.pendingPaymentApprovals > 0) { %>
+                    <span class="badge bg-warning text-dark fw-bold px-3 py-2"><%= stats.pendingPaymentApprovals %> Proofs to Verify</span>
+                <% } %>
+            </div>
+            <p class="text-muted mb-4">Review incoming booking requests, check uploaded payment screenshot proofs, verify payments, and chat with customers.</p>
+            <div class="mt-auto">
+                <a href="/appointments/provider" class="btn btn-primary px-4">View Appointments & Proofs</a>
+            </div>
+        </div>
+    </div>
+</div>

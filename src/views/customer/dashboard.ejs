@@ -1,0 +1,38 @@
+<div class="row mb-5 mt-2">
+    <div class="col-12">
+        <h2 class="fw-bold">Customer Dashboard</h2>
+        <p class="text-muted">Manage your bookings and explore new services.</p>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-6">
+        <div class="card stat-card border-0" style="background-color: #eff6ff; color: #1e3a8a;">
+            <div class="stat-card-title fw-bold">Total Bookings</div>
+            <div class="stat-card-value"><%= stats.totalBookings %></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card stat-card border-0" style="background-color: #fffbeb; color: #78350f;">
+            <div class="stat-card-title fw-bold">Pending Approvals</div>
+            <div class="stat-card-value"><%= stats.pendingBookings %></div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 p-4 border-0 shadow-sm card-hover">
+            <h4 class="fw-bold mb-3">My Bookings</h4>
+            <p class="text-muted mb-4">Check the status of your appointments, chat with partners, and manage your schedule.</p>
+            <a href="/appointments/my-bookings" class="btn btn-primary mt-auto align-self-start px-4">View Bookings</a>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 p-4 border-0 shadow-sm card-hover">
+            <h4 class="fw-bold mb-3">Find Services</h4>
+            <p class="text-muted mb-4">Need something else done? Browse our marketplace of local professionals.</p>
+            <a href="/marketplace" class="btn btn-outline-primary mt-auto align-self-start px-4">Browse Marketplace</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+[
+  {
+    "customerId": "179163965047894y1",
+    "providerId": "1792091905484norvhl",
+    "serviceId": "17921414628616xmv694",
+    "date": "2026-11-11",
+    "time": "05:00",
+    "notes": "[Mode: Campus / In-Person]\r\nhello",
+    "status": "completed",
+    "paymentAmount": 199,
+    "providerEarnings": 169.15,
+    "platformFee": 29.85,
+    "paymentScreenshot": "/uploads/payments/1792144346411-122348854.png",
+    "transactionId": null,
+    "paymentStatus": "verified",
+    "createdAt": 1792144346441,
+    "id": "1792144346443w64507",
+    "paymentVerifiedAt": 1792144412313
+  }
+]

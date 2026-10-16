@@ -1,0 +1,305 @@
+<div class="row mb-4 mt-2">
+    <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h2 class="fw-bold mb-0">Dashboard</h2>
+                <% if (isPartner) { %>
+                    <span class="badge bg-primary px-3 py-2 text-white fw-bold" style="letter-spacing: 0.5px;">PARTNER</span>
+                <% } %>
+            </div>
+            <p class="text-muted mb-0">Welcome back, <strong><%= user.email %></strong></p>
+        </div>
+        <div class="d-flex gap-2">
+            <% if (isPartner) { %>
+                <a href="/services/create" class="btn btn-primary shadow-sm">+ Add New Service</a>
+            <% } %>
+            <button type="button" onclick="if (window.history.length > 1) { history.back(); } else { window.location.href='/marketplace'; }" class="btn btn-outline-secondary d-inline-flex align-items-center gap-1 shadow-sm px-3 py-2 fw-medium" style="border-radius: 8px;">
+                ← Back
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- USER BOOKINGS & EXPLORE SERVICES SECTION -->
+<div class="row mb-3">
+    <div class="col-12">
+        <h4 class="fw-bold mb-1">My Bookings</h4>
+        <p class="text-muted small">Services you have booked on CampusConnect.</p>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card stat-card shadow-sm" style="background-color: var(--champagne-light); border: 1px solid var(--border-warm) !important; color: var(--espresso);">
+            <div class="stat-card-title fw-bold" style="color: var(--cognac);">Total Services Booked</div>
+            <div class="stat-card-value" style="color: var(--espresso);"><%= customerStats.totalBookings %></div>
+            <small class="mt-1 d-block text-muted"><%= customerStats.activeBookings %> active | <%= customerStats.completedBookings %> completed</small>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card stat-card shadow-sm" style="background-color: var(--amber-light); border: 1px solid #FDE68A !important; color: #78350f;">
+            <div class="stat-card-title fw-bold" style="color: var(--amber);">Pending Booking Approvals</div>
+            <div class="stat-card-value" style="color: var(--espresso);"><%= customerStats.pendingBookings %></div>
+            <small class="mt-1 d-block" style="color: #92400E;">Awaiting partner confirmation</small>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 p-4 border-0 shadow-sm card-hover">
+            <h5 class="fw-bold mb-2">Track My Appointments</h5>
+            <p class="text-muted small mb-4">Check status of your bookings, inspect payment receipts, and chat live with partners.</p>
+            <a href="/appointments/my-bookings" class="btn btn-primary mt-auto align-self-start px-4">View My Bookings</a>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card h-100 p-4 border-0 shadow-sm card-hover">
+            <h5 class="fw-bold mb-2">Explore Campus Services</h5>
+            <p class="text-muted small mb-4">Need academic tutoring, coding help, graphic design, or campus errands? Find students and partners ready to assist.</p>
+            <a href="/marketplace" class="btn btn-outline-primary mt-auto align-self-start px-4">Browse Marketplace</a>
+        </div>
+    </div>
+</div>
+
+<% if (isPartner && partnerStats) { %>
+    <!-- PARTNER PORTAL WINDOW (Manage orders, payment collected, & services) -->
+    <div class="card p-4 p-md-5 mb-5 border-0 shadow-sm" style="background: #ffffff; border-left: 6px solid var(--cognac) !important; border: 1px solid var(--border-warm); border-radius: 18px;">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <span class="badge bg-primary text-white px-2 py-1 small fw-bold">PARTNER PORTAL</span>
+                    <span class="badge px-2 py-1 small fw-semibold" style="background-color: var(--emerald-light); color: var(--emerald); border: 1px solid #A7F3D0;">Verified Partner</span>
+                </div>
+                <h3 class="fw-bold m-0" style="color: var(--espresso);">Manage Orders & Payments Collected</h3>
+                <p class="text-muted small mb-0">Track your incoming client bookings, verify payment screenshots, and monitor your net payouts.</p>
+            </div>
+            <a href="/services/create" class="btn btn-primary fw-bold shadow-sm px-4 py-2">
+                + Add New Service
+            </a>
+        </div>
+
+        <!-- Partner Financial Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card p-3 border-0 shadow-sm" style="background: linear-gradient(135deg, var(--emerald) 0%, #0E533C 100%); color: #ffffff; border-radius: 14px;">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="small text-white-50 fw-bold text-uppercase" style="letter-spacing: 0.5px;">Realized Net Earnings</span>
+                        <span class="badge bg-white text-dark fw-bold">Completed</span>
+                    </div>
+                    <div class="fs-2 fw-bold text-white">₹<%= partnerStats.totalEarnings %></div>
+                    <small class="text-white-50 mt-1 d-block" style="font-size: 0.75rem;">Settled from <%= partnerStats.completedOrders %> completed orders</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3 shadow-sm" style="background-color: var(--champagne-light); border: 1.5px solid var(--border-warm) !important; border-radius: 14px;">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="small text-muted fw-bold text-uppercase" style="letter-spacing: 0.5px;">In-Progress Escrow</span>
+                        <span class="badge fw-bold" style="background-color: var(--amber-light); color: #92400E; border: 1px solid #FDE68A;">Pending Completion</span>
+                    </div>
+                    <div class="fs-2 fw-bold" style="color: var(--espresso);">₹<%= partnerStats.pendingEarnings %></div>
+                    <small class="text-muted mt-1 d-block" style="font-size: 0.75rem;">Releases into earnings once you mark orders completed</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3 shadow-sm" style="background-color: <%= partnerStats.pendingPaymentApprovals > 0 ? 'var(--amber-light)' : 'var(--emerald-light)' %>; color: <%= partnerStats.pendingPaymentApprovals > 0 ? '#92400E' : 'var(--emerald)' %>; border: 1px solid <%= partnerStats.pendingPaymentApprovals > 0 ? '#FDE68A' : '#A7F3D0' %> !important; border-radius: 14px;">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Payments Under Review</span>
+                        <span class="badge bg-<%= partnerStats.pendingPaymentApprovals > 0 ? 'warning text-dark' : 'success' %> fw-bold"><%= partnerStats.pendingPaymentApprovals %> Pending</span>
+                    </div>
+                    <div class="fs-2 fw-bold"><%= partnerStats.pendingPaymentApprovals %></div>
+                    <small class="mt-1 d-block" style="font-size: 0.75rem;"><%= partnerStats.verifiedPaymentsCount %> verified | Gross Volume: ₹<%= partnerStats.totalGross %></small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Partner Management Links -->
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="p-3 bg-light rounded-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-bold text-dark">Client Orders & Payment Proofs</div>
+                        <small class="text-muted"><%= partnerStats.pendingOrders %> pending requests awaiting review</small>
+                    </div>
+                    <a href="/appointments/provider" class="btn btn-sm btn-primary fw-medium px-3">
+                        View Orders & Verify Proofs →
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-3 bg-light rounded-3 d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-bold text-dark">Your Service Listings</div>
+                        <small class="text-muted"><%= partnerStats.totalServices %> active services listed on marketplace</small>
+                    </div>
+                    <div>
+                        <a href="/services/my-services" class="btn btn-sm btn-outline-primary fw-medium px-3">
+                            Manage Services →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PARTNER PAYOUT SETTLEMENT & UPI MANAGEMENT -->
+        <hr class="my-4 opacity-25">
+        <div id="payout-section">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div>
+                    <h4 class="fw-bold m-0 text-dark">💳 Partner Payout Settlement</h4>
+                    <p class="text-muted small mb-0">Provide your UPI ID. CampusConnect automatically generates dynamic QR codes for Super Admin to transfer your payouts directly.</p>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-muted small">Available Payable Balance:</span>
+                    <span class="fs-4 fw-bold text-success">₹<%= partnerStats.financials ? partnerStats.financials.availablePayableBalance : partnerStats.totalEarnings %></span>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <!-- Card A: Register / Update Payout UPI ID -->
+                <div class="col-md-6">
+                    <div class="card p-4 border h-100 bg-light rounded-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold m-0 text-dark">1. Your Payout UPI ID</h6>
+                            <% if (partnerStats.financials && partnerStats.financials.partnerUpiId) { %>
+                                <span class="badge bg-success-subtle text-success fw-bold">✓ Active UPI ID</span>
+                            <% } else { %>
+                                <span class="badge bg-warning-subtle text-warning-emphasis fw-bold">UPI ID Required</span>
+                            <% } %>
+                        </div>
+
+                        <% if (partnerStats.financials && partnerStats.financials.partnerUpiId) { %>
+                            <div class="p-3 bg-white rounded border mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="small text-muted fw-semibold">Current Registered UPI ID:</div>
+                                        <div class="text-primary font-monospace fw-bold fs-6"><%= partnerStats.financials.partnerUpiId %></div>
+                                    </div>
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 small">
+                                        ⚡ Auto QR Enabled
+                                    </span>
+                                </div>
+                                <small class="text-muted d-block mt-2" style="font-size: 0.75rem;">
+                                    🛡️ Dynamic QR codes are generated automatically by CampusConnect with exact payout amounts for admin settlement.
+                                </small>
+                            </div>
+                        <% } else { %>
+                            <div class="alert alert-info border-0 small py-2 mb-3">
+                                <strong>Enter your UPI ID:</strong> Super Admin will transfer your payouts directly to this UPI ID. No QR code upload needed.
+                            </div>
+                        <% } %>
+
+                        <form action="/services/payout-qr" method="POST">
+                            <div class="mb-3">
+                                <label for="partnerUpiId" class="form-label text-muted small fw-semibold">Your UPI ID (VPA)</label>
+                                <input type="text" class="form-control form-control-sm font-monospace" name="partnerUpiId" placeholder="e.g. yourname@oksbi or 9876543210@paytm" value="<%= partnerStats.financials ? (partnerStats.financials.partnerUpiId || '') : '' %>" required>
+                                <div class="form-text small">Only your UPI ID is required. QR codes are generated automatically by the system.</div>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-primary w-100 fw-bold shadow-sm">
+                                <%= (partnerStats.financials && partnerStats.financials.partnerUpiId) ? 'Update UPI ID' : 'Save UPI ID' %>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Card B: Request Payment Settlement -->
+                <div class="col-md-6">
+                    <div class="card p-4 border h-100 bg-light rounded-3">
+                        <h6 class="fw-bold mb-3 text-dark">2. Request Payout / Clear Balance</h6>
+                        <div class="p-3 bg-white rounded border mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted small">Realized Completed Earnings:</span>
+                                <span class="fw-semibold">₹<%= partnerStats.financials ? partnerStats.financials.totalEarned : partnerStats.totalEarnings %></span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted small">Settled Payouts Cleared:</span>
+                                <span class="text-muted small">- ₹<%= partnerStats.financials ? partnerStats.financials.totalCleared : '0.00' %></span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted small">Pending In-Review Requests:</span>
+                                <span class="text-muted small">- ₹<%= partnerStats.financials ? partnerStats.financials.totalPending : '0.00' %></span>
+                            </div>
+                            <hr class="my-2 opacity-25">
+                            <div class="d-flex justify-content-between">
+                                <strong class="text-success">Available for Payout:</strong>
+                                <strong class="text-success fs-5">₹<%= partnerStats.financials ? partnerStats.financials.availablePayableBalance : partnerStats.totalEarnings %></strong>
+                            </div>
+                        </div>
+
+                        <% const availBal = parseFloat(partnerStats.financials ? partnerStats.financials.availablePayableBalance : '0'); %>
+                        <% const hasUpi = partnerStats.financials && partnerStats.financials.partnerUpiId; %>
+
+                        <form action="/services/request-payout" method="POST">
+                            <div class="mb-3">
+                                <label for="amount" class="form-label text-muted small fw-semibold">Withdrawal Amount (₹)</label>
+                                <input type="number" step="0.01" max="<%= availBal %>" class="form-control form-control-sm" name="amount" value="<%= availBal > 0 ? availBal : '' %>" placeholder="Enter amount" required <%= availBal <= 0 ? 'disabled' : '' %>>
+                            </div>
+                            <div class="mb-3">
+                                <label for="notes" class="form-label text-muted small fw-semibold">Note for Super Admin (Optional)</label>
+                                <input type="text" class="form-control form-control-sm" name="notes" placeholder="e.g. Month-end tutoring settlement" <%= availBal <= 0 ? 'disabled' : '' %>>
+                            </div>
+                            <% if (!hasUpi) { %>
+                                <div class="alert alert-warning py-1 px-2 small mb-2" style="font-size: 0.75rem;">
+                                    Please enter and save your UPI ID on the left first.
+                                </div>
+                            <% } %>
+                            <button type="submit" class="btn btn-sm btn-success w-100 fw-bold shadow-sm" <%= (availBal <= 0 || !hasUpi) ? 'disabled' : '' %>>
+                                Request Settlement Payout →
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Partner Payout Requests Ledger -->
+            <% if (partnerStats.payouts && partnerStats.payouts.length > 0) { %>
+                <div class="card border rounded-3 overflow-hidden">
+                    <div class="card-header bg-white py-2 border-0 fw-bold small text-muted text-uppercase">
+                        Payout Request History & Settlement Receipts
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0 align-middle">
+                            <thead class="table-light small">
+                                <tr>
+                                    <th class="px-3">Date</th>
+                                    <th class="px-3">Amount</th>
+                                    <th class="px-3">Status</th>
+                                    <th class="px-3">Admin Settlement Proof & UTR</th>
+                                </tr>
+                            </thead>
+                            <tbody class="small">
+                                <% partnerStats.payouts.forEach(p => { %>
+                                    <tr>
+                                        <td class="px-3"><%= new Date(p.createdAt).toLocaleDateString() %></td>
+                                        <td class="px-3 fw-bold text-success">₹<%= p.amount %></td>
+                                        <td class="px-3">
+                                            <% if (p.status === 'cleared') { %>
+                                                <span class="badge bg-success">Cleared ✓</span>
+                                            <% } else { %>
+                                                <span class="badge bg-warning text-dark">Under Review</span>
+                                            <% } %>
+                                        </td>
+                                        <td class="px-3">
+                                            <% if (p.status === 'cleared') { %>
+                                                <% if (p.adminTransactionId) { %>
+                                                    <span class="font-monospace text-dark fw-bold me-2">UTR: <%= p.adminTransactionId %></span>
+                                                <% } %>
+                                                <% if (p.adminPaymentProof) { %>
+                                                    <a href="<%= p.adminPaymentProof %>" target="_blank" class="badge bg-light text-primary border text-decoration-none">
+                                                        📷 View Admin Receipt
+                                                    </a>
+                                                <% } %>
+                                            <% } else { %>
+                                                <span class="text-muted">Awaiting Admin processing</span>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+<% } %>

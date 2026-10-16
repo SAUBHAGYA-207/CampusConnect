@@ -1,0 +1,110 @@
+<div class="row">
+    <div class="col-12 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <h2 class="fw-bold mb-1">Incoming Requests & Payments</h2>
+            <p class="text-muted mb-0">Manage customer bookings, review payment screenshot proofs, and track your net earnings.</p>
+        </div>
+        <a href="/dashboard" onclick="if (window.history.length > 1) { history.back(); return false; }" class="btn btn-outline-secondary d-inline-flex align-items-center gap-1 shadow-sm px-3 py-2 fw-medium" style="border-radius: 8px;">← Back</a>
+    </div>
+
+    <div class="col-12">
+        <% if (appointments.length === 0) { %>
+            <div class="card p-5 text-center border-0 shadow-sm">
+                <h5 class="text-muted mb-0">No appointment requests found yet.</h5>
+            </div>
+        <% } else { %>
+            <div class="card border-0 shadow-sm overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-muted fw-semibold py-3 px-3">Date & Time</th>
+                                <th class="text-muted fw-semibold py-3 px-3">Service</th>
+                                <th class="text-muted fw-semibold py-3 px-3">Your Net Earning</th>
+                                <th class="text-muted fw-semibold py-3 px-3">Payment Proof</th>
+                                <th class="text-muted fw-semibold py-3 px-3">Booking Status</th>
+                                <th class="text-muted fw-semibold py-3 px-3 text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% appointments.forEach(app => { %>
+                                <% 
+                                    const amount = app.paymentAmount || (app.service ? app.service.price : 0);
+                                    const providerShare = app.providerEarnings || (amount * 0.90).toFixed(2);
+                                %>
+                                <tr>
+                                    <td class="px-3 py-3 fw-medium">
+                                        <%= app.date %> <br>
+                                        <small class="text-muted"><%= app.time %></small>
+                                    </td>
+                                    <td class="px-3 py-3">
+                                        <div class="fw-bold"><%= app.service ? app.service.title : 'Unknown Service' %></div>
+                                        <small class="text-muted">Total: ₹<%= amount %></small>
+                                    </td>
+                                    <td class="px-3 py-3">
+                                        <span class="text-success fw-bold">₹<%= providerShare %></span>
+                                        <br>
+                                        <% if (app.status === 'completed') { %>
+                                            <span class="badge bg-success" style="font-size: 0.65rem;">✓ Released</span>
+                                        <% } else if (app.status === 'cancelled' || app.status === 'rejected') { %>
+                                            <span class="badge bg-danger" style="font-size: 0.65rem;">Cancelled</span>
+                                        <% } else { %>
+                                            <span class="badge bg-secondary" style="font-size: 0.65rem;" title="Reflects in earnings after you mark completed">Releases on complete</span>
+                                        <% } %>
+                                    </td>
+                                    <td class="px-3 py-3">
+                                        <% if (app.paymentScreenshot) { %>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <a href="<%= app.paymentScreenshot %>" target="_blank" title="Click to view full screenshot">
+                                                    <img src="<%= app.paymentScreenshot %>" alt="Proof" class="rounded border shadow-sm" style="width: 48px; height: 48px; object-fit: cover;">
+                                                </a>
+                                                <div>
+                                                    <span class="badge bg-<%= app.paymentStatus === 'verified' ? 'success' : app.paymentStatus === 'rejected' ? 'danger' : 'warning text-dark' %>">
+                                                        <%= app.paymentStatus === 'verified' ? 'Verified' : app.paymentStatus === 'rejected' ? 'Rejected' : 'Under Review' %>
+                                                    </span>
+                                                    <% if (app.transactionId) { %>
+                                                        <div class="text-muted font-monospace" style="font-size: 0.75rem;">UTR: <%= app.transactionId %></div>
+                                                    <% } %>
+                                                </div>
+                                            </div>
+                                        <% } else { %>
+                                            <span class="badge bg-secondary">No Proof Uploaded</span>
+                                        <% } %>
+                                    </td>
+                                    <td class="px-3 py-3">
+                                        <span class="badge rounded-pill bg-<%= app.status === 'pending' ? 'warning text-dark' : app.status === 'accepted' ? 'info text-dark' : app.status === 'completed' ? 'success' : 'danger' %> px-3 py-2">
+                                            <%= app.status.charAt(0).toUpperCase() + app.status.slice(1) %>
+                                        </span>
+                                    </td>
+                                    <td class="px-3 py-3 text-end">
+                                        <% if (app.status === 'pending') { %>
+                                            <form action="/appointments/<%= app.id %>/status" method="POST" class="d-inline">
+                                                <input type="hidden" name="status" value="accepted">
+                                                <button class="btn btn-sm btn-success rounded-pill px-3 shadow-sm" title="Accept Booking & Confirm Payment">Accept</button>
+                                            </form>
+                                            <form action="/appointments/<%= app.id %>/status" method="POST" class="d-inline">
+                                                <input type="hidden" name="status" value="rejected">
+                                                <button class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-1">Reject</button>
+                                            </form>
+                                        <% } else if (app.status === 'accepted') { %>
+                                            <form action="/appointments/<%= app.id %>/status" method="POST" class="d-inline">
+                                                <input type="hidden" name="status" value="completed">
+                                                <button class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm">Complete</button>
+                                            </form>
+                                            <form action="/appointments/<%= app.id %>/status" method="POST" class="d-inline">
+                                                <input type="hidden" name="status" value="cancelled">
+                                                <button class="btn btn-sm btn-outline-danger rounded-pill px-3 ms-1">Cancel</button>
+                                            </form>
+                                        <% } %>
+
+                                        <a href="/appointments/provider/<%= app.id %>" class="btn btn-sm btn-light border rounded-pill px-3 ms-1 fw-medium text-primary">Details & Chat</a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>

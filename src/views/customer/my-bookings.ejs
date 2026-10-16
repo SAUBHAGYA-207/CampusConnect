@@ -1,0 +1,47 @@
+<div class="row mb-4 align-items-center">
+    <div class="col-md-8">
+        <h2 class="fw-bold mb-1">My Bookings</h2>
+        <p class="text-muted mb-0">Track your service appointments and payment verification status.</p>
+    </div>
+    <div class="col-md-4 text-md-end mt-2 mt-md-0">
+        <a href="/dashboard" onclick="if (window.history.length > 1) { history.back(); return false; }" class="btn btn-outline-secondary d-inline-flex align-items-center gap-1 shadow-sm px-3 py-2 fw-medium" style="border-radius: 8px;">
+            ← Back
+        </a>
+    </div>
+</div>
+    
+    <div class="col-12">
+        <% if (appointments.length === 0) { %>
+            <div class="card p-5 text-center border-0 shadow-sm">
+                <h5 class="text-muted mb-3">You haven't booked any services yet.</h5>
+                <a href="/marketplace" class="btn btn-outline-primary px-4">Browse Marketplace</a>
+            </div>
+        <% } else { %>
+            <div class="row g-4">
+                <% appointments.forEach(app => { %>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm card-hover">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-3 gap-2 flex-wrap">
+                                    <span class="badge rounded-pill bg-<%= app.status === 'pending' ? 'warning text-dark' : app.status === 'accepted' ? 'info text-dark' : app.status === 'completed' ? 'success' : 'danger' %> px-3 py-2">
+                                        <%= app.status.charAt(0).toUpperCase() + app.status.slice(1) %>
+                                    </span>
+                                    <span class="badge bg-<%= app.paymentStatus === 'verified' ? 'success' : app.paymentStatus === 'rejected' ? 'danger' : 'light text-dark border' %> px-2 py-1 small">
+                                        <%= app.paymentStatus === 'verified' ? 'Paid ✓' : app.paymentStatus === 'rejected' ? 'Payment Flagged' : 'Proof Submitted' %>
+                                    </span>
+                                </div>
+                                <h5 class="card-title fw-bold mb-1"><%= app.service ? app.service.title : 'Unknown Service' %></h5>
+                                <div class="text-success fw-bold mb-2">₹<%= app.paymentAmount || (app.service ? app.service.price : 'N/A') %></div>
+                                <h6 class="text-muted small mb-3"><%= app.date %> at <%= app.time %></h6>
+                                
+                                <div class="mt-4">
+                                    <a href="/appointments/my-bookings/<%= app.id %>" class="btn btn-light border w-100 fw-medium">View Details, Receipt & Chat</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } %>
+    </div>
+</div>

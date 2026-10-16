@@ -1,0 +1,693 @@
+<div class="row mb-3">
+    <div class="col-12">
+        <a href="/marketplace" onclick="if (window.history.length > 1) { history.back(); return false; }" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1 shadow-sm px-3 py-2 fw-medium" style="border-radius: 8px;">
+            ← Back
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-7 mb-4">
+        <div class="card p-0 overflow-hidden shadow-sm border-0">
+            <% if (service.image) { %>
+                <img src="<%= service.image %>" class="img-fluid w-100" alt="<%= service.title %>" style="max-height: 420px; object-fit: cover;">
+            <% } else { %>
+                <div class="w-100 bg-light d-flex justify-content-center align-items-center text-muted" style="height: 280px;">
+                    <span>No Image Provided</span>
+                </div>
+            <% } %>
+            <div class="card-body p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+                    <div>
+                        <span class="badge bg-light text-primary mb-2 px-3 py-2 fw-semibold" style="font-size: 0.85rem;"><%= service.category %></span>
+                        <h2 class="fw-bold mb-1"><%= service.title %></h2>
+                    </div>
+                    <div class="text-end">
+                        <span class="text-muted small d-block">Service Fee</span>
+                        <h3 class="text-success fw-bold m-0">₹<%= service.price %></h3>
+                    </div>
+                </div>
+                
+                <hr class="text-muted opacity-25 my-4">
+                
+                <h5 class="fw-bold mb-3">About This Service</h5>
+                <p class="text-muted" style="white-space: pre-wrap; line-height: 1.8;"><%= service.description %></p>
+                
+                <div class="mt-4 p-3 bg-light rounded-3 d-flex align-items-center gap-3">
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 44px; height: 44px;">
+                        ✓
+                    </div>
+                    <div>
+                        <div class="fw-semibold">100% Payment Secured by CampusConnect</div>
+                        <small class="text-muted">Payment held securely and released to partner upon service fulfillment.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking & Payment Gateway Panel -->
+    <div class="col-lg-5">
+        <div class="card p-4 shadow-sm border-0 sticky-top" style="top: 20px;" id="bookingCardContainer">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold m-0" id="bookingPanelTitle">Book Service</h4>
+                <span class="badge bg-success-subtle text-success fw-semibold px-2 py-1" id="bookingStatusBadge">Instant Escrow Pay</span>
+            </div>
+            
+            <% if (user) { %>
+                <% if (service.providerId === user.id) { %>
+                    <div class="alert alert-info border-0 bg-info bg-opacity-10 text-info-emphasis rounded-3 p-3">
+                        <strong>This is your service listing.</strong> You cannot book your own listing. You can manage or edit this service from your <a href="/services/my-services" class="alert-link">Partner Portal</a>.
+                    </div>
+                <% } else { %>
+                    <form action="/appointments/book" method="POST" enctype="multipart/form-data" id="bookingForm">
+                        <input type="hidden" name="serviceId" value="<%= service.id %>">
+                        <input type="hidden" id="servicePriceHidden" value="<%= service.price %>">
+                        <input type="hidden" id="serviceTitleHidden" value="<%= service.title %>">
+                        <% 
+                            const activeUpi = typeof adminUpiId !== 'undefined' && adminUpiId ? adminUpiId : (typeof upiId !== 'undefined' && upiId ? upiId : 'anand1024anand@okicici');
+                            const activePayee = typeof adminPayeeName !== 'undefined' && adminPayeeName ? adminPayeeName : (typeof upiPayeeName !== 'undefined' && upiPayeeName ? upiPayeeName : 'CampusConnect Admin Escrow');
+                        %>
+                        <input type="hidden" id="activeUpiIdHidden" value="<%= activeUpi %>">
+                        <input type="hidden" id="activePayeeNameHidden" value="<%= activePayee %>">
+                        
+                        <!-- STEP 0: Initial Overview / Call To Action (NO QR Code is pre-generated!) -->
+                        <div id="bookingStateOverview" class="booking-flow-card">
+                            <div class="p-3 bg-light rounded-3 mb-3 border">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="text-muted small fw-semibold">Service Fee:</span>
+                                    <span class="fs-4 fw-bold text-success">₹<%= service.price %></span>
+                                </div>
+                                <hr class="my-2 opacity-25">
+                                <div class="small text-muted mb-2 d-flex align-items-start gap-2">
+                                    <span class="badge bg-success-subtle text-success rounded-pill mt-1">✓</span>
+                                    <span><strong>100% Escrow Protection:</strong> Payment held securely and released only after service fulfillment.</span>
+                                </div>
+                                <div class="small text-muted d-flex align-items-start gap-2">
+                                    <span class="badge bg-primary-subtle text-primary rounded-pill mt-1">⚡</span>
+                                    <span>Direct coordination & messaging with verified student partner.</span>
+                                </div>
+                            </div>
+
+                            <button type="button" id="btnStartBooking" class="btn btn-primary btn-lg w-100 py-3 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
+                                <span>📅 Book This Service</span>
+                            </button>
+                            <small class="text-muted text-center d-block mt-2" style="font-size: 0.78rem;">
+                                Click to specify appointment schedule & service requirements.
+                            </small>
+                        </div>
+
+                        <!-- STEP 1: Enter Specifications -->
+                        <div id="bookingStateSpecifications" class="booking-flow-card d-none">
+                            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                                <span class="badge bg-primary px-3 py-2 fw-semibold">Step 1 of 2: Specifications</span>
+                                <span class="text-muted small">Next: Payment & QR</span>
+                            </div>
+
+                            <!-- Date Picker -->
+                            <div class="mb-3">
+                                <label for="bookingDate" class="form-label text-dark fw-bold small">
+                                    1. Select Appointment Date <span class="text-danger">*</span>
+                                </label>
+                                <input type="date" class="form-control" name="date" required id="bookingDate">
+                                <div class="invalid-feedback" id="dateError">Please choose a valid appointment date.</div>
+                            </div>
+                            
+                            <!-- Time Picker -->
+                            <div class="mb-3">
+                                <label for="bookingTime" class="form-label text-dark fw-bold small">
+                                    2. Select Preferred Time <span class="text-danger">*</span>
+                                </label>
+                                <input type="time" class="form-control" name="time" required id="bookingTime">
+                                <div class="invalid-feedback" id="timeError">Please select a preferred time slot.</div>
+                            </div>
+
+                            <!-- Meeting Mode / Delivery Preference -->
+                            <div class="mb-3">
+                                <label class="form-label text-dark fw-bold small mb-1">
+                                    3. Meeting / Service Mode
+                                </label>
+                                <div class="d-flex gap-2 flex-wrap" id="serviceModeContainer">
+                                    <button type="button" class="btn btn-sm btn-outline-primary service-mode-btn active" data-mode="Campus / In-Person">
+                                        🏫 Campus / In-Person
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary service-mode-btn" data-mode="Online (Meet/Zoom)">
+                                        💻 Online (Meet/Zoom)
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-primary service-mode-btn" data-mode="Flexible">
+                                        🤝 Flexible
+                                    </button>
+                                </div>
+                                <input type="hidden" id="selectedServiceMode" value="Campus / In-Person">
+                            </div>
+
+                            <!-- Specifications / Requirements Notes -->
+                            <div class="mb-3">
+                                <label for="bookingNotes" class="form-label text-dark fw-bold small">
+                                    4. Enter Your Specifications & Requirements <span class="text-danger">*</span>
+                                </label>
+                                <textarea class="form-control" 
+                                          name="notes" 
+                                          id="bookingNotes" 
+                                          rows="3" 
+                                          required 
+                                          placeholder="Detail your requirements (e.g. syllabus topics, specific deliverables, project guidelines, preferred meeting spot on campus)..."></textarea>
+                                <div class="form-text small">Provide clear specifications so the partner can prepare accurately.</div>
+                                <div class="invalid-feedback" id="specsError">Please enter your specifications or requirements.</div>
+                            </div>
+
+                            <!-- Validation Feedback Banner -->
+                            <div id="specsValidationBanner" class="alert alert-danger py-2 px-3 small d-none mb-3">
+                                Please fill in date, time, and your specifications before proceeding.
+                            </div>
+
+                            <!-- Action: Proceed to Payment Button -->
+                            <button type="button" id="btnProceedToPayment" class="btn btn-success btn-lg w-100 py-3 shadow-sm fw-bold d-flex align-items-center justify-content-center gap-2">
+                                <span>💳 Proceed to Payment (₹<%= service.price %>) →</span>
+                            </button>
+
+                            <button type="button" id="btnBackToOverview" class="btn btn-link btn-sm text-muted w-100 mt-2 text-decoration-none">
+                                ← Back
+                            </button>
+                        </div>
+
+                        <!-- STEP 2: Animated Dynamic QR Code Generator Screen -->
+                        <div id="bookingStateGeneratingQr" class="booking-flow-card d-none text-center py-4 px-2">
+                            <div class="qr-gen-radar-box my-3">
+                                <div class="qr-pulse-halo"></div>
+                                <div class="qr-rotating-ring"></div>
+                                <div class="qr-pulse-center">
+                                    <span class="fs-2">⚡</span>
+                                </div>
+                            </div>
+                            
+                            <h5 class="fw-bold text-dark mt-3 mb-1">Generating Dynamic Payment QR...</h5>
+                            <p class="text-muted small mb-3">
+                                Creating secure escrow UPI session for <strong class="text-success">₹<%= service.price %></strong>
+                            </p>
+                            
+                            <div class="progress" style="height: 6px; border-radius: 4px; overflow: hidden; max-width: 280px; margin: 0 auto 12px;">
+                                <div id="qrGenProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 10%;"></div>
+                            </div>
+                            <small id="qrGenStatusLabel" class="text-muted font-monospace" style="font-size: 0.78rem;">
+                                Generating dynamic UPI payload...
+                            </small>
+                        </div>
+
+                        <!-- STEP 3: Generated QR Code Ready & Payment Proof Upload -->
+                        <div id="bookingStatePaymentReady" class="booking-flow-card d-none">
+                            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                                <span class="badge bg-success px-3 py-2 fw-semibold">Step 2 of 2: Scan & Pay</span>
+                                <span class="badge bg-light text-dark font-monospace border" id="displayTxnRef">REF: #CC-000000</span>
+                            </div>
+
+                            <!-- Specifications Summary Header -->
+                            <div class="p-2 px-3 bg-light rounded-3 mb-3 border small">
+                                <div class="d-flex justify-content-between text-muted mb-1">
+                                    <span>Schedule:</span>
+                                    <strong class="text-dark" id="summaryScheduleDisplay"></strong>
+                                </div>
+                                <div class="d-flex justify-content-between text-muted mb-1">
+                                    <span>Mode:</span>
+                                    <strong class="text-dark" id="summaryModeDisplay"></strong>
+                                </div>
+                                <div class="text-muted text-truncate">
+                                    <span>Specifications:</span>
+                                    <span class="text-dark fst-italic" id="summaryNotesDisplay"></span>
+                                </div>
+                            </div>
+
+                            <!-- Generated QR Code Display with Laser Scanner Animation -->
+                            <div class="p-3 rounded-3 mb-3 text-center bg-white border shadow-sm qr-reveal-card" style="background-color: #f8fafc;">
+                                <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+                                    <span class="fw-bold small text-dark">Admin Escrow UPI QR</span>
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1" id="qrSessionTimer">
+                                        ⏱️ Valid: 05:00
+                                    </span>
+                                </div>
+
+                                <div class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 mb-2 small fw-semibold">
+                                    🛡️ Direct Payment to Admin Escrow
+                                </div>
+
+                                <!-- Dynamic QR Image Wrapper with Animated Scanning Laser -->
+                                <div class="position-relative d-inline-block p-2 bg-white rounded-3 border shadow-sm my-2 qr-scan-frame">
+                                    <!-- Neon animated scan laser -->
+                                    <div class="qr-neon-laser"></div>
+                                    <!-- Dynamically Loaded QR (empty on initial page load) -->
+                                    <img id="dynamicPaymentQrImg" 
+                                         src="" 
+                                         alt="Admin Escrow Payment QR Code for ₹<%= service.price %>" 
+                                         class="img-fluid rounded" 
+                                         style="width: 210px; height: 210px; object-fit: contain; display: block;">
+                                </div>
+
+                                <div class="mt-2">
+                                    <span class="badge bg-light text-dark border font-monospace small px-2 py-1" id="activeUpiDisplay"><%= activeUpi %></span>
+                                    <button type="button" class="btn btn-sm btn-link text-decoration-none py-0 small" id="btnCopyUpi">Copy UPI</button>
+                                </div>
+                                
+                                <div class="small text-muted mt-1">
+                                    Payee: <strong class="text-dark"><%= activePayee %></strong> | Amount: <strong class="text-success fs-6">₹<%= service.price %></strong>
+                                </div>
+                                
+                                <div class="p-2 mt-2 bg-light rounded text-muted small" style="font-size: 0.76rem;">
+                                    🔒 <strong>Escrow Protected:</strong> You are paying to CampusConnect Admin. Admin safely holds funds until service delivery, then settles payment directly to the partner upon verified completion.
+                                </div>
+
+                                <div class="mt-2 d-md-none">
+                                    <a id="mobileUpiAppBtn" href="#" class="btn btn-sm btn-outline-primary px-3">
+                                        📱 Open Directly in UPI App
+                                    </a>
+                                </div>
+                                
+                                <p class="text-muted small mt-2 mb-0" style="font-size: 0.78rem;">
+                                    Scan using <strong>GPay, PhonePe, Paytm, or BHIM</strong>
+                                </p>
+                            </div>
+
+                            <!-- Payment Proof Screenshot Upload -->
+                            <div class="mb-3">
+                                <label for="paymentScreenshot" class="form-label text-dark fw-bold small">
+                                    Upload Payment Screenshot <span class="text-danger">*</span>
+                                </label>
+                                <input type="file" 
+                                       class="form-control" 
+                                       id="paymentScreenshot" 
+                                       name="paymentScreenshot" 
+                                       accept="image/jpeg,image/png,image/webp" 
+                                       required 
+                                       onchange="previewScreenshot(event)">
+                                <div class="form-text small">Upload the transaction success screenshot from your UPI app.</div>
+                            </div>
+
+                            <div id="screenshotPreviewContainer" class="d-none text-center mb-3 p-2 bg-white rounded border">
+                                <small class="text-muted d-block mb-1">Preview of Payment Proof:</small>
+                                <img id="screenshotPreview" src="#" alt="Screenshot preview" style="max-height: 180px; max-width: 100%; border-radius: 8px;">
+                            </div>
+
+
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100 py-3 shadow-sm fw-bold">
+                                Confirm & Submit Booking ✓
+                            </button>
+
+                            <button type="button" id="btnEditSpecifications" class="btn btn-outline-secondary btn-sm w-100 mt-2">
+                                ✏️ Edit Specifications or Schedule
+                            </button>
+                        </div>
+                    </form>
+                <% } %>
+            <% } else { %>
+                <div class="text-center py-4">
+                    <p class="text-muted mb-3">You need an account to book this service and make payment.</p>
+                    <a href="/auth/login" class="btn btn-primary w-100 mb-2">Log In</a>
+                    <a href="/auth/register" class="btn btn-outline-secondary w-100">Create Account</a>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Step Cards and Transitions */
+    .booking-flow-card {
+        animation: fadeInStep 0.35s ease-out;
+    }
+    @keyframes fadeInStep {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Radar / Hologram Generator Animation */
+    .qr-gen-radar-box {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .qr-pulse-halo {
+        position: absolute;
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, rgba(37, 99, 235, 0) 70%);
+        animation: pulseHalo 1.4s ease-out infinite;
+    }
+    .qr-rotating-ring {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 3px dashed #2563eb;
+        border-top-color: #10b981;
+        animation: spinOrbit 1.1s linear infinite;
+    }
+    .qr-pulse-center {
+        position: relative;
+        z-index: 2;
+        animation: bounceIcon 0.8s ease-in-out infinite alternate;
+    }
+    @keyframes pulseHalo {
+        0% { transform: scale(0.6); opacity: 1; }
+        100% { transform: scale(1.4); opacity: 0; }
+    }
+    @keyframes spinOrbit {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    @keyframes bounceIcon {
+        0% { transform: translateY(-2px) scale(0.96); }
+        100% { transform: translateY(2px) scale(1.04); }
+    }
+
+    /* QR Reveal & Laser Scanner Animation */
+    .qr-reveal-card {
+        animation: qrCardPop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes qrCardPop {
+        0% { opacity: 0; transform: scale(0.94); }
+        100% { opacity: 1; transform: scale(1); }
+    }
+    .qr-scan-frame {
+        position: relative;
+        overflow: hidden;
+        border: 2px solid #e2e8f0;
+        transition: box-shadow 0.3s ease;
+    }
+    .qr-neon-laser {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #2563eb, #10b981, #2563eb, transparent);
+        box-shadow: 0 0 10px 2px rgba(16, 185, 129, 0.8);
+        border-radius: 2px;
+        animation: laserSweep 2s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 5;
+    }
+    @keyframes laserSweep {
+        0% { top: 4px; opacity: 0.9; }
+        50% { top: calc(100% - 7px); opacity: 0.95; }
+        100% { top: 4px; opacity: 0.9; }
+    }
+
+    /* Service Mode Buttons */
+    .service-mode-btn {
+        border-radius: 20px;
+        transition: all 0.2s ease;
+    }
+    .service-mode-btn.active {
+        background-color: #2563eb !important;
+        color: #ffffff !important;
+        border-color: #2563eb !important;
+    }
+
+    /* Input Shake Animation on Validation Error */
+    @keyframes shakeInput {
+        0%, 100% { transform: translateX(0); }
+        20%, 60% { transform: translateX(-6px); }
+        40%, 80% { transform: translateX(6px); }
+    }
+    .is-invalid-shake {
+        animation: shakeInput 0.4s ease-in-out;
+        border-color: #dc3545 !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set minimum date to today
+        const dateInput = document.getElementById('bookingDate');
+        if (dateInput) {
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.min = today;
+        }
+
+        const stateOverview = document.getElementById('bookingStateOverview');
+        const stateSpecs = document.getElementById('bookingStateSpecifications');
+        const stateGenQr = document.getElementById('bookingStateGeneratingQr');
+        const statePayReady = document.getElementById('bookingStatePaymentReady');
+
+        const btnStartBooking = document.getElementById('btnStartBooking');
+        const btnProceedToPayment = document.getElementById('btnProceedToPayment');
+        const btnBackToOverview = document.getElementById('btnBackToOverview');
+        const btnEditSpecifications = document.getElementById('btnEditSpecifications');
+
+        const bookingTimeInput = document.getElementById('bookingTime');
+        const bookingNotesInput = document.getElementById('bookingNotes');
+        const specsValidationBanner = document.getElementById('specsValidationBanner');
+
+        const servicePrice = document.getElementById('servicePriceHidden') ? document.getElementById('servicePriceHidden').value : '';
+        const serviceTitle = document.getElementById('serviceTitleHidden') ? document.getElementById('serviceTitleHidden').value : '';
+        const activeUpiId = document.getElementById('activeUpiIdHidden') ? document.getElementById('activeUpiIdHidden').value : 'campusconnect.payments@upi';
+        const activePayeeName = document.getElementById('activePayeeNameHidden') ? document.getElementById('activePayeeNameHidden').value : 'CampusConnect Partner';
+
+        let timerInterval = null;
+
+        // Service Mode selection buttons
+        const modeButtons = document.querySelectorAll('.service-mode-btn');
+        const selectedModeInput = document.getElementById('selectedServiceMode');
+        modeButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                modeButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                if (selectedModeInput) {
+                    selectedModeInput.value = this.getAttribute('data-mode');
+                }
+            });
+        });
+
+        // 1. User clicks "Book This Service" -> Enter specifications step
+        if (btnStartBooking) {
+            btnStartBooking.addEventListener('click', function() {
+                stateOverview.classList.add('d-none');
+                stateSpecs.classList.remove('d-none');
+                if (dateInput && !dateInput.value) {
+                    dateInput.focus();
+                }
+            });
+        }
+
+        // Auto-open specs if URL has #book or ?book=1
+        if (window.location.hash === '#book' || window.location.search.includes('book=1')) {
+            if (stateOverview && stateSpecs) {
+                stateOverview.classList.add('d-none');
+                stateSpecs.classList.remove('d-none');
+            }
+        }
+
+        // 2. Back to Overview button
+        if (btnBackToOverview) {
+            btnBackToOverview.addEventListener('click', function() {
+                stateSpecs.classList.add('d-none');
+                stateOverview.classList.remove('d-none');
+            });
+        }
+
+        // 3. User clicks "Proceed to Payment" -> Validate specifications -> Animated Dynamic QR Generation
+        if (btnProceedToPayment) {
+            btnProceedToPayment.addEventListener('click', function() {
+                let isValid = true;
+
+                // Validate Date
+                if (!dateInput.value) {
+                    dateInput.classList.add('is-invalid', 'is-invalid-shake');
+                    setTimeout(() => dateInput.classList.remove('is-invalid-shake'), 400);
+                    isValid = false;
+                } else {
+                    dateInput.classList.remove('is-invalid');
+                }
+
+                // Validate Time
+                if (!bookingTimeInput.value) {
+                    bookingTimeInput.classList.add('is-invalid', 'is-invalid-shake');
+                    setTimeout(() => bookingTimeInput.classList.remove('is-invalid-shake'), 400);
+                    isValid = false;
+                } else {
+                    bookingTimeInput.classList.remove('is-invalid');
+                }
+
+                // Validate Specifications / Notes
+                if (!bookingNotesInput.value || bookingNotesInput.value.trim().length < 3) {
+                    bookingNotesInput.classList.add('is-invalid', 'is-invalid-shake');
+                    setTimeout(() => bookingNotesInput.classList.remove('is-invalid-shake'), 400);
+                    isValid = false;
+                } else {
+                    bookingNotesInput.classList.remove('is-invalid');
+                }
+
+                if (!isValid) {
+                    specsValidationBanner.classList.remove('d-none');
+                    return;
+                }
+
+                specsValidationBanner.classList.add('d-none');
+
+                // Switch to Generating QR Animation state
+                stateSpecs.classList.add('d-none');
+                stateGenQr.classList.remove('d-none');
+
+                const progressBar = document.getElementById('qrGenProgressBar');
+                const statusLabel = document.getElementById('qrGenStatusLabel');
+
+                // Generation animation sequence
+                progressBar.style.width = '20%';
+                statusLabel.innerText = 'Creating unique escrow transaction reference...';
+
+                setTimeout(() => {
+                    progressBar.style.width = '60%';
+                    statusLabel.innerText = 'Encrypting payment parameters & UPI intent...';
+                }, 400);
+
+                setTimeout(() => {
+                    progressBar.style.width = '90%';
+                    statusLabel.innerText = 'Rendering dynamic QR code...';
+                }, 850);
+
+                setTimeout(() => {
+                    progressBar.style.width = '100%';
+                    statusLabel.innerText = 'Session ready!';
+
+                    // Transition to Payment Ready state
+                    setTimeout(() => {
+                        stateGenQr.classList.add('d-none');
+                        statePayReady.classList.remove('d-none');
+
+                        // Generate unique transaction reference code
+                        const randomRef = 'CC-' + Math.floor(100000 + Math.random() * 900000);
+                        const txnRefBadge = document.getElementById('displayTxnRef');
+                        if (txnRefBadge) txnRefBadge.innerText = 'REF: #' + randomRef;
+
+                        // Display specifications summary
+                        const scheduleSummary = document.getElementById('summaryScheduleDisplay');
+                        if (scheduleSummary) {
+                            scheduleSummary.innerText = dateInput.value + ' at ' + bookingTimeInput.value;
+                        }
+                        const modeSummary = document.getElementById('summaryModeDisplay');
+                        if (modeSummary && selectedModeInput) {
+                            modeSummary.innerText = selectedModeInput.value;
+                        }
+                        const notesSummary = document.getElementById('summaryNotesDisplay');
+                        if (notesSummary) {
+                            const trimmedNotes = bookingNotesInput.value.trim();
+                            notesSummary.innerText = trimmedNotes.length > 50 ? trimmedNotes.substring(0, 47) + '...' : trimmedNotes;
+                        }
+
+                        // Generate Dynamic QR Code URL now (on demand, never pre-generated!)
+                        const notePayload = 'CampusConnect ' + randomRef + ' ' + serviceTitle;
+                        const upiPayload = 'upi://pay?pa=' + encodeURIComponent(activeUpiId) + 
+                                           '&pn=' + encodeURIComponent(activePayeeName) + 
+                                           '&am=' + encodeURIComponent(servicePrice) + 
+                                           '&cu=INR' + 
+                                           '&tn=' + encodeURIComponent(notePayload);
+
+                        const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=' + encodeURIComponent(upiPayload);
+                        const qrImgElem = document.getElementById('dynamicPaymentQrImg');
+                        if (qrImgElem) {
+                            qrImgElem.src = qrUrl;
+                        }
+
+                        // Mobile UPI app deep link
+                        const mobileLink = document.getElementById('mobileUpiAppBtn');
+                        if (mobileLink) {
+                            mobileLink.href = upiPayload;
+                        }
+
+                        // Start 5-minute countdown timer
+                        startQrCountdown(5 * 60);
+
+                    }, 300);
+                }, 1300);
+            });
+        }
+
+        // 4. Return to Edit Specifications button
+        if (btnEditSpecifications) {
+            btnEditSpecifications.addEventListener('click', function() {
+                if (timerInterval) clearInterval(timerInterval);
+                statePayReady.classList.add('d-none');
+                stateSpecs.classList.remove('d-none');
+            });
+        }
+
+        // 5. Copy UPI ID button
+        const btnCopyUpi = document.getElementById('btnCopyUpi');
+        if (btnCopyUpi) {
+            btnCopyUpi.addEventListener('click', function() {
+                navigator.clipboard.writeText(activeUpiId).then(() => {
+                    const originalText = btnCopyUpi.innerText;
+                    btnCopyUpi.innerText = 'Copied!';
+                    btnCopyUpi.classList.add('text-success');
+                    setTimeout(() => {
+                        btnCopyUpi.innerText = originalText;
+                        btnCopyUpi.classList.remove('text-success');
+                    }, 2000);
+                });
+            });
+        }
+
+        // 6. Countdown Timer function
+        function startQrCountdown(durationInSeconds) {
+            if (timerInterval) clearInterval(timerInterval);
+            let timer = durationInSeconds;
+            const timerElem = document.getElementById('qrSessionTimer');
+
+            function updateDisplay() {
+                const minutes = Math.floor(timer / 60);
+                const seconds = timer % 60;
+                if (timerElem) {
+                    timerElem.innerText = '⏱️ Valid: ' + 
+                        (minutes < 10 ? '0' : '') + minutes + ':' + 
+                        (seconds < 10 ? '0' : '') + seconds;
+                }
+                if (timer <= 0) {
+                    clearInterval(timerInterval);
+                    if (timerElem) {
+                        timerElem.innerText = '⚠️ QR Expired';
+                        timerElem.className = 'badge bg-danger text-white px-2 py-1';
+                    }
+                }
+                timer--;
+            }
+
+            updateDisplay();
+            timerInterval = setInterval(updateDisplay, 1000);
+        }
+
+        // Form submission: include service mode with user specifications in notes
+        const bookingForm = document.getElementById('bookingForm');
+        if (bookingForm) {
+            bookingForm.addEventListener('submit', function(e) {
+                if (selectedModeInput && bookingNotesInput) {
+                    const mode = selectedModeInput.value;
+                    const originalNotes = bookingNotesInput.value.trim();
+                    if (!originalNotes.startsWith('[Mode:')) {
+                        bookingNotesInput.value = '[Mode: ' + mode + ']\n' + originalNotes;
+                    }
+                }
+            });
+        }
+    });
+
+    // Preview uploaded payment screenshot
+    function previewScreenshot(event) {
+        const file = event.target.files[0];
+        const container = document.getElementById('screenshotPreviewContainer');
+        const img = document.getElementById('screenshotPreview');
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+                container.classList.remove('d-none');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            container.classList.add('d-none');
+        }
+    }
+</script>

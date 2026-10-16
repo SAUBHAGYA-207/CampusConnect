@@ -1,0 +1,7 @@
+<div class="alert alert-danger mt-5">
+    <h4>Error</h4>
+    <p><%= message %></p>
+    <% if (error && error.stack) { %>
+        <pre><%= error.stack %></pre>
+    <% } %>
+</div>

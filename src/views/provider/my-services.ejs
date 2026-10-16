@@ -1,0 +1,45 @@
+<div class="row mb-4 align-items-center">
+    <div class="col-md-7">
+        <h2 class="fw-bold m-0">My Services</h2>
+        <p class="text-muted mb-0 small">Manage your active service listings and offerings.</p>
+    </div>
+    <div class="col-md-5 text-md-end mt-3 mt-md-0 d-flex justify-content-md-end gap-2">
+        <a href="/dashboard" onclick="if (window.history.length > 1) { history.back(); return false; }" class="btn btn-outline-secondary d-inline-flex align-items-center gap-1 shadow-sm px-3 py-2 fw-medium" style="border-radius: 8px;">← Back</a>
+        <a href="/services/create" class="btn btn-primary shadow-sm">+ Add New Service</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <% if (services.length === 0) { %>
+        <div class="col-12 text-center py-5">
+            <h5 class="text-muted mb-3">You haven't listed any services yet.</h5>
+            <a href="/services/create" class="btn btn-outline-primary px-4">Create your first service</a>
+        </div>
+    <% } else { %>
+        <% services.forEach(service => { %>
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <% if (service.image) { %>
+                        <img src="<%= service.image %>" class="card-img-top" alt="<%= service.title %>" style="height: 200px; object-fit: cover; border-radius: 16px 16px 0 0;">
+                    <% } else { %>
+                        <div class="card-img-top bg-light d-flex justify-content-center align-items-center text-muted" style="height: 200px; border-radius: 16px 16px 0 0;">
+                            <span>No Image</span>
+                        </div>
+                    <% } %>
+                    <div class="card-body p-4">
+                        <span class="badge bg-light text-secondary mb-2 px-2 py-1"><%= service.category %></span>
+                        <h5 class="card-title fw-bold mb-1"><%= service.title %></h5>
+                        <p class="text-success fw-bold fs-5 mt-2 mb-4">₹<%= service.price %></p>
+                        
+                        <div class="d-flex gap-2 mt-auto">
+                            <a href="/services/<%= service.id %>/edit" class="btn btn-light border flex-grow-1">Edit</a>
+                            <form action="/services/<%= service.id %>/delete" method="POST" class="flex-grow-1 m-0">
+                                <button type="submit" class="btn btn-outline-danger w-100" onclick="return confirm('Delete this service permanently?')">Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    <% } %>
+</div>

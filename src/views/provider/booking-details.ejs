@@ -1,0 +1,273 @@
+<div class="row mb-3">
+    <div class="col-12">
+        <a href="/appointments/provider" onclick="if (window.history.length > 1) { history.back(); return false; }" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1 shadow-sm px-3 py-2 fw-medium" style="border-radius: 8px;">
+            ← Back
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm border-0 h-100" style="border-radius: 16px;">
+            <div class="card-header bg-white border-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+                <h4 class="mb-0 fw-bold">Booking & Payment Details</h4>
+                <span class="badge rounded-pill bg-<%= appointment.status === 'pending' ? 'warning text-dark' : appointment.status === 'accepted' ? 'info text-dark' : appointment.status === 'completed' ? 'success' : 'danger' %> px-3 py-2">
+                    <%= appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1) %>
+                </span>
+            </div>
+            <div class="card-body p-4">
+                <h6 class="text-muted text-uppercase fw-bold mb-3" style="font-size: 0.8rem; letter-spacing: 0.5px;">Service Information</h6>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted">Service Title</span>
+                    <a href="/marketplace/<%= appointment.serviceId %>" class="fw-bold text-decoration-none"><%= appointment.service ? appointment.service.title : 'Unknown' %></a>
+                </div>
+                
+                <!-- Financial Breakdown -->
+                <div class="p-3 my-3 rounded-3" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="text-muted small">Total Customer Payment:</span>
+                        <span class="fw-bold text-dark">₹<%= appointment.paymentAmount || (appointment.service ? appointment.service.price : 'N/A') %></span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="text-muted small">Platform Commission:</span>
+                        <span class="text-muted small">- ₹<%= appointment.platformFee || ((appointment.paymentAmount || (appointment.service ? appointment.service.price : 0)) * 0.10).toFixed(2) %></span>
+                    </div>
+                    <hr class="my-2 opacity-25">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-success">Your Net Earning:</span>
+                        <span class="fw-bold text-success fs-5">₹<%= appointment.providerEarnings || ((appointment.paymentAmount || (appointment.service ? appointment.service.price : 0)) * 0.90).toFixed(2) %></span>
+                    </div>
+                    <div class="mt-2 text-end">
+                        <% if (appointment.status === 'completed') { %>
+                            <span class="badge bg-success">✓ Released to Net Earnings</span>
+                        <% } else if (appointment.status === 'cancelled' || appointment.status === 'rejected') { %>
+                            <span class="badge bg-danger">Cancelled / Unreleased</span>
+                        <% } else { %>
+                            <span class="badge bg-warning text-dark">Locked in Escrow — Releases when marked Completed</span>
+                        <% } %>
+                    </div>
+                </div>
+
+                <h6 class="text-muted text-uppercase fw-bold mb-3 mt-4" style="font-size: 0.8rem; letter-spacing: 0.5px;">Payment Verification</h6>
+                <div class="p-3 bg-light rounded-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted small fw-bold">Payment Status:</span>
+                        <span class="badge bg-<%= appointment.paymentStatus === 'verified' ? 'success' : appointment.paymentStatus === 'rejected' ? 'danger' : 'warning text-dark' %> px-2 py-1">
+                            <%= appointment.paymentStatus === 'verified' ? 'Verified' : appointment.paymentStatus === 'rejected' ? 'Rejected' : 'Proof Submitted - Needs Verification' %>
+                        </span>
+                    </div>
+
+                    <% if (appointment.transactionId) { %>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted small">Transaction / UTR:</span>
+                            <span class="font-monospace small fw-bold"><%= appointment.transactionId %></span>
+                        </div>
+                    <% } %>
+
+                    <% if (appointment.paymentScreenshot) { %>
+                        <div class="mt-2">
+                            <span class="text-muted small d-block mb-1">Uploaded Payment Screenshot:</span>
+                            <a href="<%= appointment.paymentScreenshot %>" target="_blank" title="Click to view full image in new tab">
+                                <img src="<%= appointment.paymentScreenshot %>" alt="Payment Proof" class="img-fluid rounded border shadow-sm" style="max-height: 180px; object-fit: contain; background: #fff;">
+                            </a>
+                            <small class="text-muted d-block mt-1 fst-italic">Click image to inspect full high-resolution screenshot</small>
+                        </div>
+
+                        <!-- Provider Verification Actions -->
+                        <% if (appointment.paymentStatus !== 'verified') { %>
+                            <div class="d-flex gap-2 mt-3">
+                                <form action="/appointments/<%= appointment.id %>/payment-status" method="POST" class="flex-grow-1">
+                                    <input type="hidden" name="paymentStatus" value="verified">
+                                    <button type="submit" class="btn btn-sm btn-success w-100 fw-bold shadow-sm">✓ Verify Payment</button>
+                                </form>
+                                <form action="/appointments/<%= appointment.id %>/payment-status" method="POST">
+                                    <input type="hidden" name="paymentStatus" value="rejected">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger fw-medium" onclick="return confirm('Are you sure you want to flag/reject this payment proof?')">Flag Payment</button>
+                                </form>
+                            </div>
+                        <% } else { %>
+                            <div class="text-success small fw-bold mt-2">✓ Payment confirmed and verified.</div>
+                        <% } %>
+                    <% } else { %>
+                        <p class="text-muted small mb-0">No payment screenshot attached for this booking.</p>
+                    <% } %>
+                </div>
+                
+                <h6 class="text-muted text-uppercase fw-bold mb-3 mt-4" style="font-size: 0.8rem; letter-spacing: 0.5px;">Schedule & Notes</h6>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted">Date & Time</span>
+                    <span class="fw-medium"><%= appointment.date %> at <%= appointment.time %></span>
+                </div>
+                
+                <div class="p-3 bg-light rounded-3 mb-4">
+                    <span class="d-block text-muted small fw-bold mb-1">Customer Note</span>
+                    <span class="fst-italic text-secondary"><%= appointment.notes || 'No specific note provided.' %></span>
+                </div>
+
+                <!-- Booking State Actions -->
+                <% if (appointment.status === 'pending') { %>
+                    <form action="/appointments/<%= appointment.id %>/status" method="POST" class="d-inline">
+                        <input type="hidden" name="status" value="accepted">
+                        <button type="submit" class="btn btn-success w-100 py-2 mb-2 rounded-3 shadow-sm fw-medium">Accept Booking</button>
+                    </form>
+                    <form action="/appointments/<%= appointment.id %>/status" method="POST" class="d-inline">
+                        <input type="hidden" name="status" value="rejected">
+                        <button type="submit" class="btn btn-outline-danger w-100 py-2 rounded-3 fw-medium">Reject Booking</button>
+                    </form>
+                <% } else if (appointment.status === 'accepted') { %>
+                    <form action="/appointments/<%= appointment.id %>/status" method="POST" class="d-inline">
+                        <input type="hidden" name="status" value="completed">
+                        <button type="submit" class="btn btn-primary w-100 py-2 mb-2 rounded-3 shadow-sm fw-medium">Mark Completed</button>
+                    </form>
+                    <form action="/appointments/<%= appointment.id %>/status" method="POST" class="d-inline">
+                        <input type="hidden" name="status" value="cancelled">
+                        <button type="submit" class="btn btn-outline-danger w-100 py-2 rounded-3 fw-medium">Cancel Booking</button>
+                    </form>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Real-time Chat Panel -->
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
+            <div class="card-header bg-success text-white d-flex align-items-center py-3">
+                <div class="rounded-circle bg-white text-success d-flex justify-content-center align-items-center me-3" style="width: 40px; height: 40px; font-weight: bold; font-size: 1.2rem;">
+                    <%= appointment.service ? appointment.service.title.charAt(0).toUpperCase() : 'S' %>
+                </div>
+                <div>
+                    <h6 class="mb-0 fw-bold">Appointment Chat</h6>
+                    <small class="text-white-50">#<%= appointment.id.substring(0, 8) %></small>
+                </div>
+            </div>
+            <div class="card-body" id="chat-box" style="height: 480px; overflow-y: scroll; display: flex; flex-direction: column; background-color: #efeae2;">
+            </div>
+            <div class="card-footer border-0" style="background-color: #f0f2f5; padding: 12px;">
+                <% if (appointment.status === 'cancelled') { %>
+                    <div class="p-3 text-center rounded-3 bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25">
+                        <div class="fw-bold d-flex align-items-center justify-content-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-slash-circle-fill text-danger" viewBox="0 0 16 16">
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.646-2.646a.5.5 0 0 0-.708 0L4.354 11.646a.5.5 0 0 0 .708.708l6.292-6.292a.5.5 0 0 0 0-.708z"/>
+                            </svg>
+                            <span>Booking Cancelled — Chat is closed.</span>
+                        </div>
+                        <small class="text-muted d-block mt-1">New messages cannot be sent for cancelled bookings. Past messages are view-only.</small>
+                    </div>
+                <% } else if (appointment.status === 'rejected') { %>
+                    <div class="p-3 text-center rounded-3 bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25">
+                        <div class="fw-bold">Booking Rejected — Chat is closed.</div>
+                        <small class="text-muted d-block mt-1">Past messages are view-only.</small>
+                    </div>
+                <% } else { %>
+                    <form id="chat-form" class="d-flex align-items-center">
+                        <input type="text" id="chat-input" class="form-control rounded-pill me-2 border-0 shadow-sm px-4 py-2" placeholder="Type a message..." required>
+                        <button type="submit" class="btn btn-success rounded-circle shadow-sm d-flex justify-content-center align-items-center" style="width: 45px; height: 45px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
+                                <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
+                            </svg>
+                        </button>
+                    </form>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #chat-box::-webkit-scrollbar { width: 6px; }
+    #chat-box::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 10px; }
+    
+    .message-bubble {
+        max-width: 85%;
+        padding: 8px 12px;
+        margin-bottom: 12px;
+        border-radius: 12px;
+        position: relative;
+        word-wrap: break-word;
+        box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+        display: inline-block;
+        clear: both;
+    }
+    .message-mine {
+        background-color: #d9fdd3;
+        align-self: flex-end;
+        border-top-right-radius: 0;
+    }
+    .message-theirs {
+        background-color: #ffffff;
+        align-self: flex-start;
+        border-top-left-radius: 0;
+    }
+    .message-text {
+        font-size: 0.95rem;
+        color: #111b21;
+        line-height: 1.4;
+    }
+    .message-time {
+        font-size: 0.7rem;
+        color: #667781;
+        float: right;
+        margin-top: 10px;
+        margin-left: 10px;
+        line-height: 1;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const chatBox = document.getElementById('chat-box');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const appointmentId = "<%= appointment.id %>";
+    const currentUserId = "<%= user.id %>";
+    const currentUserRole = "<%= user.role %>";
+
+    if (window.socket) {
+        window.socket.emit('join_appointment_room', { appointmentId, userId: currentUserId });
+
+        window.socket.on('new_message', (msg) => {
+            appendMessage(msg);
+        });
+    }
+
+    function appendMessage(msg) {
+        const isMine = msg.senderId === currentUserId;
+        const date = new Date(msg.timestamp);
+        const timeString = isNaN(date) ? '' : date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+        const div = document.createElement('div');
+        div.className = `message-bubble ${isMine ? 'message-mine' : 'message-theirs'}`;
+        
+        const textSpan = document.createElement('span');
+        textSpan.className = 'message-text';
+        textSpan.innerText = msg.text;
+        
+        const timeSpan = document.createElement('span');
+        timeSpan.className = 'message-time';
+        timeSpan.innerText = timeString;
+
+        div.appendChild(textSpan);
+        div.appendChild(timeSpan);
+
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    fetch(`/api/chat/${appointmentId}`)
+        .then(r => r.json())
+        .then(messages => {
+            if(Array.isArray(messages)) messages.forEach(appendMessage);
+        });
+
+    if (chatForm && chatInput) {
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if (text && window.socket) {
+                window.socket.emit('send_message', { appointmentId, userId: currentUserId, role: currentUserRole, text });
+                chatInput.value = '';
+            }
+        });
+    }
+});
+</script>

@@ -1,0 +1,41 @@
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-md-5 col-lg-4">
+        <div class="mb-3">
+            <a href="/" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1 shadow-sm px-3 py-2 fw-medium" style="border-radius: 8px;" onclick="if (window.history.length > 1) { history.back(); return false; }">
+                ← Back
+            </a>
+        </div>
+        <div class="card p-4 p-md-5 shadow-sm border-0" style="border: 1px solid var(--border-warm) !important; border-radius: 18px;">
+            <div class="text-center mb-4">
+                <h3 class="fw-bold mb-1" style="color: var(--espresso); letter-spacing: -0.5px;">Create Account</h3>
+                <p class="text-muted small">Join CampusConnect today</p>
+            </div>
+            <% if (error) { %>
+                <div class="alert alert-danger py-2 px-3 small rounded-3 mb-3" style="background-color: #FDF2F2; border-color: #F8B4B4; color: #9B1C1C;"><%= error %></div>
+            <% } %>
+            <form action="/auth/register" method="POST">
+                <div class="mb-3">
+                    <label for="email" class="form-label text-muted fw-semibold small">Email address</label>
+                    <input type="email" class="form-control form-control-lg" id="email" name="email" placeholder="name@domain.com" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label text-muted fw-semibold small">Password</label>
+                    <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="••••••••" required>
+                </div>
+
+                <!-- Sign up as Partner: perfectly aligned inside card with no explanation text -->
+                <div class="mb-4">
+                    <label class="partner-checkbox-card" for="isPartner">
+                        <span class="fw-semibold" style="color: var(--espresso); font-size: 0.95rem;">Sign up as Partner</span>
+                        <input class="partner-checkbox-input" type="checkbox" value="provider" id="isPartner" name="isPartner">
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm fw-bold">Sign Up</button>
+            </form>
+            <div class="text-center mt-4">
+                <small class="text-muted">Already have an account? <a href="/auth/login" class="text-decoration-none fw-semibold" style="color: var(--cognac);">Login</a></small>
+            </div>
+        </div>
+    </div>
+</div>
