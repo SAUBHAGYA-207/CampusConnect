@@ -65,19 +65,29 @@ async function sendViaResend({ to, subject, html, text }) {
 
 /**
  * Dispatch email via Brevo HTTP API (Port 443 - Never blocked by Render/AWS/Cloud)
+ * Sends to ANY recipient without requiring a custom domain.
  */
 async function sendViaBrevo({ to, subject, html, text }) {
     const apiKey = (process.env.BREVO_API_KEY || '').trim();
     if (!apiKey) return null;
 
-    const fromEmail = (process.env.BREVO_FROM_EMAIL || process.env.SMTP_USER || 'campusconnect216@gmail.com').trim();
-    const fromName = process.env.BREVO_FROM_NAME || 'CampusConnect';
+    let fromEmail = process.env.BREVO_FROM_EMAIL ? process.env.BREVO_FROM_EMAIL.trim() : null;
+    let fromName = process.env.BREVO_FROM_NAME || 'CampusConnect';
+
+    if (!fromEmail) {
+        const mailFrom = (process.env.MAIL_FROM || '').trim();
+        const match = mailFrom.match(/<([^>]+)>/);
+        fromEmail = match ? match[1].trim() : (process.env.SMTP_USER ? process.env.SMTP_USER.trim() : 'campusconnect216@gmail.com');
+        const nameMatch = mailFrom.match(/"([^"]+)"/);
+        if (nameMatch) fromName = nameMatch[1].trim();
+    }
 
     const res = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
         headers: {
             'api-key': apiKey,
-            'Content-Type': 'application/json'
+            'accept': 'application/json',
+            'content-type': 'application/json'
         },
         body: JSON.stringify({
             sender: { name: fromName, email: fromEmail },
@@ -196,20 +206,7 @@ async function getTransporter() {
  * Universal email dispatcher (tries HTTP APIs first, then SMTP)
  */
 async function sendMailUniversal({ to, subject, text, html }) {
-    // 1. Try Resend HTTP API (Port 443 HTTPS - bypasses Render SMTP firewall)
-    if (process.env.RESEND_API_KEY) {
-        try {
-            const resendResult = await sendViaResend({ to, subject, html, text });
-            if (resendResult) {
-                console.log(`✅ [EmailService] Email delivered via Resend API to: ${to} (ID: ${resendResult.messageId})`);
-                return { success: true, isRealDelivery: true, previewUrl: null };
-            }
-        } catch (resendErr) {
-            console.error('❌ [EmailService] Resend API Error:', resendErr.message);
-        }
-    }
-
-    // 2. Try Brevo HTTP API (Port 443 HTTPS)
+    // 1. Try Brevo HTTP API (Port 443 HTTPS - sends to ANY student email without custom domain requirement)
     if (process.env.BREVO_API_KEY) {
         try {
             const brevoResult = await sendViaBrevo({ to, subject, html, text });
@@ -219,6 +216,19 @@ async function sendMailUniversal({ to, subject, text, html }) {
             }
         } catch (brevoErr) {
             console.error('❌ [EmailService] Brevo API Error:', brevoErr.message);
+        }
+    }
+
+    // 2. Try Resend HTTP API (Port 443 HTTPS - bypasses Render SMTP firewall)
+    if (process.env.RESEND_API_KEY) {
+        try {
+            const resendResult = await sendViaResend({ to, subject, html, text });
+            if (resendResult) {
+                console.log(`✅ [EmailService] Email delivered via Resend API to: ${to} (ID: ${resendResult.messageId})`);
+                return { success: true, isRealDelivery: true, previewUrl: null };
+            }
+        } catch (resendErr) {
+            console.error('❌ [EmailService] Resend API Error:', resendErr.message);
         }
     }
 
