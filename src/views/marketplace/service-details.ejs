@@ -10,7 +10,7 @@
     <div class="col-lg-7 mb-4">
         <div class="card p-0 overflow-hidden shadow-sm border-0">
             <% if (service.image) { %>
-                <img src="<%= service.image %>" class="img-fluid w-100" alt="<%= service.title %>" style="max-height: 420px; object-fit: cover;">
+                <img src="<%= service.image %>" class="img-fluid w-100" alt="<%= service.title %>" style="max-height: 420px; object-fit: cover;" onerror="this.onerror=null; this.src='/images/banners/banner-teach.jpg';">
             <% } else { %>
                 <div class="w-100 bg-light d-flex justify-content-center align-items-center text-muted" style="height: 280px;">
                     <span>No Image Provided</span>

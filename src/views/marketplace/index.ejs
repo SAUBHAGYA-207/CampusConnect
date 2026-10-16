@@ -175,7 +175,7 @@
                 <a href="/marketplace/<%= service.id %>" class="text-decoration-none text-dark">
                     <div class="card h-100 card-hover">
                         <% if (service.image) { %>
-                            <img src="<%= service.image %>" class="card-img-top" alt="<%= service.title %>" style="height: 180px; object-fit: cover; border-radius: 16px 16px 0 0;">
+                            <img src="<%= service.image %>" class="card-img-top" alt="<%= service.title %>" style="height: 180px; object-fit: cover; border-radius: 16px 16px 0 0;" onerror="this.onerror=null; this.src='/images/banners/banner-tech.jpg';">
                         <% } else { %>
                             <div class="card-img-top bg-light d-flex justify-content-center align-items-center text-muted" style="height: 180px; border-radius: 16px 16px 0 0;">
                                 <span>No Image</span>

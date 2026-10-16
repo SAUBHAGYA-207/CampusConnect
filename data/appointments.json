@@ -10,7 +10,7 @@
     "paymentAmount": 199,
     "providerEarnings": 169.15,
     "platformFee": 29.85,
-    "paymentScreenshot": "/uploads/payments/1792144346411-122348854.png",
+    "paymentScreenshot": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/payments/1792144346411-122348854.png",
     "transactionId": null,
     "paymentStatus": "verified",
     "createdAt": 1792144346441,
