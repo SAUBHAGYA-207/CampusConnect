@@ -1,5 +1,6 @@
 const JsonStorage = require('../storage/jsonStorage');
 const servicesStorage = new JsonStorage('services');
+const usersStorage = new JsonStorage('users');
 
 function normalizeService(service) {
     if (!service) return null;
@@ -91,7 +92,25 @@ exports.updateService = async (serviceId, providerId, updates) => {
 
 exports.getServiceById = async (serviceId) => {
     const service = await servicesStorage.getById(serviceId);
-    return normalizeService(service);
+    if (!service) return null;
+    const normalized = normalizeService(service);
+    if (normalized && normalized.providerId) {
+        try {
+            const user = await usersStorage.getById(normalized.providerId);
+            if (user) {
+                const displayName = user.name || user.username || (user.email ? user.email.split('@')[0] : 'Partner');
+                normalized.provider = {
+                    ...user,
+                    name: displayName,
+                    username: displayName
+                };
+                normalized.providerName = displayName;
+            }
+        } catch (e) {
+            console.warn('Could not populate provider for getServiceById:', e.message);
+        }
+    }
+    return normalized;
 };
 
 exports.getServicesByProvider = async (providerId) => {
@@ -103,9 +122,41 @@ exports.searchServices = async (query = {}, category, minPrice, maxPrice, sortBy
     let services = await servicesStorage.getAll();
     services = services.map(normalizeService);
 
+    // Populate partner/provider username & profile details
+    try {
+        const users = await usersStorage.getAll();
+        const userMap = new Map();
+        users.forEach(u => {
+            if (u && u.id) {
+                const displayName = u.name || u.username || (u.email ? u.email.split('@')[0] : 'Partner');
+                userMap.set(u.id, {
+                    id: u.id,
+                    email: u.email,
+                    name: displayName,
+                    username: displayName
+                });
+            }
+        });
+        services = services.map(s => {
+            const providerInfo = userMap.get(s.providerId);
+            const providerName = providerInfo ? providerInfo.name : 'Campus Partner';
+            return {
+                ...s,
+                provider: providerInfo || { name: providerName, username: providerName },
+                providerName
+            };
+        });
+    } catch (e) {
+        console.warn('Could not populate provider usernames for searchServices:', e.message);
+    }
+
     if (query.q) {
         const q = query.q.toLowerCase();
-        services = services.filter(s => s.title.toLowerCase().includes(q) || s.description.toLowerCase().includes(q));
+        services = services.filter(s => 
+            s.title.toLowerCase().includes(q) || 
+            s.description.toLowerCase().includes(q) ||
+            (s.providerName && s.providerName.toLowerCase().includes(q))
+        );
     }
     if (category) {
         services = services.filter(s => s.category === category);

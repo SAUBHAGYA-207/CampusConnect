@@ -164,12 +164,25 @@ class JsonStorage {
         if (isSupabaseConfigured()) {
             const client = getSupabaseClient();
             if (client) {
-                const { error } = await client.from(this.tableName).delete().eq('id', id);
-                if (error) {
-                    console.error(`[Supabase Storage Error] delete on ${this.tableName}:`, error.message);
-                    throw error;
+                try {
+                    let { error } = await client.from(this.tableName).delete().eq('id', id);
+                    if (error) {
+                        // Retry once on transient network glitch
+                        const retry = await client.from(this.tableName).delete().eq('id', id);
+                        if (!retry.error) return true;
+                        console.error(`[Supabase Storage Error] delete on ${this.tableName}:`, error.message);
+                        throw error;
+                    }
+                    return true;
+                } catch (err) {
+                    // Try one immediate retry on transient connection glitch
+                    try {
+                        const retry = await client.from(this.tableName).delete().eq('id', id);
+                        if (!retry.error) return true;
+                    } catch (retryErr) {}
+                    console.error(`[Supabase Storage Error] delete on ${this.tableName}:`, err.message);
+                    throw err;
                 }
-                return true;
             }
         }
         return new Promise((resolve, reject) => {

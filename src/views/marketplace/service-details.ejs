@@ -81,10 +81,28 @@
                 </div>
             <% } %>
             <div class="card-body p-4 p-md-5">
+                <% 
+                    const partnerDisplayName = (provider && (provider.username || provider.name)) || service.providerName || 'Campus Partner';
+                    const partnerInitial = (partnerDisplayName.replace(/^@/, '').charAt(0) || 'P').toUpperCase();
+                %>
                 <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
                     <div>
-                        <span class="badge bg-light text-primary mb-2 px-3 py-2 fw-semibold" style="font-size: 0.85rem;"><%= service.category %></span>
-                        <h2 class="fw-bold mb-1"><%= service.title %></h2>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="badge bg-light text-primary px-3 py-2 fw-semibold" style="font-size: 0.85rem;"><%= service.category %></span>
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 rounded-pill small fw-semibold">
+                                ✓ Verified Partner
+                            </span>
+                        </div>
+                        <h2 class="fw-bold mb-2"><%= service.title %></h2>
+                        <div class="d-flex align-items-center gap-2 mt-2">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold shadow-sm" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                                <%= partnerInitial %>
+                            </div>
+                            <div>
+                                <span class="text-muted small">Offered by </span>
+                                <span class="fw-bold text-dark">@<%= partnerDisplayName %></span>
+                            </div>
+                        </div>
                     </div>
                     <div class="text-end">
                         <span class="text-muted small d-block">Service Fee</span>
@@ -94,6 +112,22 @@
                 
                 <hr class="text-muted opacity-25 my-4">
                 
+                <!-- Partner Profile Showcase Box -->
+                <div class="p-3 mb-4 rounded-3 border bg-light d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold shadow-sm flex-shrink-0" style="width: 46px; height: 46px; font-size: 1.15rem;">
+                            <%= partnerInitial %>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="fw-bold fs-6 text-dark">@<%= partnerDisplayName %></span>
+                                <span class="badge bg-success text-white rounded-pill px-2 py-0 fw-semibold" style="font-size: 0.68rem;">Verified</span>
+                            </div>
+                            <small class="text-muted d-block">CampusConnect Student Partner • Instant Chat & File Sharing</small>
+                        </div>
+                    </div>
+                </div>
+
                 <h5 class="fw-bold mb-3">About This Service</h5>
                 <p class="text-muted" style="white-space: pre-wrap; line-height: 1.8;"><%= service.description %></p>
                 
@@ -103,7 +137,7 @@
                     </div>
                     <div>
                         <div class="fw-semibold">100% Payment Secured by CampusConnect</div>
-                        <small class="text-muted">Payment held securely and released to partner upon service fulfillment.</small>
+                        <small class="text-muted">Payment held securely in escrow and released to @<%= partnerDisplayName %> only upon service fulfillment.</small>
                     </div>
                 </div>
             </div>

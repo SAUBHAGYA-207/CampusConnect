@@ -19,9 +19,17 @@ router.get('/:id', async (req, res, next) => {
         const service = await serviceService.getServiceById(req.params.id);
         if (!service) return res.status(404).render('error', { message: 'Service not found' });
         
-        let provider = null;
-        if (service.providerId) {
-            provider = await usersStorage.getById(service.providerId);
+        let provider = service.provider || null;
+        if (!provider && service.providerId) {
+            const rawUser = await usersStorage.getById(service.providerId);
+            if (rawUser) {
+                const displayName = rawUser.name || rawUser.username || (rawUser.email ? rawUser.email.split('@')[0] : 'Partner');
+                provider = {
+                    ...rawUser,
+                    name: displayName,
+                    username: displayName
+                };
+            }
         }
 
         // Customer pays directly to Admin's Escrow QR / UPI ID
