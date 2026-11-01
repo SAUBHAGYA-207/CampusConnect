@@ -17,11 +17,17 @@ const createStorage = (subfolder) => {
 };
 
 const fileFilter = (req, file, cb) => {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    if (allowedTypes.includes(file.mimetype)) {
+    const allowedMimes = [
+        'image/jpeg', 'image/jpg', 'image/png', 'image/webp',
+        'image/pjpeg', 'image/x-png', 'image/gif', 'image/avif'
+    ];
+    const ext = path.extname(file.originalname).toLowerCase();
+    const allowedExts = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif'];
+
+    if (allowedMimes.includes(file.mimetype.toLowerCase()) || allowedExts.includes(ext)) {
         cb(null, true);
     } else {
-        cb(new Error('Invalid file type. Only JPEG, PNG, and WEBP images are allowed.'), false);
+        cb(new Error('Invalid image format. Allowed formats: JPEG, PNG, WEBP, GIF, and AVIF.'), false);
     }
 };
 
@@ -61,7 +67,10 @@ const serviceMultiUpload = (req, res, next) => {
         { name: 'images', maxCount: 10 },
         { name: 'image', maxCount: 1 }
     ])(req, res, (err) => {
-        if (err) return next(err);
+        if (err) {
+            console.warn('[Upload Middleware Warning]:', err.message);
+            req.uploadError = err.message || 'Error uploading selected image(s).';
+        }
         // Consolidate files into req.files array for convenient consumption
         const allFiles = [];
         if (req.files) {

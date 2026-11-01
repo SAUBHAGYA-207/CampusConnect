@@ -81,7 +81,24 @@ const storageService = require('../services/storageService');
 
 exports.postCreateService = async (req, res, next) => {
     try {
+        if (req.uploadError) {
+            return res.render('provider/create-service', { error: req.uploadError });
+        }
+
         const { title, description, price, category } = req.body;
+        if (!title || !title.trim() || !description || !description.trim() || price === undefined || price === '' || !category) {
+            return res.render('provider/create-service', { 
+                error: 'Please fill in all required fields (title, description, price, category).' 
+            });
+        }
+
+        const parsedPrice = parseFloat(price);
+        if (isNaN(parsedPrice) || parsedPrice < 0) {
+            return res.render('provider/create-service', { 
+                error: 'Please provide a valid price (₹ 0 or greater).' 
+            });
+        }
+
         const filesToUpload = req.uploadedFiles || (req.files ? (Array.isArray(req.files) ? req.files : Object.values(req.files).flat()) : (req.file ? [req.file] : []));
         let images = [];
         if (filesToUpload && filesToUpload.length > 0) {
@@ -89,16 +106,19 @@ exports.postCreateService = async (req, res, next) => {
         }
         
         await serviceService.createService(req.session.user.id, {
-            title,
-            description,
-            price: parseFloat(price),
+            title: title.trim(),
+            description: description.trim(),
+            price: parsedPrice,
             category,
             images,
             image: images[0] || null
         });
         res.redirect('/services/my-services');
     } catch (error) {
-        next(error);
+        console.error('❌ [postCreateService Error]:', error);
+        res.render('provider/create-service', { 
+            error: error.message || 'Something went wrong while creating the service. Please try again.' 
+        });
     }
 };
 
@@ -115,11 +135,31 @@ exports.getEditService = async (req, res, next) => {
 };
 
 exports.postEditService = async (req, res, next) => {
+    let currentService = null;
     try {
-        const { title, description, price, category } = req.body;
-        const currentService = await serviceService.getServiceById(req.params.id);
+        currentService = await serviceService.getServiceById(req.params.id);
         if (!currentService || currentService.providerId !== req.session.user.id) {
             return res.status(403).render('error', { message: 'Forbidden' });
+        }
+
+        if (req.uploadError) {
+            return res.render('provider/edit-service', { service: currentService, error: req.uploadError });
+        }
+
+        const { title, description, price, category } = req.body;
+        if (!title || !title.trim() || !description || !description.trim() || price === undefined || price === '' || !category) {
+            return res.render('provider/edit-service', { 
+                service: currentService, 
+                error: 'Please fill in all required fields (title, description, price, category).' 
+            });
+        }
+
+        const parsedPrice = parseFloat(price);
+        if (isNaN(parsedPrice) || parsedPrice < 0) {
+            return res.render('provider/edit-service', { 
+                service: currentService, 
+                error: 'Please provide a valid price (₹ 0 or greater).' 
+            });
         }
 
         let keptImages = [];
@@ -141,9 +181,9 @@ exports.postEditService = async (req, res, next) => {
 
         const combinedImages = [...keptImages, ...newUploadedUrls];
         const updates = {
-            title,
-            description,
-            price: parseFloat(price),
+            title: title.trim(),
+            description: description.trim(),
+            price: parsedPrice,
             category,
             images: combinedImages,
             image: combinedImages[0] || null
@@ -152,7 +192,11 @@ exports.postEditService = async (req, res, next) => {
         await serviceService.updateService(req.params.id, req.session.user.id, updates);
         res.redirect('/services/my-services');
     } catch (error) {
-        next(error);
+        console.error('❌ [postEditService Error]:', error);
+        res.render('provider/edit-service', { 
+            service: currentService || { id: req.params.id }, 
+            error: error.message || 'Something went wrong while updating the service. Please try again.' 
+        });
     }
 };
 

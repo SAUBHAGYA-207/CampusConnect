@@ -75,7 +75,9 @@ class JsonStorage {
                 let { data, error } = await client.from(this.tableName).insert([currentItem]).select().single();
                 
                 while (error && error.message) {
-                    const match = error.message.match(/Could not find the '(\w+)' column/);
+                    const match = error.message.match(/Could not find the ['"](\w+)['"] column/i) ||
+                                  error.message.match(/column ['"](\w+)['"] of relation/i) ||
+                                  error.message.match(/column ['"](\w+)['"] does not exist/i);
                     if (match && match[1] && currentItem[match[1]] !== undefined) {
                         delete currentItem[match[1]];
                         const retry = await client.from(this.tableName).insert([currentItem]).select().single();
@@ -118,7 +120,9 @@ class JsonStorage {
                 let { data, error } = await client.from(this.tableName).update(currentUpdates).eq('id', id).select().maybeSingle();
                 
                 while (error && error.message) {
-                    const match = error.message.match(/Could not find the '(\w+)' column/);
+                    const match = error.message.match(/Could not find the ['"](\w+)['"] column/i) ||
+                                  error.message.match(/column ['"](\w+)['"] of relation/i) ||
+                                  error.message.match(/column ['"](\w+)['"] does not exist/i);
                     if (match && match[1] && currentUpdates[match[1]] !== undefined) {
                         delete currentUpdates[match[1]];
                         const retry = await client.from(this.tableName).update(currentUpdates).eq('id', id).select().maybeSingle();

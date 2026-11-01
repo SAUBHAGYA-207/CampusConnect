@@ -56,15 +56,16 @@ exports.createService = async (providerId, serviceData) => {
     const primaryImage = images.length > 0 ? images[0] : (serviceData.image || null);
     const imagePayload = images.length > 1 ? JSON.stringify(images) : primaryImage;
 
+    // Send only valid columns recognized by Supabase services table
     const payload = {
-        ...serviceData,
+        title: serviceData.title,
+        description: serviceData.description,
+        price: serviceData.price,
+        category: serviceData.category,
         image: imagePayload,
         providerId,
         createdAt: Date.now()
     };
-    if (images.length > 0) {
-        payload.images = JSON.stringify(images);
-    }
 
     const added = await servicesStorage.add(payload);
     return normalizeService(added);
@@ -81,7 +82,7 @@ exports.updateService = async (serviceId, providerId, updates) => {
         const images = updates.images.filter(Boolean);
         const primaryImage = images.length > 0 ? images[0] : null;
         updatesPayload.image = images.length > 1 ? JSON.stringify(images) : primaryImage;
-        updatesPayload.images = JSON.stringify(images);
+        delete updatesPayload.images;
     }
 
     const updated = await servicesStorage.update(serviceId, updatesPayload);
