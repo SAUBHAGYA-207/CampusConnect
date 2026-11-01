@@ -82,10 +82,19 @@ const storageService = require('../services/storageService');
 exports.postCreateService = async (req, res, next) => {
     try {
         const { title, description, price, category } = req.body;
-        const image = req.file ? await storageService.uploadMulterFile(req.file, 'services') : null;
+        const filesToUpload = req.uploadedFiles || (req.files ? (Array.isArray(req.files) ? req.files : Object.values(req.files).flat()) : (req.file ? [req.file] : []));
+        let images = [];
+        if (filesToUpload && filesToUpload.length > 0) {
+            images = await storageService.uploadMultipleMulterFiles(filesToUpload, 'services');
+        }
         
         await serviceService.createService(req.session.user.id, {
-            title, description, price: parseFloat(price), category, image
+            title,
+            description,
+            price: parseFloat(price),
+            category,
+            images,
+            image: images[0] || null
         });
         res.redirect('/services/my-services');
     } catch (error) {
@@ -108,10 +117,37 @@ exports.getEditService = async (req, res, next) => {
 exports.postEditService = async (req, res, next) => {
     try {
         const { title, description, price, category } = req.body;
-        const updates = { title, description, price: parseFloat(price), category };
-        if (req.file) {
-            updates.image = await storageService.uploadMulterFile(req.file, 'services');
+        const currentService = await serviceService.getServiceById(req.params.id);
+        if (!currentService || currentService.providerId !== req.session.user.id) {
+            return res.status(403).render('error', { message: 'Forbidden' });
         }
+
+        let keptImages = [];
+        if (req.body.existingImages !== undefined) {
+            if (Array.isArray(req.body.existingImages)) {
+                keptImages = req.body.existingImages.filter(Boolean);
+            } else if (typeof req.body.existingImages === 'string' && req.body.existingImages.trim()) {
+                keptImages = [req.body.existingImages.trim()];
+            }
+        } else {
+            keptImages = currentService.images || (currentService.image ? [currentService.image] : []);
+        }
+
+        const filesToUpload = req.uploadedFiles || (req.files ? (Array.isArray(req.files) ? req.files : Object.values(req.files).flat()) : (req.file ? [req.file] : []));
+        let newUploadedUrls = [];
+        if (filesToUpload && filesToUpload.length > 0) {
+            newUploadedUrls = await storageService.uploadMultipleMulterFiles(filesToUpload, 'services');
+        }
+
+        const combinedImages = [...keptImages, ...newUploadedUrls];
+        const updates = {
+            title,
+            description,
+            price: parseFloat(price),
+            category,
+            images: combinedImages,
+            image: combinedImages[0] || null
+        };
         
         await serviceService.updateService(req.params.id, req.session.user.id, updates);
         res.redirect('/services/my-services');

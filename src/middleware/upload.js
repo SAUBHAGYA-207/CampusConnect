@@ -49,11 +49,39 @@ const partnerQrUpload = multer({
     fileFilter: fileFilter
 });
 
+const chatUpload = multer({
+    storage: createStorage('chat'),
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+    fileFilter: fileFilter
+});
+
+// Middleware to accept multiple service images with names 'images' or 'image'
+const serviceMultiUpload = (req, res, next) => {
+    serviceUpload.fields([
+        { name: 'images', maxCount: 10 },
+        { name: 'image', maxCount: 1 }
+    ])(req, res, (err) => {
+        if (err) return next(err);
+        // Consolidate files into req.files array for convenient consumption
+        const allFiles = [];
+        if (req.files) {
+            if (req.files.images) allFiles.push(...req.files.images);
+            if (req.files.image) allFiles.push(...req.files.image);
+        } else if (req.file) {
+            allFiles.push(req.file);
+        }
+        req.uploadedFiles = allFiles;
+        next();
+    });
+};
+
 // Exports
 const upload = serviceUpload;
 upload.serviceUpload = serviceUpload;
+upload.serviceMultiUpload = serviceMultiUpload;
 upload.paymentUpload = paymentUpload;
 upload.payoutUpload = payoutUpload;
 upload.partnerQrUpload = partnerQrUpload;
+upload.chatUpload = chatUpload;
 
 module.exports = upload;

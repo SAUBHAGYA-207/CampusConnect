@@ -9,11 +9,75 @@
 <div class="row">
     <div class="col-lg-7 mb-4">
         <div class="card p-0 overflow-hidden shadow-sm border-0">
-            <% if (service.image) { %>
-                <img src="<%= service.image %>" class="img-fluid w-100" alt="<%= service.title %>" style="max-height: 420px; object-fit: cover;" onerror="this.onerror=null; this.src='/images/banners/banner-teach.jpg';">
+            <% 
+              const serviceImages = (service.images && service.images.length > 0) 
+                ? service.images 
+                : (service.image ? [service.image] : []); 
+            %>
+
+            <% if (serviceImages.length > 0) { %>
+                <!-- Amazon-style Product Carousel & Gallery -->
+                <div class="product-gallery-container position-relative bg-dark overflow-hidden">
+                    <div id="productCarousel" class="carousel slide" data-bs-ride="false" data-bs-touch="true">
+                        <!-- Carousel Items (Swipeable) -->
+                        <div class="carousel-inner" style="background-color: #0b0f19;">
+                            <% serviceImages.forEach((imgUrl, idx) => { %>
+                                <div class="carousel-item <%= idx === 0 ? 'active' : '' %>" style="height: 440px;">
+                                    <img src="<%= imgUrl %>" 
+                                         class="d-block w-100 h-100 product-main-img" 
+                                         alt="<%= service.title %> - Photo <%= idx + 1 %>" 
+                                         style="object-fit: contain; cursor: zoom-in;"
+                                         onclick="openImageLightbox('<%= imgUrl %>')"
+                                         onerror="this.onerror=null; this.src='/images/banners/banner-teach.jpg';">
+                                </div>
+                            <% }) %>
+                        </div>
+
+                        <!-- Carousel Controls & Swipe Indicators -->
+                        <% if (serviceImages.length > 1) { %>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev" style="width: 12%;">
+                                <span class="carousel-control-prev-icon rounded-circle p-3 bg-dark bg-opacity-75 shadow-sm" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next" style="width: 12%;">
+                                <span class="carousel-control-next-icon rounded-circle p-3 bg-dark bg-opacity-75 shadow-sm" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                            
+                            <!-- Floating Photo Counter (Amazon Style e.g. "1 / 4") -->
+                            <div class="position-absolute bottom-0 end-0 m-3 px-3 py-1 rounded-pill bg-dark bg-opacity-75 text-white fw-semibold small shadow-sm" style="backdrop-filter: blur(4px); z-index: 10;">
+                                📷 <span id="carouselCurrentIndex">1</span> / <%= serviceImages.length %>
+                            </div>
+                        <% } %>
+
+                        <!-- Click to Zoom Badge -->
+                        <div class="position-absolute top-0 end-0 m-3 px-2 py-1 rounded bg-dark bg-opacity-75 text-white-50 small" style="font-size: 0.72rem; pointer-events: none;">
+                            🔍 Click to zoom
+                        </div>
+                    </div>
+
+                    <!-- Amazon-style Thumbnail Strip -->
+                    <% if (serviceImages.length > 1) { %>
+                        <div class="thumbnail-strip p-2 bg-light border-top d-flex gap-2 overflow-auto align-items-center" style="scrollbar-width: thin;">
+                            <% serviceImages.forEach((imgUrl, idx) => { %>
+                                <button type="button" 
+                                        class="thumb-btn border rounded-3 p-1 bg-white flex-shrink-0 <%= idx === 0 ? 'thumb-active' : '' %>" 
+                                        data-bs-target="#productCarousel" 
+                                        data-bs-slide-to="<%= idx %>" 
+                                        aria-label="Slide <%= idx + 1 %>"
+                                        style="width: 64px; height: 64px; border: 2px solid <%= idx === 0 ? '#2563eb' : 'transparent' %> !important; cursor: pointer; transition: all 0.2s ease;">
+                                    <img src="<%= imgUrl %>" class="w-100 h-100 rounded-2" style="object-fit: cover;" onerror="this.onerror=null; this.src='/images/banners/banner-teach.jpg';">
+                                </button>
+                            <% }) %>
+                        </div>
+                    <% } %>
+                </div>
             <% } else { %>
-                <div class="w-100 bg-light d-flex justify-content-center align-items-center text-muted" style="height: 280px;">
-                    <span>No Image Provided</span>
+                <div class="w-100 bg-light d-flex justify-content-center align-items-center text-muted" style="height: 320px;">
+                    <div class="text-center">
+                        <div class="display-6 mb-2">🛍️</div>
+                        <span class="fw-semibold">No Image Provided</span>
+                    </div>
                 </div>
             <% } %>
             <div class="card-body p-4 p-md-5">
@@ -690,4 +754,61 @@
             container.classList.add('d-none');
         }
     }
+
+    // Amazon-style Carousel Synchronizer & Lightbox
+    document.addEventListener('DOMContentLoaded', function() {
+        const carouselEl = document.getElementById('productCarousel');
+        const counterEl = document.getElementById('carouselCurrentIndex');
+        const thumbBtns = document.querySelectorAll('.thumb-btn');
+
+        if (carouselEl) {
+            carouselEl.addEventListener('slide.bs.carousel', function(e) {
+                const newIndex = e.to;
+                if (counterEl) {
+                    counterEl.innerText = (newIndex + 1);
+                }
+                thumbBtns.forEach((btn, idx) => {
+                    if (idx === newIndex) {
+                        btn.style.setProperty('border-color', '#2563eb', 'important');
+                        btn.classList.add('shadow-sm');
+                        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    } else {
+                        btn.style.setProperty('border-color', 'transparent', 'important');
+                        btn.classList.remove('shadow-sm');
+                    }
+                });
+            });
+
+            // Hover on thumbnail to switch slide (like Amazon desktop)
+            thumbBtns.forEach((btn, idx) => {
+                btn.addEventListener('mouseenter', function() {
+                    const bsCarousel = bootstrap.Carousel.getOrCreateInstance(carouselEl);
+                    bsCarousel.to(idx);
+                });
+            });
+        }
+    });
+
+    function openImageLightbox(src) {
+        const modalImg = document.getElementById('lightboxModalImg');
+        if (modalImg) {
+            modalImg.src = src;
+            const modal = new bootstrap.Modal(document.getElementById('imageLightboxModal'));
+            modal.show();
+        }
+    }
 </script>
+
+<!-- Product Image Lightbox Modal -->
+<div class="modal fade" id="imageLightboxModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-header border-0 pb-0 justify-content-end">
+                <button type="button" class="btn btn-close btn-close-white shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-2">
+                <img id="lightboxModalImg" src="" alt="Enlarged view" class="img-fluid rounded-4 shadow-lg" style="max-height: 85vh; object-fit: contain;">
+            </div>
+        </div>
+    </div>
+</div>

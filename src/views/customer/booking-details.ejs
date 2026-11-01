@@ -111,15 +111,58 @@
                         <small class="text-muted d-block mt-1">Past messages are view-only.</small>
                     </div>
                 <% } else { %>
-                    <form id="chat-form" class="d-flex align-items-center">
-                        <input type="text" id="chat-input" class="form-control rounded-pill me-2 border-0 shadow-sm px-4 py-2" placeholder="Type a message..." required>
-                        <button type="submit" class="btn btn-success rounded-circle shadow-sm d-flex justify-content-center align-items-center" style="width: 45px; height: 45px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
+                    <!-- Staged Image Preview Bar -->
+                    <div id="chat-staged-container" class="d-none px-2 py-2 mb-2 bg-white rounded-3 border d-flex align-items-center justify-content-between shadow-sm">
+                        <div class="d-flex align-items-center gap-2 overflow-hidden">
+                            <img id="chat-staged-preview" src="" alt="preview" class="rounded border" style="width: 44px; height: 44px; object-fit: cover;">
+                            <div class="small text-truncate" style="max-width: 220px;">
+                                <div id="chat-staged-filename" class="fw-semibold text-truncate">image.jpg</div>
+                                <div id="chat-staged-filesize" class="text-muted" style="font-size: 0.75rem;">120 KB</div>
+                            </div>
+                        </div>
+                        <button type="button" id="chat-remove-staged" class="btn btn-sm btn-outline-secondary rounded-circle" style="width: 28px; height: 28px; padding: 0;" title="Remove image">✕</button>
+                    </div>
+
+                    <form id="chat-form" class="d-flex align-items-center gap-2">
+                        <input type="file" id="chat-file-input" accept="image/*" class="d-none">
+                        <button type="button" id="chat-attach-btn" class="btn btn-light rounded-circle shadow-sm border d-flex justify-content-center align-items-center flex-shrink-0" style="width: 42px; height: 42px;" title="Attach photo">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-paperclip" viewBox="0 0 16 16">
+                                <path d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0V3z"/>
+                            </svg>
+                        </button>
+                        <input type="text" id="chat-input" class="form-control rounded-pill border-0 shadow-sm px-4 py-2" placeholder="Type a message...">
+                        <button type="submit" id="chat-send-btn" class="btn btn-success rounded-circle shadow-sm d-flex justify-content-center align-items-center flex-shrink-0" style="width: 42px; height: 42px;" title="Send">
+                            <svg id="chat-send-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-send-fill" viewBox="0 0 16 16">
                                 <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083l6-15Zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471-.47 1.178Z"/>
                             </svg>
+                            <span id="chat-send-spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
                         </button>
                     </form>
                 <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Lightbox Modal -->
+<div class="modal fade" id="chatLightboxModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark text-white border-0">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-3">
+                <img id="chatLightboxImg" src="" class="img-fluid rounded" style="max-height: 80vh; object-fit: contain;" alt="Enlarged photo">
+            </div>
+            <div class="modal-footer border-0 pt-0 justify-content-between">
+                <span class="text-white-50 small" id="chatLightboxCaption"></span>
+                <button type="button" id="chatLightboxDownloadBtn" class="btn btn-outline-light btn-sm d-inline-flex align-items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                    </svg>
+                    <span>Download</span>
+                </button>
             </div>
         </div>
     </div>
@@ -170,9 +213,71 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatBox = document.getElementById('chat-box');
     const chatForm = document.getElementById('chat-form');
     const chatInput = document.getElementById('chat-input');
+    const attachBtn = document.getElementById('chat-attach-btn');
+    const fileInput = document.getElementById('chat-file-input');
+    const stagedContainer = document.getElementById('chat-staged-container');
+    const stagedPreview = document.getElementById('chat-staged-preview');
+    const stagedFilename = document.getElementById('chat-staged-filename');
+    const stagedFilesize = document.getElementById('chat-staged-filesize');
+    const removeStagedBtn = document.getElementById('chat-remove-staged');
+    const sendBtn = document.getElementById('chat-send-btn');
+    const sendIcon = document.getElementById('chat-send-icon');
+    const sendSpinner = document.getElementById('chat-send-spinner');
+
     const appointmentId = "<%= appointment.id %>";
     const currentUserId = "<%= user.id %>";
     const currentUserRole = "<%= user.role %>";
+
+    let stagedFile = null;
+
+    if (attachBtn && fileInput) {
+        attachBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files && fileInput.files[0]) {
+                stagedFile = fileInput.files[0];
+                stagedFilename.textContent = stagedFile.name;
+                stagedFilesize.textContent = (stagedFile.size / 1024).toFixed(1) + ' KB';
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    stagedPreview.src = e.target.result;
+                    stagedContainer.classList.remove('d-none');
+                };
+                reader.readAsDataURL(stagedFile);
+            }
+        });
+    }
+
+    if (removeStagedBtn) {
+        removeStagedBtn.addEventListener('click', () => {
+            stagedFile = null;
+            if (fileInput) fileInput.value = '';
+            stagedContainer.classList.add('d-none');
+            stagedPreview.src = '';
+        });
+    }
+
+    window.downloadChatImage = function(url) {
+        if (!url) return;
+        const cleanUrl = url.split('?')[0];
+        const filename = cleanUrl.split('/').pop() || 'chat-image.jpg';
+        const downloadUrl = `/api/chat/download/file?url=${encodeURIComponent(url)}&filename=${encodeURIComponent(filename)}`;
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.setAttribute('download', filename);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+
+    window.openChatLightbox = function(url) {
+        const modalEl = document.getElementById('chatLightboxModal');
+        if (!modalEl) return;
+        document.getElementById('chatLightboxImg').src = url;
+        const dlBtn = document.getElementById('chatLightboxDownloadBtn');
+        dlBtn.onclick = () => window.downloadChatImage(url);
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+    };
 
     if (window.socket) {
         window.socket.emit('join_appointment_room', { appointmentId, userId: currentUserId });
@@ -190,15 +295,37 @@ document.addEventListener('DOMContentLoaded', () => {
         const div = document.createElement('div');
         div.className = `message-bubble ${isMine ? 'message-mine' : 'message-theirs'}`;
         
-        const textSpan = document.createElement('span');
-        textSpan.className = 'message-text';
-        textSpan.innerText = msg.text;
+        if (msg.imageUrl) {
+            const imgBox = document.createElement('div');
+            imgBox.className = 'chat-img-box mb-2';
+            imgBox.innerHTML = `
+                <div class="position-relative overflow-hidden rounded-3 border" style="max-width: 280px; background: rgba(0,0,0,0.04);">
+                    <img src="${msg.imageUrl}" class="img-fluid d-block" style="width: 100%; max-height: 260px; object-fit: cover; cursor: pointer;" alt="Chat attachment" onclick="openChatLightbox('${msg.imageUrl}')">
+                    <div class="p-1 px-2 d-flex justify-content-between align-items-center bg-white bg-opacity-75 border-top">
+                        <button type="button" class="btn btn-sm btn-light border py-0 px-2 d-inline-flex align-items-center gap-1 text-dark" style="font-size: 0.75rem;" onclick="downloadChatImage('${msg.imageUrl}')" title="Download Image">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                            </svg>
+                            <span>Download</span>
+                        </button>
+                        <span class="text-muted" style="font-size: 0.7rem;">Click to zoom</span>
+                    </div>
+                </div>
+            `;
+            div.appendChild(imgBox);
+        }
+
+        if (msg.text && msg.text.trim()) {
+            const textSpan = document.createElement('span');
+            textSpan.className = 'message-text d-block';
+            textSpan.innerText = msg.text;
+            div.appendChild(textSpan);
+        }
         
         const timeSpan = document.createElement('span');
         timeSpan.className = 'message-time';
         timeSpan.innerText = timeString;
-
-        div.appendChild(textSpan);
         div.appendChild(timeSpan);
 
         chatBox.appendChild(div);
@@ -208,17 +335,67 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch(`/api/chat/${appointmentId}`)
         .then(r => r.json())
         .then(messages => {
-            if(Array.isArray(messages)) messages.forEach(appendMessage);
+            if (Array.isArray(messages)) messages.forEach(appendMessage);
         });
 
     if (chatForm && chatInput) {
-        chatForm.addEventListener('submit', (e) => {
+        chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const text = chatInput.value.trim();
-            if (text && window.socket) {
-                window.socket.emit('send_message', { appointmentId, userId: currentUserId, role: currentUserRole, text });
-                chatInput.value = '';
+            if (!text && !stagedFile) return;
+
+            let uploadedImageUrl = null;
+
+            if (stagedFile) {
+                if (sendBtn) sendBtn.disabled = true;
+                if (sendIcon) sendIcon.classList.add('d-none');
+                if (sendSpinner) sendSpinner.classList.remove('d-none');
+                try {
+                    const formData = new FormData();
+                    formData.append('image', stagedFile);
+                    const uploadRes = await fetch(`/api/chat/${appointmentId}/upload`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await uploadRes.json();
+                    if (data.success && data.imageUrl) {
+                        uploadedImageUrl = data.imageUrl;
+                    } else {
+                        alert('Failed to upload image: ' + (data.error || 'Unknown error'));
+                        if (sendBtn) sendBtn.disabled = false;
+                        if (sendIcon) sendIcon.classList.remove('d-none');
+                        if (sendSpinner) sendSpinner.classList.add('d-none');
+                        return;
+                    }
+                } catch (err) {
+                    console.error('Chat image upload error:', err);
+                    alert('Error uploading image');
+                    if (sendBtn) sendBtn.disabled = false;
+                    if (sendIcon) sendIcon.classList.remove('d-none');
+                    if (sendSpinner) sendSpinner.classList.add('d-none');
+                    return;
+                }
             }
+
+            if (window.socket) {
+                window.socket.emit('send_message', {
+                    appointmentId,
+                    userId: currentUserId,
+                    role: currentUserRole,
+                    text,
+                    imageUrl: uploadedImageUrl
+                });
+            }
+
+            // Reset input and staged file
+            chatInput.value = '';
+            stagedFile = null;
+            if (fileInput) fileInput.value = '';
+            if (stagedContainer) stagedContainer.classList.add('d-none');
+            if (stagedPreview) stagedPreview.src = '';
+            if (sendBtn) sendBtn.disabled = false;
+            if (sendIcon) sendIcon.classList.remove('d-none');
+            if (sendSpinner) sendSpinner.classList.add('d-none');
         });
     }
 });

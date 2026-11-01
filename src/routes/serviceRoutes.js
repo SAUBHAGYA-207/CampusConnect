@@ -11,10 +11,10 @@ router.get('/dashboard', (req, res) => res.redirect('/dashboard'));
 router.get('/my-services', serviceController.getMyServices);
 
 router.get('/create', serviceController.getCreateService);
-router.post('/create', upload.single('image'), serviceController.postCreateService);
+router.post('/create', upload.serviceMultiUpload, serviceController.postCreateService);
 
 router.get('/:id/edit', serviceController.getEditService);
-router.post('/:id/edit', upload.single('image'), serviceController.postEditService);
+router.post('/:id/edit', upload.serviceMultiUpload, serviceController.postEditService);
 
 router.post('/:id/delete', serviceController.deleteService);
 

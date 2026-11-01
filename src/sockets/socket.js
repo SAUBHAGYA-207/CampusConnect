@@ -30,7 +30,7 @@ module.exports = (io) => {
 
         // Handle sending messages
         socket.on('send_message', async (data) => {
-            const { appointmentId, userId, role, text } = data;
+            const { appointmentId, userId, role, text, imageUrl } = data;
             try {
                 const app = await appointmentService.getAppointmentById(appointmentId);
                 if (app && (app.customerId === userId || app.providerId === userId)) {
@@ -40,7 +40,7 @@ module.exports = (io) => {
                         return;
                     }
 
-                    const msg = await chatService.saveMessage(appointmentId, userId, role, text);
+                    const msg = await chatService.saveMessage(appointmentId, userId, role, text, imageUrl);
                     io.to(`appt_${appointmentId}`).emit('new_message', msg);
                     
                     // Notification to the other party

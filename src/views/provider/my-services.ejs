@@ -18,7 +18,12 @@
     <% } else { %>
         <% services.forEach(service => { %>
             <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card h-100 border-0 shadow-sm position-relative overflow-hidden">
+                    <% if (service.images && service.images.length > 1) { %>
+                        <span class="position-absolute top-0 end-0 m-2 badge bg-dark bg-opacity-75 rounded-pill px-2 py-1 shadow-sm" style="z-index: 2; font-size: 0.72rem;">
+                            📷 <%= service.images.length %> photos
+                        </span>
+                    <% } %>
                     <% if (service.image) { %>
                         <img src="<%= service.image %>" class="card-img-top" alt="<%= service.title %>" style="height: 200px; object-fit: cover; border-radius: 16px 16px 0 0;">
                     <% } else { %>

@@ -1,12 +1,73 @@
 const JsonStorage = require('../storage/jsonStorage');
 const servicesStorage = new JsonStorage('services');
 
+function normalizeService(service) {
+    if (!service) return null;
+    let images = [];
+    if (Array.isArray(service.images)) {
+        images = service.images.filter(Boolean);
+    } else if (typeof service.images === 'string' && service.images.trim()) {
+        try {
+            const parsed = JSON.parse(service.images);
+            if (Array.isArray(parsed)) images = parsed.filter(Boolean);
+            else images = [service.images];
+        } catch (e) {
+            images = [service.images];
+        }
+    }
+
+    if (images.length === 0 && service.image) {
+        if (typeof service.image === 'string' && service.image.trim()) {
+            if (service.image.trim().startsWith('[')) {
+                try {
+                    const parsed = JSON.parse(service.image);
+                    if (Array.isArray(parsed)) images = parsed.filter(Boolean);
+                    else images = [service.image];
+                } catch (e) {
+                    images = [service.image];
+                }
+            } else if (service.image.includes('|||')) {
+                images = service.image.split('|||').map(s => s.trim()).filter(Boolean);
+            } else {
+                images = [service.image];
+            }
+        }
+    }
+
+    const primaryImage = images.length > 0 ? images[0] : (service.image || null);
+
+    return {
+        ...service,
+        images,
+        image: primaryImage
+    };
+}
+
+exports.normalizeService = normalizeService;
+
 exports.createService = async (providerId, serviceData) => {
-    return await servicesStorage.add({
+    let images = [];
+    if (Array.isArray(serviceData.images)) {
+        images = serviceData.images.filter(Boolean);
+    } else if (serviceData.image) {
+        images = [serviceData.image];
+    }
+
+    const primaryImage = images.length > 0 ? images[0] : (serviceData.image || null);
+    const imagePayload = images.length > 1 ? JSON.stringify(images) : primaryImage;
+
+    const payload = {
         ...serviceData,
+        image: imagePayload,
         providerId,
         createdAt: Date.now()
-    });
+    };
+    if (images.length > 0) {
+        payload.images = JSON.stringify(images);
+    }
+
+    const added = await servicesStorage.add(payload);
+    return normalizeService(added);
 };
 
 exports.updateService = async (serviceId, providerId, updates) => {
@@ -14,20 +75,32 @@ exports.updateService = async (serviceId, providerId, updates) => {
     if (!service || service.providerId !== providerId) {
         throw new Error('Service not found or unauthorized');
     }
-    return await servicesStorage.update(serviceId, updates);
+
+    const updatesPayload = { ...updates };
+    if (Array.isArray(updates.images)) {
+        const images = updates.images.filter(Boolean);
+        const primaryImage = images.length > 0 ? images[0] : null;
+        updatesPayload.image = images.length > 1 ? JSON.stringify(images) : primaryImage;
+        updatesPayload.images = JSON.stringify(images);
+    }
+
+    const updated = await servicesStorage.update(serviceId, updatesPayload);
+    return normalizeService(updated);
 };
 
 exports.getServiceById = async (serviceId) => {
-    return await servicesStorage.getById(serviceId);
+    const service = await servicesStorage.getById(serviceId);
+    return normalizeService(service);
 };
 
 exports.getServicesByProvider = async (providerId) => {
     const services = await servicesStorage.getAll();
-    return services.filter(s => s.providerId === providerId);
+    return services.filter(s => s.providerId === providerId).map(normalizeService);
 };
 
 exports.searchServices = async (query = {}, category, minPrice, maxPrice, sortBy) => {
     let services = await servicesStorage.getAll();
+    services = services.map(normalizeService);
 
     if (query.q) {
         const q = query.q.toLowerCase();

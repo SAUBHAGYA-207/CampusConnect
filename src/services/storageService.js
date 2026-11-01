@@ -138,6 +138,19 @@ async function uploadMulterFile(multerFile, subfolder) {
 }
 
 /**
+ * Upload an array of Multer files to Supabase Storage concurrently
+ * @param {Array} multerFiles - Array of req.file objects
+ * @param {string} subfolder - e.g. 'services'
+ * @returns {Promise<Array<string>>}
+ */
+async function uploadMultipleMulterFiles(multerFiles, subfolder) {
+    if (!multerFiles || !Array.isArray(multerFiles) || multerFiles.length === 0) return [];
+    const uploadPromises = multerFiles.map(file => uploadMulterFile(file, subfolder));
+    const results = await Promise.all(uploadPromises);
+    return results.filter(Boolean);
+}
+
+/**
  * Retrieve public URL from path or return unchanged if already a full URL or local fallback
  */
 function getPublicUrl(storagePath) {
@@ -175,6 +188,7 @@ module.exports = {
     ensureBucket,
     uploadToSupabase,
     uploadMulterFile,
+    uploadMultipleMulterFiles,
     getPublicUrl,
     getBannerUrl,
     getMimeType

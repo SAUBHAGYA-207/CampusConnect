@@ -35,14 +35,42 @@
                     </div>
                 </div>
                 <div class="mb-4">
-                    <label for="image" class="form-label text-muted fw-medium small">Update Image (Leave blank to keep current)</label>
-                    <input class="form-control bg-light border-0" type="file" id="image" name="image" accept="image/jpeg, image/png, image/webp">
-                    <% if (service.image) { %>
-                        <div class="mt-3 p-2 bg-light rounded" style="display: inline-block;">
-                            <img src="<%= service.image %>" alt="Current image" style="height: 60px; object-fit: cover; border-radius: 6px;">
-                            <span class="text-muted small ms-2 align-middle">Current image</span>
-                        </div>
-                    <% } %>
+                    <label class="form-label text-muted fw-medium small d-flex justify-content-between align-items-center">
+                        <span>Current Images (<span id="existingCount"><%= (service.images && service.images.length) ? service.images.length : (service.image ? 1 : 0) %></span>)</span>
+                        <small class="text-muted">Click 🗑️ to remove an image</small>
+                    </label>
+                    
+                    <!-- Existing Images Gallery -->
+                    <div id="existingGallery" class="d-flex flex-wrap gap-2 mb-3">
+                        <% const currentImages = (service.images && service.images.length > 0) ? service.images : (service.image ? [service.image] : []); %>
+                        <% if (currentImages.length === 0) { %>
+                            <div class="p-3 bg-light rounded text-muted small w-100 text-center">No images currently uploaded.</div>
+                        <% } else { %>
+                            <% currentImages.forEach((imgUrl, idx) => { %>
+                                <div class="existing-img-card position-relative rounded overflow-hidden shadow-sm border bg-white" style="width: 100px; height: 100px;">
+                                    <img src="<%= imgUrl %>" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='/images/banners/banner-tech.jpg';">
+                                    <input type="hidden" name="existingImages" value="<%= imgUrl %>">
+                                    <% if (idx === 0) { %>
+                                        <span class="position-absolute top-0 start-0 badge bg-primary m-1 px-1 py-0 fw-semibold" style="font-size: 0.65rem;">Cover</span>
+                                    <% } %>
+                                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 p-0 rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 22px; height: 22px; font-size: 0.75rem;" onclick="removeExistingImg(this)" title="Remove Image">✕</button>
+                                </div>
+                            <% }) %>
+                        <% } %>
+                    </div>
+
+                    <label for="images" class="form-label text-muted fw-medium small d-flex justify-content-between align-items-center">
+                        <span>Add More Images (Max 8 total)</span>
+                        <span class="badge bg-light text-primary border" id="newImageCountBadge">0 new</span>
+                    </label>
+                    <input class="form-control bg-light border-0 py-2" type="file" id="images" name="images" multiple accept="image/jpeg, image/png, image/webp" onchange="previewNewImages(this)">
+                    <div class="form-text small text-muted mt-1">
+                        💡 You can select multiple additional images to upload.
+                    </div>
+                    
+                    <!-- New Images Preview -->
+                    <div id="newImagesPreview" class="d-flex flex-wrap gap-2 mt-3" style="display: none !important;">
+                    </div>
                 </div>
                 <div class="d-flex gap-2">
                     <a href="/services/my-services" class="btn btn-light border py-3 flex-grow-1 fw-bold">Cancel</a>
@@ -52,3 +80,63 @@
         </div>
     </div>
 </div>
+
+<script>
+function removeExistingImg(btn) {
+    const card = btn.closest('.existing-img-card');
+    if (card) {
+        card.remove();
+        updateExistingCount();
+    }
+}
+
+function updateExistingCount() {
+    const cards = document.querySelectorAll('.existing-img-card');
+    const badge = document.getElementById('existingCount');
+    if (badge) badge.innerText = cards.length;
+}
+
+function previewNewImages(input) {
+    const container = document.getElementById('newImagesPreview');
+    const badge = document.getElementById('newImageCountBadge');
+    container.innerHTML = '';
+    
+    if (!input.files || input.files.length === 0) {
+        container.style.setProperty('display', 'none', 'important');
+        badge.innerText = '0 new';
+        return;
+    }
+    
+    const count = input.files.length;
+    badge.innerText = `${count} new`;
+    container.style.removeProperty('display');
+    container.style.display = 'flex';
+    
+    Array.from(input.files).forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const card = document.createElement('div');
+            card.className = 'position-relative rounded overflow-hidden shadow-sm border bg-white';
+            card.style.width = '100px';
+            card.style.height = '100px';
+            
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            
+            card.appendChild(img);
+            
+            const newBadge = document.createElement('span');
+            newBadge.className = 'position-absolute top-0 start-0 badge bg-success m-1 px-1 py-0 fw-semibold';
+            newBadge.style.fontSize = '0.65rem';
+            newBadge.innerText = 'New';
+            card.appendChild(newBadge);
+            
+            container.appendChild(card);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+</script>

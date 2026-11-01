@@ -3,19 +3,48 @@ const messagesStorage = new JsonStorage('messages');
 const adminMessagesStorage = new JsonStorage('admin_messages');
 const usersStorage = new JsonStorage('users');
 
-exports.saveMessage = async (appointmentId, senderId, senderRole, text) => {
-    return await messagesStorage.add({
+exports.saveMessage = async (appointmentId, senderId, senderRole, text, imageUrl) => {
+    let payloadText = text || '';
+    if (imageUrl) {
+        payloadText = `[IMAGE]${imageUrl}[/IMAGE]${payloadText ? ' ' + payloadText : ''}`;
+    }
+
+    const saved = await messagesStorage.add({
         appointmentId,
         senderId,
         senderRole,
-        text,
+        text: payloadText,
         timestamp: Date.now()
     });
+
+    return {
+        ...saved,
+        text: text || '',
+        imageUrl: imageUrl || null
+    };
 };
 
 exports.getMessagesForAppointment = async (appointmentId) => {
     const all = await messagesStorage.getAll();
-    return all.filter(m => m.appointmentId === appointmentId).sort((a, b) => a.timestamp - b.timestamp);
+    return all
+        .filter(m => m.appointmentId === appointmentId)
+        .map(m => {
+            let text = m.text || '';
+            let imageUrl = m.imageUrl || null;
+            if (text && text.includes('[IMAGE]')) {
+                const match = text.match(/\[IMAGE\](.*?)\[\/IMAGE\]/);
+                if (match) {
+                    imageUrl = match[1];
+                    text = text.replace(match[0], '').trim();
+                }
+            }
+            return {
+                ...m,
+                text,
+                imageUrl
+            };
+        })
+        .sort((a, b) => a.timestamp - b.timestamp);
 };
 
 // Admin direct communication with each user/partner
