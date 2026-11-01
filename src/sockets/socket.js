@@ -22,9 +22,26 @@ module.exports = (io) => {
                 if (app && (app.customerId === userId || app.providerId === userId)) {
                     socket.join(`appt_${appointmentId}`);
                     console.log(`Socket ${socket.id} joined appt_${appointmentId}`);
+
+                    // Mark past messages from the other participant as read
+                    await chatService.markMessagesAsRead(appointmentId, userId);
+                    io.to(`appt_${appointmentId}`).emit('messages_read', { appointmentId, readerId: userId });
                 }
             } catch (err) {
                 console.error(err);
+            }
+        });
+
+        // Mark appointment messages as read (e.g. while actively viewing chat)
+        socket.on('mark_read', async (data) => {
+            const { appointmentId, userId } = data;
+            if (appointmentId && userId) {
+                try {
+                    await chatService.markMessagesAsRead(appointmentId, userId);
+                    io.to(`appt_${appointmentId}`).emit('messages_read', { appointmentId, readerId: userId });
+                } catch (err) {
+                    console.error('Error marking messages read:', err);
+                }
             }
         });
 
@@ -40,11 +57,27 @@ module.exports = (io) => {
                         return;
                     }
 
-                    const msg = await chatService.saveMessage(appointmentId, userId, role, text, imageUrl);
+                    const receiverId = role === 'provider' ? app.customerId : app.providerId;
+
+                    // Check if the other party is actively in the appointment chat room
+                    const room = io.sockets.adapter.rooms.get(`appt_${appointmentId}`);
+                    const isRecipientInRoom = room && room.size > 1;
+
+                    // Check if recipient is connected anywhere on site
+                    const userRoom = io.sockets.adapter.rooms.get(`user_${receiverId}`);
+                    const isRecipientOnline = userRoom && userRoom.size > 0;
+
+                    let initialStatus = 'sent';
+                    if (isRecipientInRoom) {
+                        initialStatus = 'read';
+                    } else if (isRecipientOnline) {
+                        initialStatus = 'delivered';
+                    }
+
+                    const msg = await chatService.saveMessage(appointmentId, userId, role, text, imageUrl, initialStatus);
                     io.to(`appt_${appointmentId}`).emit('new_message', msg);
                     
                     // Notification to the other party
-                    const receiverId = role === 'provider' ? app.customerId : app.providerId;
                     await notificationService.createNotification(
                         receiverId, 
                         `New message regarding your appointment for ${app.date}`,
@@ -57,11 +90,28 @@ module.exports = (io) => {
         });
 
         // Admin Direct Chat Handlers
-        socket.on('join_admin_chat', (data) => {
-            const { targetUserId } = data;
+        socket.on('join_admin_chat', async (data) => {
+            const { targetUserId, readerRole } = data;
             if (targetUserId) {
                 socket.join(`admin_chat_${targetUserId}`);
                 console.log(`Socket ${socket.id} joined admin_chat_${targetUserId}`);
+
+                if (readerRole) {
+                    await chatService.markAdminMessagesAsRead(targetUserId, readerRole);
+                    io.to(`admin_chat_${targetUserId}`).emit('admin_messages_read', { targetUserId, readerRole });
+                }
+            }
+        });
+
+        socket.on('admin_mark_read', async (data) => {
+            const { targetUserId, readerRole } = data;
+            if (targetUserId && readerRole) {
+                try {
+                    await chatService.markAdminMessagesAsRead(targetUserId, readerRole);
+                    io.to(`admin_chat_${targetUserId}`).emit('admin_messages_read', { targetUserId, readerRole });
+                } catch (err) {
+                    console.error('Error marking admin messages read:', err);
+                }
             }
         });
 
@@ -70,7 +120,11 @@ module.exports = (io) => {
             if (!targetUserId || !text) return;
 
             try {
-                const msg = await chatService.saveAdminMessage(targetUserId, senderId, senderRole, text, senderName, senderEmail);
+                const room = io.sockets.adapter.rooms.get(`admin_chat_${targetUserId}`);
+                const isRecipientInRoom = room && room.size > 1;
+                const initialStatus = isRecipientInRoom ? 'read' : 'sent';
+
+                const msg = await chatService.saveAdminMessage(targetUserId, senderId, senderRole, text, senderName, senderEmail, initialStatus);
                 io.to(`admin_chat_${targetUserId}`).emit('new_admin_message', msg);
 
                 // If sent by admin, notify user; if sent by user, notify admin

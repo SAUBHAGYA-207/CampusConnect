@@ -245,6 +245,14 @@
         margin-top: 10px;
         margin-left: 10px;
         line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+    }
+    .chat-tick {
+        display: inline-block;
+        vertical-align: middle;
+        flex-shrink: 0;
     }
 </style>
 
@@ -319,11 +327,35 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.show();
     };
 
+    function getTickSvg(status) {
+        if (status === 'read') {
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none" class="chat-tick tick-read" title="Read"><path d="M15.01 3.316l-7.98 7.98a.5.5 0 0 1-.707 0L2.47 7.443a.5.5 0 1 1 .707-.707l3.48 3.48 7.646-7.646a.5.5 0 0 1 .707.746z" fill="#53bdeb"/><path d="M11.51 3.316l-7.98 7.98a.5.5 0 0 1-.707 0L.17 8.643a.5.5 0 1 1 .707-.707l2.313 2.313 7.613-7.613a.5.5 0 0 1 .707.68z" fill="#53bdeb"/></svg>`;
+        } else if (status === 'delivered') {
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none" class="chat-tick tick-delivered" title="Delivered"><path d="M15.01 3.316l-7.98 7.98a.5.5 0 0 1-.707 0L2.47 7.443a.5.5 0 1 1 .707-.707l3.48 3.48 7.646-7.646a.5.5 0 0 1 .707.746z" fill="#8696a0"/><path d="M11.51 3.316l-7.98 7.98a.5.5 0 0 1-.707 0L.17 8.643a.5.5 0 1 1 .707-.707l2.313 2.313 7.613-7.613a.5.5 0 0 1 .707.68z" fill="#8696a0"/></svg>`;
+        } else {
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="15" viewBox="0 0 16 15" fill="none" class="chat-tick tick-sent" title="Sent"><path d="M13.5 3.5l-7.5 7.5a.5.5 0 0 1-.707 0l-3.5-3.5a.5.5 0 1 1 .707-.707L5.646 9.94l7.147-7.147a.5.5 0 0 1 .707.707z" fill="#8696a0"/></svg>`;
+        }
+    }
+
     if (window.socket) {
         window.socket.emit('join_appointment_room', { appointmentId, userId: currentUserId });
 
         window.socket.on('new_message', (msg) => {
             appendMessage(msg);
+            // If the other party sent this message, acknowledge as read immediately
+            if (msg.senderId !== currentUserId) {
+                window.socket.emit('mark_read', { appointmentId, userId: currentUserId });
+            }
+        });
+
+        window.socket.on('messages_read', (data) => {
+            if (data && data.appointmentId === appointmentId && data.readerId !== currentUserId) {
+                // Update all sent/delivered ticks on my messages to blue double ticks
+                document.querySelectorAll('.message-mine .tick-indicator').forEach(el => {
+                    el.setAttribute('data-status', 'read');
+                    el.innerHTML = getTickSvg('read');
+                });
+            }
         });
     }
 
@@ -365,7 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const timeSpan = document.createElement('span');
         timeSpan.className = 'message-time';
-        timeSpan.innerText = timeString;
+        timeSpan.innerHTML = `<span>${timeString}</span>${isMine ? `<span class="tick-indicator" data-status="${msg.status || 'sent'}">${getTickSvg(msg.status || 'sent')}</span>` : ''}`;
         div.appendChild(timeSpan);
 
         chatBox.appendChild(div);

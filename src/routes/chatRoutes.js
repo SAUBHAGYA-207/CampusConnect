@@ -18,8 +18,20 @@ router.get('/:appointmentId', requireAuth, async (req, res, next) => {
             return res.status(403).json({ error: 'Forbidden' });
         }
         
+        await chatService.markMessagesAsRead(appointmentId, req.session.user.id);
         const messages = await chatService.getMessagesForAppointment(appointmentId);
         res.json(messages);
+    } catch (error) {
+        next(error);
+    }
+});
+
+// Mark messages as read endpoint
+router.post('/:appointmentId/read', requireAuth, async (req, res, next) => {
+    try {
+        const { appointmentId } = req.params;
+        await chatService.markMessagesAsRead(appointmentId, req.session.user.id);
+        res.json({ success: true });
     } catch (error) {
         next(error);
     }

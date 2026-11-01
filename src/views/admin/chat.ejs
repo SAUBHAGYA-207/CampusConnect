@@ -149,6 +149,11 @@
         align-self: flex-start;
         border-top-left-radius: 2px;
     }
+    .chat-tick {
+        display: inline-block;
+        vertical-align: middle;
+        flex-shrink: 0;
+    }
 </style>
 
 <script>
@@ -178,6 +183,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentAdminEmail = "<%= typeof adminUser !== 'undefined' && adminUser ? adminUser.email : 'admin@campusconnect.com' %>";
 
     const renderedMsgIds = new Set();
+
+    function getTickSvg(status) {
+        if (status === 'read') {
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none" class="chat-tick tick-read" title="Read"><path d="M15.01 3.316l-7.98 7.98a.5.5 0 0 1-.707 0L2.47 7.443a.5.5 0 1 1 .707-.707l3.48 3.48 7.646-7.646a.5.5 0 0 1 .707.746z" fill="#53bdeb"/><path d="M11.51 3.316l-7.98 7.98a.5.5 0 0 1-.707 0L.17 8.643a.5.5 0 1 1 .707-.707l2.313 2.313 7.613-7.613a.5.5 0 0 1 .707.68z" fill="#53bdeb"/></svg>`;
+        } else if (status === 'delivered') {
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="15" viewBox="0 0 16 15" fill="none" class="chat-tick tick-delivered" title="Delivered"><path d="M15.01 3.316l-7.98 7.98a.5.5 0 0 1-.707 0L2.47 7.443a.5.5 0 1 1 .707-.707l3.48 3.48 7.646-7.646a.5.5 0 0 1 .707.746z" fill="#8696a0"/><path d="M11.51 3.316l-7.98 7.98a.5.5 0 0 1-.707 0L.17 8.643a.5.5 0 1 1 .707-.707l2.313 2.313 7.613-7.613a.5.5 0 0 1 .707.68z" fill="#8696a0"/></svg>`;
+        } else {
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="15" viewBox="0 0 16 15" fill="none" class="chat-tick tick-sent" title="Sent"><path d="M13.5 3.5l-7.5 7.5a.5.5 0 0 1-.707 0l-3.5-3.5a.5.5 0 1 1 .707-.707L5.646 9.94l7.147-7.147a.5.5 0 0 1 .707.707z" fill="#8696a0"/></svg>`;
+        }
+    }
 
     function appendMessage(msg) {
         if (!msg || !msg.text) return;
@@ -210,9 +225,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const timeSpan = document.createElement('span');
-        timeSpan.className = 'text-muted';
+        timeSpan.className = 'text-muted d-inline-flex align-items-center gap-1';
         timeSpan.style.fontSize = '0.65rem';
-        timeSpan.innerText = timeStr;
+        timeSpan.innerHTML = `<span>${timeStr}</span>${isAdmin ? `<span class="tick-indicator" data-status="${msg.status || 'sent'}">${getTickSvg(msg.status || 'sent')}</span>` : ''}`;
 
         senderLabel.appendChild(labelText);
         senderLabel.appendChild(timeSpan);
@@ -231,11 +246,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // Connect socket if present
     function setupSocket() {
         if (window.socket) {
-            window.socket.emit('join_admin_chat', { targetUserId });
+            window.socket.emit('join_admin_chat', { targetUserId, readerRole: 'admin' });
             window.socket.off('new_admin_message');
             window.socket.on('new_admin_message', (msg) => {
                 if (msg.targetUserId === targetUserId) {
                     appendMessage(msg);
+                    if (msg.senderRole !== 'admin') {
+                        window.socket.emit('admin_mark_read', { targetUserId, readerRole: 'admin' });
+                    }
+                }
+            });
+            window.socket.off('admin_messages_read');
+            window.socket.on('admin_messages_read', (data) => {
+                if (data && data.targetUserId === targetUserId && data.readerRole !== 'admin') {
+                    document.querySelectorAll('.msg-admin .tick-indicator').forEach(el => {
+                        el.setAttribute('data-status', 'read');
+                        el.innerHTML = getTickSvg('read');
+                    });
                 }
             });
         }

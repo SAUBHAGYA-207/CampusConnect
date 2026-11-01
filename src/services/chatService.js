@@ -3,10 +3,13 @@ const messagesStorage = new JsonStorage('messages');
 const adminMessagesStorage = new JsonStorage('admin_messages');
 const usersStorage = new JsonStorage('users');
 
-exports.saveMessage = async (appointmentId, senderId, senderRole, text, imageUrl) => {
+exports.saveMessage = async (appointmentId, senderId, senderRole, text, imageUrl, status = 'sent') => {
     let payloadText = text || '';
     if (imageUrl) {
         payloadText = `[IMAGE]${imageUrl}[/IMAGE]${payloadText ? ' ' + payloadText : ''}`;
+    }
+    if (status && status !== 'sent') {
+        payloadText = `[STATUS:${status}]${payloadText}`;
     }
 
     const saved = await messagesStorage.add({
@@ -20,7 +23,8 @@ exports.saveMessage = async (appointmentId, senderId, senderRole, text, imageUrl
     return {
         ...saved,
         text: text || '',
-        imageUrl: imageUrl || null
+        imageUrl: imageUrl || null,
+        status: status || 'sent'
     };
 };
 
@@ -31,6 +35,16 @@ exports.getMessagesForAppointment = async (appointmentId) => {
         .map(m => {
             let text = m.text || '';
             let imageUrl = m.imageUrl || null;
+            let status = 'sent';
+
+            if (text && text.includes('[STATUS:')) {
+                const matchStatus = text.match(/\[STATUS:(sent|delivered|read)\]/);
+                if (matchStatus) {
+                    status = matchStatus[1];
+                    text = text.replace(matchStatus[0], '');
+                }
+            }
+
             if (text && text.includes('[IMAGE]')) {
                 const match = text.match(/\[IMAGE\](.*?)\[\/IMAGE\]/);
                 if (match) {
@@ -38,28 +52,63 @@ exports.getMessagesForAppointment = async (appointmentId) => {
                     text = text.replace(match[0], '').trim();
                 }
             }
+
             return {
                 ...m,
                 text,
-                imageUrl
+                imageUrl,
+                status
             };
         })
         .sort((a, b) => a.timestamp - b.timestamp);
 };
 
+exports.markMessagesAsRead = async (appointmentId, readerId) => {
+    try {
+        const all = await messagesStorage.getAll();
+        const unreadMessages = all.filter(m => m.appointmentId === appointmentId && m.senderId !== readerId);
+        
+        for (const m of unreadMessages) {
+            let text = m.text || '';
+            let currentStatus = 'sent';
+            if (text.includes('[STATUS:')) {
+                const matchStatus = text.match(/\[STATUS:(sent|delivered|read)\]/);
+                if (matchStatus) currentStatus = matchStatus[1];
+            }
+            if (currentStatus !== 'read') {
+                let newText = text;
+                if (newText.includes('[STATUS:')) {
+                    newText = newText.replace(/\[STATUS:(sent|delivered|read)\]/, '[STATUS:read]');
+                } else {
+                    newText = `[STATUS:read]${newText}`;
+                }
+                await messagesStorage.update(m.id, { text: newText });
+            }
+        }
+        return true;
+    } catch (err) {
+        console.warn('Could not update messages read status:', err.message);
+        return false;
+    }
+};
+
 // Admin direct communication with each user/partner
-exports.saveAdminMessage = async (targetUserId, senderId, senderRole, text, senderName, senderEmail) => {
+exports.saveAdminMessage = async (targetUserId, senderId, senderRole, text, senderName, senderEmail, status = 'sent') => {
     // In Supabase admin_messages table: id, partnerId, senderId, senderRole, text, timestamp
-    // When senderRole is admin, persist the admin's email or name into senderId for zero-migration attribution
     const effectiveSenderId = (senderRole === 'admin' && (senderEmail || senderName))
         ? (senderEmail || senderName)
         : senderId;
+
+    let payloadText = text || '';
+    if (status && status !== 'sent') {
+        payloadText = `[STATUS:${status}]${payloadText}`;
+    }
 
     const payload = {
         partnerId: targetUserId,
         senderId: effectiveSenderId,
         senderRole,
-        text,
+        text: payloadText,
         timestamp: Date.now()
     };
 
@@ -73,7 +122,8 @@ exports.saveAdminMessage = async (targetUserId, senderId, senderRole, text, send
         senderRole: saved.senderRole,
         senderName: senderName || (senderRole === 'admin' ? (saved.senderId || 'Super Admin') : 'User'),
         senderEmail: senderEmail || (senderRole === 'admin' && saved.senderId && saved.senderId.includes('@') ? saved.senderId : ''),
-        text: saved.text,
+        text: text || '',
+        status: status || 'sent',
         timestamp: saved.timestamp
     };
 };
@@ -86,15 +136,59 @@ exports.getAdminMessagesForUser = async (targetUserId) => {
             const isEmail = m.senderId && m.senderId.includes('@');
             const adminEmail = m.senderEmail || (m.senderRole === 'admin' && isEmail ? m.senderId : '');
             const adminName = m.senderName || (m.senderRole === 'admin' ? (m.senderId || 'Super Admin') : 'User');
+            let text = m.text || '';
+            let status = 'sent';
+
+            if (text && text.includes('[STATUS:')) {
+                const matchStatus = text.match(/\[STATUS:(sent|delivered|read)\]/);
+                if (matchStatus) {
+                    status = matchStatus[1];
+                    text = text.replace(matchStatus[0], '');
+                }
+            }
+
             return {
                 ...m,
                 targetUserId: m.targetUserId || m.partnerId,
                 partnerId: m.partnerId || m.targetUserId,
                 senderEmail: adminEmail,
-                senderName: adminName
+                senderName: adminName,
+                text,
+                status
             };
         })
         .sort((a, b) => a.timestamp - b.timestamp);
+};
+
+exports.markAdminMessagesAsRead = async (targetUserId, readerRole) => {
+    try {
+        const all = await adminMessagesStorage.getAll();
+        const unread = all.filter(m => 
+            (m.targetUserId === targetUserId || m.partnerId === targetUserId) && 
+            m.senderRole !== readerRole
+        );
+        for (const m of unread) {
+            let text = m.text || '';
+            let currentStatus = 'sent';
+            if (text.includes('[STATUS:')) {
+                const match = text.match(/\[STATUS:(sent|delivered|read)\]/);
+                if (match) currentStatus = match[1];
+            }
+            if (currentStatus !== 'read') {
+                let newText = text;
+                if (newText.includes('[STATUS:')) {
+                    newText = newText.replace(/\[STATUS:(sent|delivered|read)\]/, '[STATUS:read]');
+                } else {
+                    newText = `[STATUS:read]${newText}`;
+                }
+                await adminMessagesStorage.update(m.id, { text: newText });
+            }
+        }
+        return true;
+    } catch (err) {
+        console.warn('Could not update admin messages read status:', err.message);
+        return false;
+    }
 };
 
 exports.getAdminChatUsers = async () => {
