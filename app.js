@@ -16,6 +16,8 @@ const storageService = require('./src/services/storageService');
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src', 'views'));
