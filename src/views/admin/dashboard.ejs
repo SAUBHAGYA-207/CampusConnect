@@ -175,7 +175,9 @@
                                                 <div class="small font-monospace text-muted mt-1">UTR: <%= p.adminTransactionId %></div>
                                             <% } %>
                                             <% if (p.adminPaymentProof) { %>
-                                                <a href="<%= p.adminPaymentProof %>" target="_blank" class="small text-success d-block">View Admin Receipt</a>
+                                                <button type="button" class="btn btn-link p-0 text-decoration-none small text-success d-block text-start mt-1" onclick="openImageLightbox('<%= p.adminPaymentProof %>', 'Admin Payout Receipt - Payout #<%= p.id %>')">
+                                                    📷 View Admin Receipt
+                                                </button>
                                             <% } %>
                                         <% } else { %>
                                             <span class="badge bg-warning text-dark px-3 py-2">Pending Review</span>
@@ -314,9 +316,9 @@
                                     </td>
                                     <td class="px-3 py-3">
                                         <% if (app.paymentScreenshot) { %>
-                                            <a href="<%= app.paymentScreenshot %>" target="_blank" class="small text-decoration-none">
+                                            <button type="button" class="btn btn-link p-0 text-decoration-none small text-primary text-start" onclick="openImageLightbox('<%= app.paymentScreenshot %>', 'Customer Payment Proof - Booking #<%= app.id %>')">
                                                 📷 Proof (<%= app.paymentStatus %>)
-                                            </a>
+                                            </button>
                                             <% if (app.transactionId) { %>
                                                 <div class="text-muted small font-monospace"><%= app.transactionId %></div>
                                             <% } %>

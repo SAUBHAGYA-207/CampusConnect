@@ -285,9 +285,9 @@
                                                     <span class="font-monospace text-dark fw-bold me-2">UTR: <%= p.adminTransactionId %></span>
                                                 <% } %>
                                                 <% if (p.adminPaymentProof) { %>
-                                                    <a href="<%= p.adminPaymentProof %>" target="_blank" class="badge bg-light text-primary border text-decoration-none">
+                                                    <button type="button" class="badge bg-light text-primary border text-decoration-none" onclick="openImageLightbox('<%= p.adminPaymentProof %>', 'Admin Settlement Receipt - Payout #<%= p.id %>')">
                                                         📷 View Admin Receipt
-                                                    </a>
+                                                    </button>
                                                 <% } %>
                                             <% } else { %>
                                                 <span class="text-muted">Awaiting Admin processing</span>

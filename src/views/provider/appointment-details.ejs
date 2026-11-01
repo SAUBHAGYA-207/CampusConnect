@@ -55,9 +55,9 @@
                                     <td class="px-3 py-3">
                                         <% if (app.paymentScreenshot) { %>
                                             <div class="d-flex align-items-center gap-2">
-                                                <a href="<%= app.paymentScreenshot %>" target="_blank" title="Click to view full screenshot">
-                                                    <img src="<%= app.paymentScreenshot %>" alt="Proof" class="rounded border shadow-sm" style="width: 48px; height: 48px; object-fit: cover;">
-                                                </a>
+                                                <button type="button" class="btn p-0 border-0 bg-transparent" onclick="openImageLightbox('<%= app.paymentScreenshot %>', 'Payment Proof - Booking #<%= app.id %>')" title="Click to view & download screenshot">
+                                                    <img src="<%= app.paymentScreenshot %>" alt="Proof" class="rounded border shadow-sm" style="width: 48px; height: 48px; object-fit: cover; cursor: pointer;">
+                                                </button>
                                                 <div>
                                                     <span class="badge bg-<%= app.paymentStatus === 'verified' ? 'success' : app.paymentStatus === 'rejected' ? 'danger' : 'warning text-dark' %>">
                                                         <%= app.paymentStatus === 'verified' ? 'Verified' : app.paymentStatus === 'rejected' ? 'Rejected' : 'Under Review' %>
@@ -65,6 +65,9 @@
                                                     <% if (app.transactionId) { %>
                                                         <div class="text-muted font-monospace" style="font-size: 0.75rem;">UTR: <%= app.transactionId %></div>
                                                     <% } %>
+                                                    <button type="button" class="btn btn-link p-0 text-decoration-none small text-primary d-block mt-1" style="font-size: 0.72rem;" onclick="openImageLightbox('<%= app.paymentScreenshot %>', 'Payment Proof - Booking #<%= app.id %>')">
+                                                        🔍 View & Download
+                                                    </button>
                                                 </div>
                                             </div>
                                         <% } else { %>

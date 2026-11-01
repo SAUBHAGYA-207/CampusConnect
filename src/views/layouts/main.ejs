@@ -460,5 +460,62 @@
             });
         </script>
     <% } %>
+
+    <!-- Global Image / Payment Proof Lightbox Modal -->
+    <div class="modal fade" id="globalImageLightboxModal" tabindex="-1" aria-hidden="true" style="z-index: 1065;">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark text-white border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+                <div class="modal-header border-0 pb-0 pt-3 px-3 d-flex justify-content-between align-items-center">
+                    <span class="text-white-50 small fw-semibold" id="globalLightboxCaption">Payment Proof / Receipt</span>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-3">
+                    <img id="globalLightboxImg" src="" class="img-fluid rounded shadow-sm" style="max-height: 75vh; max-width: 100%; object-fit: contain; background: rgba(0,0,0,0.2);" alt="Enlarged preview">
+                </div>
+                <div class="modal-footer border-0 pt-0 pb-3 px-3 justify-content-between">
+                    <span class="text-white-50" style="font-size: 0.75rem;">CampusConnect Secure Media Viewer</span>
+                    <button type="button" id="globalLightboxDownloadBtn" class="btn btn-outline-light btn-sm d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        <span>Download</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.downloadMediaImage = function(url, filename) {
+            if (!url) return;
+            const cleanUrl = url.split('?')[0];
+            const defaultName = filename || cleanUrl.split('/').pop() || 'payment-proof.jpg';
+            const downloadUrl = `/api/chat/download/file?url=${encodeURIComponent(url)}&filename=${encodeURIComponent(defaultName)}`;
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.setAttribute('download', defaultName);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        };
+
+        window.openImageLightbox = function(url, caption) {
+            if (!url) return;
+            const modalEl = document.getElementById('globalImageLightboxModal');
+            if (!modalEl) return;
+            const imgEl = document.getElementById('globalLightboxImg');
+            const capEl = document.getElementById('globalLightboxCaption');
+            const dlBtn = document.getElementById('globalLightboxDownloadBtn');
+            if (imgEl) imgEl.src = url;
+            if (capEl) capEl.textContent = caption || 'Payment Proof / Receipt';
+            if (dlBtn) dlBtn.onclick = () => window.downloadMediaImage(url);
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+        };
+
+        window.openChatLightbox = window.openImageLightbox;
+        window.downloadChatImage = window.downloadMediaImage;
+    </script>
 </body>
 </html>
