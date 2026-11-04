@@ -114,6 +114,39 @@
                     <span class="fst-italic text-secondary"><%= appointment.notes || 'No specific note provided.' %></span>
                 </div>
 
+                <!-- Customer Deliverable / Reference Media Card -->
+                <% if (appointment.referenceMedia) { %>
+                    <div class="p-3 mb-4 rounded-3 border" style="background-color: #F8FAFC; border-color: #E2E8F0 !important;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="d-flex align-items-center gap-1 text-dark small fw-bold">
+                                <span>📸</span> Customer Reference / Deliverable File
+                            </span>
+                            <span class="badge bg-primary text-white" style="font-size: 0.68rem;">Customer Upload</span>
+                        </div>
+                        <div class="mt-2">
+                            <% if (appointment.referenceMediaType === 'video' || appointment.referenceMedia.match(/\.(mp4|mov|webm|avi)$/i)) { %>
+                                <video controls class="w-100 rounded border shadow-sm" style="max-height: 200px;">
+                                    <source src="<%= appointment.referenceMedia %>">
+                                    Your browser does not support the video tag.
+                                </video>
+                            <% } else { %>
+                                <div class="position-relative d-inline-block rounded border overflow-hidden shadow-sm" style="cursor: pointer; background: #fff;" onclick="openImageLightbox('<%= appointment.referenceMedia %>', 'Customer Reference Media - Booking #<%= appointment.id %>')">
+                                    <img src="<%= appointment.referenceMedia %>" alt="Customer Reference Media" class="img-fluid d-block" style="max-height: 160px; object-fit: contain;">
+                                    <div class="p-1 px-2 d-flex justify-content-between align-items-center bg-white bg-opacity-75 border-top">
+                                        <button type="button" class="btn btn-sm btn-light border py-0 px-2 d-inline-flex align-items-center gap-1 text-dark" style="font-size: 0.75rem;" onclick="event.stopPropagation(); downloadMediaImage('<%= appointment.referenceMedia %>', 'customer-reference-<%= appointment.id %>')">
+                                            <span>Download</span>
+                                        </button>
+                                        <span class="text-muted" style="font-size: 0.7rem;">🔍 Click to enlarge</span>
+                                    </div>
+                                </div>
+                            <% } %>
+                        </div>
+                        <small class="text-muted d-block mt-2" style="font-size: 0.75rem;">
+                            💬 You can communicate with the customer and share draft versions via the live chat on the right.
+                        </small>
+                    </div>
+                <% } %>
+
                 <!-- Booking State Actions -->
                 <% if (appointment.status === 'pending') { %>
                     <form action="/appointments/<%= appointment.id %>/status" method="POST" class="d-inline">

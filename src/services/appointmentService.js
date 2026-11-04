@@ -4,7 +4,39 @@ const servicesStorage = new JsonStorage('services');
 const { createNotification } = require('./notificationService');
 const { sendStatusEmail } = require('./emailService');
 
-exports.createAppointment = async (customerId, serviceId, date, time, notes, paymentData = {}) => {
+function normalizeAppointment(appt) {
+    if (!appt) return null;
+    let referenceMedia = null;
+    let referenceMediaType = null;
+    let referenceMediaName = null;
+    let cleanNotes = appt.notes || '';
+
+    if (cleanNotes && cleanNotes.includes('<!--CC_REF_MEDIA:')) {
+        try {
+            const match = cleanNotes.match(/<!--CC_REF_MEDIA:([\s\S]*?)-->/);
+            if (match && match[1]) {
+                const parsed = JSON.parse(match[1]);
+                referenceMedia = parsed.url;
+                referenceMediaType = parsed.type;
+                referenceMediaName = parsed.name;
+                cleanNotes = cleanNotes.replace(/<!--CC_REF_MEDIA:[\s\S]*?-->/g, '').trim();
+            }
+        } catch (e) {}
+    }
+
+    return {
+        ...appt,
+        referenceMedia,
+        referenceMediaType: referenceMediaType || 'image',
+        referenceMediaName: referenceMediaName || 'Reference Media',
+        notes: cleanNotes,
+        rawNotes: appt.notes || ''
+    };
+}
+
+exports.normalizeAppointment = normalizeAppointment;
+
+exports.createAppointment = async (customerId, serviceId, date, time, notes, paymentData = {}, referenceData = {}) => {
     const service = await servicesStorage.getById(serviceId);
     if (!service) throw new Error('Service not found');
 
@@ -23,13 +55,23 @@ exports.createAppointment = async (customerId, serviceId, date, time, notes, pay
     const providerEarnings = parseFloat((price * 0.90).toFixed(2));
     const platformFee = parseFloat((price * 0.10).toFixed(2));
 
+    let finalNotes = (notes || '').trim();
+    if (referenceData && referenceData.referenceMediaUrl) {
+        const refTag = `\n\n<!--CC_REF_MEDIA:${JSON.stringify({
+            url: referenceData.referenceMediaUrl,
+            type: referenceData.referenceMediaType || 'image',
+            name: referenceData.referenceMediaName || 'Reference Media'
+        })}-->`;
+        finalNotes += refTag;
+    }
+
     const newAppointment = await appointmentsStorage.add({
         customerId,
         providerId: service.providerId,
         serviceId,
         date,
         time,
-        notes: notes || '',
+        notes: finalNotes,
         status: 'pending',
         paymentAmount: price,
         providerEarnings: providerEarnings,
@@ -42,16 +84,18 @@ exports.createAppointment = async (customerId, serviceId, date, time, notes, pay
 
     // Notify provider about the new booking and payment proof
     try {
+        const hasMedia = referenceData && referenceData.referenceMediaUrl;
+        const mediaNote = hasMedia ? ' with reference deliverables attached' : '';
         await createNotification(
             service.providerId,
-            `New booking request with payment proof received for "${service.title}" (₹${price})`,
+            `New booking request${mediaNote} for "${service.title}" (₹${price})`,
             `/appointments/provider/${newAppointment.id}`
         );
     } catch (e) {
         console.error('Error creating notification:', e);
     }
 
-    return newAppointment;
+    return normalizeAppointment(newAppointment);
 };
 
 exports.updatePaymentStatus = async (appointmentId, providerId, newPaymentStatus) => {
@@ -136,14 +180,15 @@ exports.updateStatus = async (appointmentId, userId, role, newStatus) => {
 
 exports.getAppointmentsByCustomer = async (customerId) => {
     const apps = await appointmentsStorage.getAll();
-    return apps.filter(a => a.customerId === customerId);
+    return apps.filter(a => a.customerId === customerId).map(normalizeAppointment);
 };
 
 exports.getAppointmentsByProvider = async (providerId) => {
     const apps = await appointmentsStorage.getAll();
-    return apps.filter(a => a.providerId === providerId);
+    return apps.filter(a => a.providerId === providerId).map(normalizeAppointment);
 };
 
 exports.getAppointmentById = async (id) => {
-    return await appointmentsStorage.getById(id);
+    const appt = await appointmentsStorage.getById(id);
+    return normalizeAppointment(appt);
 };

@@ -104,6 +104,10 @@ exports.postCreateService = async (req, res, next) => {
         if (filesToUpload && filesToUpload.length > 0) {
             images = await storageService.uploadMultipleMulterFiles(filesToUpload, 'services');
         }
+
+        const requiresUpload = req.body.requiresUpload === 'true' || req.body.requiresUpload === 'on' || req.body.requiresUpload === true;
+        const deliveryMode = req.body.deliveryMode || (requiresUpload ? 'online' : 'flexible');
+        const uploadPrompt = req.body.uploadPrompt ? req.body.uploadPrompt.trim() : '';
         
         await serviceService.createService(req.session.user.id, {
             title: title.trim(),
@@ -111,7 +115,10 @@ exports.postCreateService = async (req, res, next) => {
             price: parsedPrice,
             category,
             images,
-            image: images[0] || null
+            image: images[0] || null,
+            requiresUpload,
+            deliveryMode,
+            uploadPrompt
         });
         res.redirect('/services/my-services');
     } catch (error) {
@@ -180,13 +187,20 @@ exports.postEditService = async (req, res, next) => {
         }
 
         const combinedImages = [...keptImages, ...newUploadedUrls];
+        const requiresUpload = req.body.requiresUpload === 'true' || req.body.requiresUpload === 'on' || req.body.requiresUpload === true;
+        const deliveryMode = req.body.deliveryMode || (requiresUpload ? 'online' : 'flexible');
+        const uploadPrompt = req.body.uploadPrompt !== undefined ? req.body.uploadPrompt.trim() : '';
+
         const updates = {
             title: title.trim(),
             description: description.trim(),
             price: parsedPrice,
             category,
             images: combinedImages,
-            image: combinedImages[0] || null
+            image: combinedImages[0] || null,
+            requiresUpload,
+            deliveryMode,
+            uploadPrompt
         };
         
         await serviceService.updateService(req.params.id, req.session.user.id, updates);

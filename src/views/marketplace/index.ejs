@@ -198,6 +198,14 @@
                                     <% } %>
                                 </div>
                                 <h5 class="card-title fw-bold mb-1"><%= service.title %></h5>
+                                <% if (service.requiresUpload || service.deliveryMode === 'online') { %>
+                                    <div class="my-1">
+                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2 py-1 fw-semibold d-inline-flex align-items-center gap-1" style="font-size: 0.68rem;">
+                                            <span>📸</span>
+                                            <span>Online • Photo/Video (No Meeting)</span>
+                                        </span>
+                                    </div>
+                                <% } %>
                                 <% if (service.providerName) { %>
                                     <div class="small text-muted mt-2 d-flex align-items-center gap-1">
                                         <span class="text-secondary" style="font-size: 0.8rem;">Partner:</span>

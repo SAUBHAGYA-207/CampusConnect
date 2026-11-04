@@ -62,6 +62,36 @@
     </div>
 </div>
 
+<% if (!isPartner) { %>
+    <!-- PROFILE & UPGRADE TO PARTNER SECTION -->
+    <div class="card p-4 p-md-5 mb-5 border-0 shadow-sm" style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: 1.5px solid #FDE68A !important; border-radius: 18px;">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <span class="fs-4">🚀</span>
+                    <span class="badge bg-warning text-dark fw-bold px-2 py-1">BECOME A PARTNER</span>
+                </div>
+                <h4 class="fw-bold mb-2 text-dark">Monetize Your Skills on CampusConnect</h4>
+                <p class="text-muted small mb-3" style="max-width: 650px;">
+                    Are you skilled in tutoring, coding, portrait sketching, graphic design, video editing, or campus services? Upgrade your account to a Partner with one click to publish listings, accept client bookings, and earn with secure UPI escrow payments.
+                </p>
+                <div class="d-flex gap-2 flex-wrap text-muted small mb-3">
+                    <span class="badge bg-white text-dark border">✓ Free instant upgrade</span>
+                    <span class="badge bg-white text-dark border">✓ Support remote deliveries (photos/videos)</span>
+                    <span class="badge bg-white text-dark border">✓ Keep 90% of earnings</span>
+                </div>
+            </div>
+            <div class="col-lg-4 text-lg-end text-start mt-3 mt-lg-0">
+                <form action="/auth/convert-to-partner" method="POST" onsubmit="return confirm('Do you want to upgrade your account to a Campus Partner?')">
+                    <button type="submit" class="btn btn-primary btn-lg fw-bold shadow-sm px-4 py-3 w-100 w-lg-auto">
+                        Upgrade to Partner Account →
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+<% } %>
+
 <% if (isPartner && partnerStats) { %>
     <!-- PARTNER PORTAL WINDOW (Manage orders, payment collected, & services) -->
     <div class="card p-4 p-md-5 mb-5 border-0 shadow-sm" style="background: #ffffff; border-left: 6px solid var(--cognac) !important; border: 1px solid var(--border-warm); border-radius: 18px;">

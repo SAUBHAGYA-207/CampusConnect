@@ -8,6 +8,15 @@ router.post('/register', authController.postRegister);
 router.get('/login', authController.getLogin);
 router.post('/login', authController.postLogin);
 
+// Dedicated Partner Portal Auth
+router.get('/partner/login', authController.getPartnerLogin);
+router.post('/partner/login', authController.postPartnerLogin);
+router.get('/partner/register', authController.getPartnerRegister);
+router.post('/partner/register', authController.postPartnerRegister);
+
+// Profile Upgrade: Convert customer account to partner
+router.post('/convert-to-partner', authController.postConvertToPartner);
+
 router.get('/verify-email', authController.getVerifyEmail);
 router.post('/verify-email', authController.postVerifyEmail);
 

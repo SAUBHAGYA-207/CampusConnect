@@ -2,6 +2,29 @@ const fs = require('fs').promises;
 const path = require('path');
 const { getSupabaseClient, isSupabaseConfigured } = require('../config/supabase');
 
+// Fast in-memory cache with short TTL (5 seconds) to eliminate redundant Supabase round-trips
+const tableCache = new Map();
+const CACHE_TTL_MS = 5000;
+
+function getCachedData(tableName) {
+    const entry = tableCache.get(tableName);
+    if (entry && (Date.now() - entry.timestamp) < CACHE_TTL_MS) {
+        return entry.data;
+    }
+    return null;
+}
+
+function setCachedData(tableName, data) {
+    tableCache.set(tableName, {
+        data,
+        timestamp: Date.now()
+    });
+}
+
+function invalidateCache(tableName) {
+    tableCache.delete(tableName);
+}
+
 class JsonStorage {
     constructor(tableName) {
         this.tableName = tableName;
@@ -26,6 +49,11 @@ class JsonStorage {
     }
 
     async getAll() {
+        const cached = getCachedData(this.tableName);
+        if (cached) {
+            return cached;
+        }
+
         if (isSupabaseConfigured()) {
             const client = getSupabaseClient();
             if (client) {
@@ -34,11 +62,15 @@ class JsonStorage {
                     console.error(`[Supabase Storage Error] getAll on ${this.tableName}:`, error.message);
                     throw error;
                 }
-                return data || [];
+                const result = data || [];
+                setCachedData(this.tableName, result);
+                return result;
             }
         }
         return this.lock.then(async () => {
-            return await this._read();
+            const result = await this._read();
+            setCachedData(this.tableName, result);
+            return result;
         });
     }
 
@@ -94,6 +126,7 @@ class JsonStorage {
                     console.error(`[Supabase Storage Error] add on ${this.tableName}:`, error.message);
                     throw error;
                 }
+                invalidateCache(this.tableName);
                 return { ...newItem, ...(data || {}) };
             }
         }
@@ -104,6 +137,7 @@ class JsonStorage {
                     const newItem = { ...item, id: item.id || (Date.now().toString() + Math.random().toString(36).substring(7)) };
                     items.push(newItem);
                     await this._write(items);
+                    invalidateCache(this.tableName);
                     resolve(newItem);
                 } catch (e) {
                     reject(e);
@@ -127,6 +161,7 @@ class JsonStorage {
                         delete currentUpdates[match[1]];
                         const retry = await client.from(this.tableName).update(currentUpdates).eq('id', id).select().maybeSingle();
                         if (!retry.error) {
+                            invalidateCache(this.tableName);
                             return retry.data || null;
                         }
                         error = retry.error;
@@ -139,6 +174,7 @@ class JsonStorage {
                     console.error(`[Supabase Storage Error] update on ${this.tableName}:`, error.message);
                     throw error;
                 }
+                invalidateCache(this.tableName);
                 return data || null;
             }
         }
@@ -152,6 +188,7 @@ class JsonStorage {
                     }
                     items[index] = { ...items[index], ...updates };
                     await this._write(items);
+                    invalidateCache(this.tableName);
                     resolve(items[index]);
                 } catch (e) {
                     reject(e);
@@ -169,16 +206,23 @@ class JsonStorage {
                     if (error) {
                         // Retry once on transient network glitch
                         const retry = await client.from(this.tableName).delete().eq('id', id);
-                        if (!retry.error) return true;
+                        if (!retry.error) {
+                            invalidateCache(this.tableName);
+                            return true;
+                        }
                         console.error(`[Supabase Storage Error] delete on ${this.tableName}:`, error.message);
                         throw error;
                     }
+                    invalidateCache(this.tableName);
                     return true;
                 } catch (err) {
                     // Try one immediate retry on transient connection glitch
                     try {
                         const retry = await client.from(this.tableName).delete().eq('id', id);
-                        if (!retry.error) return true;
+                        if (!retry.error) {
+                            invalidateCache(this.tableName);
+                            return true;
+                        }
                     } catch (retryErr) {}
                     console.error(`[Supabase Storage Error] delete on ${this.tableName}:`, err.message);
                     throw err;
@@ -191,6 +235,7 @@ class JsonStorage {
                     const items = await this._read();
                     const newItems = items.filter(item => item.id !== id);
                     await this._write(newItems);
+                    invalidateCache(this.tableName);
                     resolve(true);
                 } catch (e) {
                     reject(e);

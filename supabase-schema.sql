@@ -27,9 +27,15 @@ CREATE TABLE IF NOT EXISTS "services" (
     "image" TEXT,
     "providerId" TEXT,
     "status" TEXT DEFAULT 'published',
+    "requiresUpload" BOOLEAN DEFAULT false,
+    "deliveryMode" TEXT DEFAULT 'flexible',
+    "uploadPrompt" TEXT,
     "createdAt" BIGINT
 );
 ALTER TABLE "services" ADD COLUMN IF NOT EXISTS "status" TEXT DEFAULT 'published';
+ALTER TABLE "services" ADD COLUMN IF NOT EXISTS "requiresUpload" BOOLEAN DEFAULT false;
+ALTER TABLE "services" ADD COLUMN IF NOT EXISTS "deliveryMode" TEXT DEFAULT 'flexible';
+ALTER TABLE "services" ADD COLUMN IF NOT EXISTS "uploadPrompt" TEXT;
 
 
 -- 3. APPOINTMENTS TABLE
@@ -48,9 +54,13 @@ CREATE TABLE IF NOT EXISTS "appointments" (
     "paymentScreenshot" TEXT,
     "transactionId" TEXT,
     "paymentStatus" TEXT DEFAULT 'pending',
+    "referenceMedia" TEXT,
+    "referenceMediaType" TEXT,
     "createdAt" BIGINT,
     "paymentVerifiedAt" BIGINT
 );
+ALTER TABLE "appointments" ADD COLUMN IF NOT EXISTS "referenceMedia" TEXT;
+ALTER TABLE "appointments" ADD COLUMN IF NOT EXISTS "referenceMediaType" TEXT;
 
 -- 4. PAYOUTS TABLE
 CREATE TABLE IF NOT EXISTS "payouts" (

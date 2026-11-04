@@ -112,6 +112,22 @@
                 
                 <hr class="text-muted opacity-25 my-4">
                 
+                <!-- Online / Remote Deliverable Showcase Banner -->
+                <% if (service.requiresUpload || service.deliveryMode === 'online') { %>
+                    <div class="p-3 mb-4 rounded-3 border d-flex align-items-start gap-3 shadow-sm" style="background-color: #F0FDF4; border-color: #BBF7D0 !important;">
+                        <span class="fs-3">🎨</span>
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <span class="fw-bold text-success">100% Online Delivery • No In-Person Meeting Needed</span>
+                                <span class="badge bg-success text-white rounded-pill px-2 py-0 fw-semibold" style="font-size: 0.68rem;">Remote Commission</span>
+                            </div>
+                            <p class="small text-muted mb-0">
+                                This service (such as custom portraits, sketches, digital art, video editing, or writing) can be prepared entirely remotely. You can upload your reference photo or video when booking, and coordinate deliverables with @<%= partnerDisplayName %> via in-app chat.
+                            </p>
+                        </div>
+                    </div>
+                <% } %>
+
                 <!-- Partner Profile Showcase Box -->
                 <div class="p-3 mb-4 rounded-3 border bg-light d-flex align-items-center justify-content-between flex-wrap gap-3">
                     <div class="d-flex align-items-center gap-3">
@@ -223,26 +239,72 @@
                             <!-- Meeting Mode / Delivery Preference -->
                             <div class="mb-3">
                                 <label class="form-label text-dark fw-bold small mb-1">
-                                    3. Meeting / Service Mode
+                                    3. Delivery / Meeting Format
                                 </label>
                                 <div class="d-flex gap-2 flex-wrap" id="serviceModeContainer">
-                                    <button type="button" class="btn btn-sm btn-outline-primary service-mode-btn active" data-mode="Campus / In-Person">
-                                        🏫 Campus / In-Person
+                                    <% const isOnlineService = service.requiresUpload || service.deliveryMode === 'online'; %>
+                                    <button type="button" class="btn btn-sm btn-outline-primary service-mode-btn <%= isOnlineService ? 'active' : '' %>" data-mode="Online (No Meeting Needed)">
+                                        🎨 100% Online (No Meeting)
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-outline-primary service-mode-btn" data-mode="Online (Meet/Zoom)">
-                                        💻 Online (Meet/Zoom)
+                                    <button type="button" class="btn btn-sm btn-outline-primary service-mode-btn <%= !isOnlineService ? 'active' : '' %>" data-mode="Campus / In-Person">
+                                        🏫 Campus / In-Person
                                     </button>
                                     <button type="button" class="btn btn-sm btn-outline-primary service-mode-btn" data-mode="Flexible">
                                         🤝 Flexible
                                     </button>
                                 </div>
-                                <input type="hidden" id="selectedServiceMode" value="Campus / In-Person">
+                                <input type="hidden" id="selectedServiceMode" value="<%= isOnlineService ? 'Online (No Meeting Needed)' : 'Campus / In-Person' %>">
                             </div>
+
+                            <!-- Customer Reference Photo / Video Upload -->
+                            <% if (service.requiresUpload) { %>
+                                <div class="mb-3 p-3 rounded-3" style="background-color: var(--champagne-light); border: 1.5px dashed var(--cognac);">
+                                    <label for="referenceMedia" class="form-label text-dark fw-bold small d-flex justify-content-between align-items-center">
+                                        <span>4. Reference Photo / Video <span class="text-danger">*</span></span>
+                                        <span class="badge bg-primary text-white" style="font-size: 0.68rem;">Required by Partner</span>
+                                    </label>
+                                    <input type="file" 
+                                           class="form-control" 
+                                           name="referenceMedia" 
+                                           id="referenceMedia" 
+                                           accept="image/*,video/*,.pdf" 
+                                           required
+                                           onchange="previewBookingReferenceMedia(this)">
+                                    <div class="form-text small text-muted mt-1">
+                                        <%= service.uploadPrompt || 'Please upload the photo or video needed for this service (e.g. portrait photo, sketch reference, video clips).' %>
+                                    </div>
+                                    <div class="invalid-feedback" id="referenceMediaError">Please upload the required reference photo or video.</div>
+                                    <div id="bookingMediaPreview" class="mt-2 text-center d-none">
+                                        <img id="bookingMediaPreviewImg" src="" class="img-fluid rounded border shadow-sm d-none" style="max-height: 140px; object-fit: contain;">
+                                        <div id="bookingMediaPreviewText" class="small fw-semibold text-success mt-1"></div>
+                                    </div>
+                                </div>
+                            <% } else { %>
+                                <div class="mb-3">
+                                    <label for="referenceMedia" class="form-label text-dark fw-bold small d-flex justify-content-between align-items-center">
+                                        <span>4. Reference Photo / Video (Optional)</span>
+                                        <span class="badge bg-light text-muted border" style="font-size: 0.68rem;">Optional</span>
+                                    </label>
+                                    <input type="file" 
+                                           class="form-control" 
+                                           name="referenceMedia" 
+                                           id="referenceMedia" 
+                                           accept="image/*,video/*,.pdf"
+                                           onchange="previewBookingReferenceMedia(this)">
+                                    <div class="form-text small text-muted">
+                                        Have a reference picture, sketch, draft, or video clip? Upload it here for your partner.
+                                    </div>
+                                    <div id="bookingMediaPreview" class="mt-2 text-center d-none">
+                                        <img id="bookingMediaPreviewImg" src="" class="img-fluid rounded border shadow-sm d-none" style="max-height: 140px; object-fit: contain;">
+                                        <div id="bookingMediaPreviewText" class="small fw-semibold text-success mt-1"></div>
+                                    </div>
+                                </div>
+                            <% } %>
 
                             <!-- Specifications / Requirements Notes -->
                             <div class="mb-3">
                                 <label for="bookingNotes" class="form-label text-dark fw-bold small">
-                                    4. Enter Your Specifications & Requirements <span class="text-danger">*</span>
+                                    5. Enter Your Specifications & Requirements <span class="text-danger">*</span>
                                 </label>
                                 <textarea class="form-control" 
                                           name="notes" 
@@ -619,6 +681,18 @@
                     bookingNotesInput.classList.remove('is-invalid');
                 }
 
+                // Validate Reference Media if required
+                const refMediaInput = document.getElementById('referenceMedia');
+                if (refMediaInput && refMediaInput.hasAttribute('required')) {
+                    if (!refMediaInput.files || refMediaInput.files.length === 0) {
+                        refMediaInput.classList.add('is-invalid', 'is-invalid-shake');
+                        setTimeout(() => refMediaInput.classList.remove('is-invalid-shake'), 400);
+                        isValid = false;
+                    } else {
+                        refMediaInput.classList.remove('is-invalid');
+                    }
+                }
+
                 if (!isValid) {
                     specsValidationBanner.classList.remove('d-none');
                     return;
@@ -831,6 +905,34 @@
             modal.show();
         }
     }
+
+    window.previewBookingReferenceMedia = function(input) {
+        const previewContainer = document.getElementById('bookingMediaPreview');
+        const previewImg = document.getElementById('bookingMediaPreviewImg');
+        const previewText = document.getElementById('bookingMediaPreviewText');
+        if (!previewContainer) return;
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            previewContainer.classList.remove('d-none');
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if (previewImg) {
+                        previewImg.src = e.target.result;
+                        previewImg.classList.remove('d-none');
+                    }
+                };
+                reader.readAsDataURL(file);
+                previewText.innerText = '✓ Reference photo selected: ' + file.name;
+            } else if (file.type.startsWith('video/')) {
+                if (previewImg) previewImg.classList.add('d-none');
+                previewText.innerText = '🎬 Video selected: ' + file.name;
+            } else {
+                if (previewImg) previewImg.classList.add('d-none');
+                previewText.innerText = '📄 Document selected: ' + file.name;
+            }
+        }
+    };
 </script>
 
 <!-- Product Image Lightbox Modal -->

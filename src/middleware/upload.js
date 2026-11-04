@@ -84,11 +84,44 @@ const serviceMultiUpload = (req, res, next) => {
     });
 };
 
+// Multi-field upload for booking (payment proof + optional customer reference photo/video)
+const bookingUpload = multer({
+    storage: createStorage('requirements'),
+    limits: { fileSize: 30 * 1024 * 1024 }, // 30MB max for videos & photos
+    fileFilter: (req, file, cb) => {
+        const allowedExts = [
+            '.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif',
+            '.mp4', '.mov', '.webm', '.avi', '.mkv',
+            '.pdf', '.zip'
+        ];
+        const ext = path.extname(file.originalname).toLowerCase();
+        if (allowedExts.includes(ext) || file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/') || file.mimetype === 'application/pdf') {
+            cb(null, true);
+        } else {
+            cb(new Error('Invalid file format. Allowed: Images, Videos, and PDF documents.'), false);
+        }
+    }
+});
+
+const bookingMultiUpload = (req, res, next) => {
+    bookingUpload.fields([
+        { name: 'paymentScreenshot', maxCount: 1 },
+        { name: 'referenceMedia', maxCount: 1 }
+    ])(req, res, (err) => {
+        if (err) {
+            console.warn('[Booking Upload Warning]:', err.message);
+            req.uploadError = err.message;
+        }
+        next();
+    });
+};
+
 // Exports
 const upload = serviceUpload;
 upload.serviceUpload = serviceUpload;
 upload.serviceMultiUpload = serviceMultiUpload;
 upload.paymentUpload = paymentUpload;
+upload.bookingMultiUpload = bookingMultiUpload;
 upload.payoutUpload = payoutUpload;
 upload.partnerQrUpload = partnerQrUpload;
 upload.chatUpload = chatUpload;

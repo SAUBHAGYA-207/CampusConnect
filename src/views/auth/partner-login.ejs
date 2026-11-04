@@ -1,0 +1,49 @@
+<div class="row justify-content-center align-items-center" style="min-height: 65vh;">
+    <div class="col-md-5 col-lg-4">
+        <div class="mb-3">
+            <a href="/" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1 shadow-sm px-3 py-2 fw-medium" style="border-radius: 8px;" onclick="if (window.history.length > 1) { history.back(); return false; }">
+                ← Back
+            </a>
+        </div>
+        <div class="card p-4 p-md-5 shadow-sm border-0" style="border: 1px solid var(--border-warm) !important; border-radius: 18px;">
+            <div class="text-center mb-4">
+                <span class="badge bg-primary text-white px-3 py-1 rounded-pill small fw-semibold mb-2">💼 Partner Portal</span>
+                <h3 class="fw-bold mb-1" style="color: var(--espresso); letter-spacing: -0.5px;">Partner Login</h3>
+                <p class="text-muted small">Sign in to manage your listings, orders & payouts</p>
+            </div>
+            <% if (typeof resetSuccess !== 'undefined' && resetSuccess) { %>
+                <div class="alert alert-success py-2 px-3 small rounded-3 mb-3 d-flex align-items-center gap-2" style="background-color: var(--emerald-light); border-color: #A7F3D0; color: var(--emerald);">
+                    <span>✓</span> Password reset successfully! Please sign in with your new password.
+                </div>
+            <% } %>
+            <% if (error) { %>
+                <div class="alert alert-danger py-2 px-3 small rounded-3 mb-3" style="background-color: #FDF2F2; border-color: #F8B4B4; color: #9B1C1C;"><%= error %></div>
+            <% } %>
+            <form action="/auth/partner/login" method="POST">
+                <div class="mb-3">
+                    <label for="email" class="form-label text-muted fw-semibold small">Partner Email address</label>
+                    <input type="email" class="form-control form-control-lg" id="email" name="email" placeholder="partner@domain.com" required>
+                </div>
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label for="password" class="form-label text-muted fw-semibold small mb-0">Password</label>
+                        <a href="/auth/forgot-password" class="small text-decoration-none fw-medium" style="color: var(--cognac); font-size: 0.8rem;">Forgot password?</a>
+                    </div>
+                    <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm fw-bold">Sign In to Partner Portal</button>
+            </form>
+
+            <div class="p-3 mt-4 rounded-3 text-center" style="background-color: var(--champagne-light); border: 1px dashed var(--border-warm);">
+                <span class="small text-muted d-block mb-1">Looking to book campus services?</span>
+                <a href="/auth/login" class="small text-decoration-none fw-bold" style="color: var(--cognac);">
+                    🛍️ Student & Customer Sign In →
+                </a>
+            </div>
+
+            <div class="text-center mt-3">
+                <small class="text-muted">Not a partner yet? <a href="/auth/partner/register" class="text-decoration-none fw-semibold" style="color: var(--cognac);">Join as Partner</a></small>
+            </div>
+        </div>
+    </div>
+</div>

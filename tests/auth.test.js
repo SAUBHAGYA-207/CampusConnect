@@ -9,24 +9,32 @@ describe('Auth Endpoints', () => {
         expect(res.text).toContain('Login');
     });
 
-    it('should load register page with Partner tick checkbox option', async () => {
+    it('should load customer register page with link to partner portal', async () => {
         const res = await request(app).get('/auth/register');
         expect(res.statusCode).toEqual(200);
         expect(res.text).toContain('Create Account');
-        expect(res.text).toContain('id="isPartner"');
-        expect(res.text).toContain('Sign up as Partner');
+        expect(res.text).toContain('/auth/partner/register');
     });
 
-    it('should assign role as provider when Partner checkbox is ticked', async () => {
+    it('should load separate partner register and login pages', async () => {
+        const registerRes = await request(app).get('/auth/partner/register');
+        expect(registerRes.statusCode).toEqual(200);
+        expect(registerRes.text).toContain('Join as a Partner');
+
+        const loginRes = await request(app).get('/auth/partner/login');
+        expect(loginRes.statusCode).toEqual(200);
+        expect(loginRes.text).toContain('Partner Portal');
+    });
+
+    it('should assign role as provider when registering via partner portal', async () => {
         const usersStorage = new JsonStorage('users');
         const testEmail = 'partnertick_' + Date.now() + '@campusconnect.local';
 
         const res = await request(app)
-            .post('/auth/register')
+            .post('/auth/partner/register')
             .send({
                 email: testEmail,
-                password: 'Password123!',
-                isPartner: 'provider'
+                password: 'Password123!'
             });
 
         expect(res.statusCode).toEqual(302);
@@ -38,6 +46,37 @@ describe('Auth Endpoints', () => {
 
         // Cleanup
         await usersStorage.delete(created.id);
+    }, 15000);
+
+    it('should allow customer to convert account to partner', async () => {
+        const agent = request.agent(app);
+        const usersStorage = new JsonStorage('users');
+        const bcrypt = require('bcryptjs');
+
+        const testEmail = 'convert_test_' + Date.now() + '@campusconnect.local';
+        const password = 'Password123!';
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const createdUser = await usersStorage.add({
+            email: testEmail,
+            password: hashedPassword,
+            role: 'customer',
+            isVerified: true
+        });
+
+        // Login as customer
+        await agent.post('/auth/login').send({ email: testEmail, password });
+
+        // Convert to partner
+        const convertRes = await agent.post('/auth/convert-to-partner');
+        expect(convertRes.statusCode).toEqual(302);
+        expect(convertRes.headers.location).toContain('/dashboard');
+
+        const updatedUser = await usersStorage.getById(createdUser.id);
+        expect(updatedUser.role).toEqual('provider');
+
+        // Cleanup
+        await usersStorage.delete(createdUser.id);
     }, 15000);
 
     it('should assign role as customer when Partner checkbox is not ticked', async () => {

@@ -68,6 +68,129 @@ exports.getLogin = (req, res) => {
     });
 };
 
+exports.getPartnerLogin = (req, res) => {
+    res.render('auth/partner-login', {
+        error: null,
+        resetSuccess: req.query.reset === 'success'
+    });
+};
+
+exports.getPartnerRegister = (req, res) => {
+    res.render('auth/partner-register', { error: null });
+};
+
+exports.postPartnerRegister = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const existingUser = await usersStorage.find(u => u.email === email);
+        if (existingUser) {
+            if (!existingUser.isVerified) {
+                const otp = generateOTP();
+                await usersStorage.update(existingUser.id, {
+                    otp,
+                    otpExpires: Date.now() + 10 * 60 * 1000
+                });
+                await sendOTP(email, otp);
+                req.session.userId = existingUser.id;
+                return req.session.save(() => {
+                    res.redirect('/auth/verify-email?sent=1');
+                });
+            }
+            return res.render('auth/partner-register', { error: 'Email already registered and verified. Please log in.' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const otp = generateOTP();
+
+        // Partner registration always assigns 'provider' role
+        const user = await usersStorage.add({
+            email,
+            password: hashedPassword,
+            role: 'provider',
+            isVerified: false,
+            otp,
+            otpExpires: Date.now() + 10 * 60 * 1000
+        });
+
+        await sendOTP(email, otp);
+        req.session.userId = user.id;
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session save error on partner register:', err);
+                return res.render('auth/partner-register', { error: 'Registration succeeded but session save failed' });
+            }
+            res.redirect('/auth/verify-email');
+        });
+    } catch (error) {
+        console.error(error);
+        res.render('auth/partner-register', { error: 'Partner registration failed' });
+    }
+};
+
+exports.postPartnerLogin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await usersStorage.find(u => u.email === email);
+        
+        if (!user || !(await bcrypt.compare(password, user.password))) {
+            return res.render('auth/partner-login', { error: 'Invalid partner credentials' });
+        }
+
+        if (!user.isVerified) {
+            const otp = generateOTP();
+            await usersStorage.update(user.id, {
+                otp,
+                otpExpires: Date.now() + 10 * 60 * 1000
+            });
+            await sendOTP(user.email, otp);
+            req.session.userId = user.id;
+            return req.session.save((err) => {
+                if (err) console.error('Session save error on unverified login:', err);
+                res.redirect('/auth/verify-email?sent=1');
+            });
+        }
+
+        req.session.user = { id: user.id, email: user.email, role: user.role, isVerified: user.isVerified };
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session save error on partner login:', err);
+                return res.render('auth/partner-login', { error: 'Failed to initialize session' });
+            }
+            if (user.role === 'admin' && isSuperAdminEmail(user.email)) {
+                return res.redirect('/admin/dashboard');
+            }
+            // Direct partners straight to their partner management dashboard
+            res.redirect('/dashboard');
+        });
+    } catch (error) {
+        console.error(error);
+        res.render('auth/partner-login', { error: 'Partner login failed' });
+    }
+};
+
+exports.postConvertToPartner = async (req, res) => {
+    try {
+        if (!req.session || !req.session.user) {
+            return res.redirect('/auth/login');
+        }
+
+        const userId = req.session.user.id;
+        await usersStorage.update(userId, { role: 'provider' });
+
+        // Update session
+        req.session.user.role = 'provider';
+        req.session.save((err) => {
+            if (err) console.error('Session error updating role:', err);
+            req.flash('success', '🎉 Congratulations! Your account has been upgraded to a Campus Partner account. You can now list services and earn on campus!');
+            res.redirect('/dashboard');
+        });
+    } catch (error) {
+        console.error('Error converting to partner:', error);
+        req.flash('error', 'Could not convert account to partner. Please try again.');
+        res.redirect('/dashboard');
+    }
+};
+
 exports.postLogin = async (req, res) => {
     try {
         const { email, password } = req.body;

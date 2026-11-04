@@ -82,6 +82,42 @@
                     <div id="newImagesPreview" class="d-flex flex-wrap gap-2 mt-3" style="display: none !important;">
                     </div>
                 </div>
+
+                <!-- Delivery Mode & Customer File Upload Requirement -->
+                <div class="card p-3 mb-4 rounded-3" style="background-color: var(--champagne-light); border: 1.5px dashed var(--border-warm) !important;">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="fs-5">🎨</span>
+                        <h6 class="fw-bold mb-0 text-dark">Delivery Mode & Customer Upload Option</h6>
+                    </div>
+                    <p class="small text-muted mb-3">
+                        Does this service work without an in-person meeting (e.g. portrait, design, video editing, essay review)? Enable remote file uploads below so customers can send photos or videos directly when booking.
+                    </p>
+
+                    <div class="mb-3">
+                        <label for="deliveryMode" class="form-label text-muted fw-semibold small">Service Delivery Format</label>
+                        <select class="form-select bg-white border py-2" id="deliveryMode" name="deliveryMode">
+                            <option value="flexible" <%= (service.deliveryMode === 'flexible' || !service.deliveryMode) ? 'selected' : '' %>>🌐 Flexible (Online or In-Person)</option>
+                            <option value="online" <%= (service.deliveryMode === 'online') ? 'selected' : '' %>>🎨 100% Online / Remote (No Meeting Needed)</option>
+                            <option value="in_person" <%= (service.deliveryMode === 'in_person') ? 'selected' : '' %>>🤝 In-Person Meeting Required</option>
+                        </select>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" role="switch" id="requiresUpload" name="requiresUpload" value="true" <%= (service.requiresUpload) ? 'checked' : '' %> onchange="toggleUploadPrompt(this.checked)">
+                        <label class="form-check-label fw-semibold text-dark small" for="requiresUpload">
+                            Require customer to upload photo, video, or files upon booking
+                        </label>
+                        <div class="form-text small text-muted">
+                            Customers will see an upload field on the booking form to send their reference image or video directly.
+                        </div>
+                    </div>
+
+                    <div id="uploadPromptContainer" style="<%= (service.requiresUpload) ? 'display: block;' : 'display: none;' %>">
+                        <label for="uploadPrompt" class="form-label text-muted fw-semibold small">Customer Upload Instructions</label>
+                        <input type="text" class="form-control bg-white border py-2" id="uploadPrompt" name="uploadPrompt" value="<%= service.uploadPrompt || '' %>" placeholder="e.g. Please upload clear front-facing photo for portrait drawing">
+                    </div>
+                </div>
+
                 <div class="d-flex gap-2">
                     <a href="/services/my-services" class="btn btn-light border py-3 flex-grow-1 fw-bold">Cancel</a>
                     <button type="submit" class="btn btn-primary py-3 flex-grow-1 fw-bold shadow-sm">Save Changes</button>
@@ -148,5 +184,14 @@ function previewNewImages(input) {
         };
         reader.readAsDataURL(file);
     });
+}
+
+function toggleUploadPrompt(checked) {
+    const el = document.getElementById('uploadPromptContainer');
+    if (el) el.style.display = checked ? 'block' : 'none';
+    const delivery = document.getElementById('deliveryMode');
+    if (checked && delivery && delivery.value === 'in_person') {
+        delivery.value = 'online';
+    }
 }
 </script>

@@ -342,11 +342,23 @@
                                     <li><a class="dropdown-item" href="/services/create">+ Add New Service</a></li>
                                     <li><a class="dropdown-item" href="/dashboard#payout-section">💳 Payouts & QR Settlement</a></li>
                                     <li><hr class="dropdown-divider"></li>
+                                <% } else { %>
+                                    <li>
+                                        <form action="/auth/convert-to-partner" method="POST" class="m-0 p-0" onsubmit="return confirm('Upgrade to Campus Partner to list services?')">
+                                            <button type="submit" class="dropdown-item text-primary fw-bold d-flex align-items-center gap-1">
+                                                <span>🚀</span> Become a Partner
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
                                 <% } %>
                                 <li><a class="dropdown-item text-danger" href="/auth/logout">Logout</a></li>
                             </ul>
                         </li>
                     <% } else { %>
+                        <li class="nav-item me-2">
+                            <a class="nav-link text-primary fw-semibold" href="/auth/partner/login">💼 Partner Portal</a>
+                        </li>
                         <li class="nav-item me-2">
                             <a class="nav-link" href="/auth/login">Login</a>
                         </li>

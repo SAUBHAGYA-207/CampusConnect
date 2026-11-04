@@ -37,10 +37,35 @@ function normalizeService(service) {
 
     const primaryImage = images.length > 0 ? images[0] : (service.image || null);
 
+    // Parse delivery & upload requirements from description or direct properties
+    let requiresUpload = service.requiresUpload === true || service.requiresUpload === 'true';
+    let deliveryMode = service.deliveryMode || 'flexible';
+    let uploadPrompt = service.uploadPrompt || '';
+    let cleanDescription = service.description || '';
+
+    // Check embedded delivery metadata in description
+    if (cleanDescription && cleanDescription.includes('<!--CC_DELIVERY:')) {
+        try {
+            const match = cleanDescription.match(/<!--CC_DELIVERY:([\s\S]*?)-->/);
+            if (match && match[1]) {
+                const parsed = JSON.parse(match[1]);
+                if (parsed.requiresUpload !== undefined) requiresUpload = Boolean(parsed.requiresUpload);
+                if (parsed.deliveryMode) deliveryMode = parsed.deliveryMode;
+                if (parsed.uploadPrompt) uploadPrompt = parsed.uploadPrompt;
+                cleanDescription = cleanDescription.replace(/<!--CC_DELIVERY:[\s\S]*?-->/g, '').trim();
+            }
+        } catch (e) {}
+    }
+
     return {
         ...service,
         images,
-        image: primaryImage
+        image: primaryImage,
+        requiresUpload,
+        deliveryMode,
+        uploadPrompt: uploadPrompt || (requiresUpload ? 'Please upload your reference photo or video for this order.' : ''),
+        description: cleanDescription,
+        rawDescription: service.description || ''
     };
 }
 
@@ -57,10 +82,21 @@ exports.createService = async (providerId, serviceData) => {
     const primaryImage = images.length > 0 ? images[0] : (serviceData.image || null);
     const imagePayload = images.length > 1 ? JSON.stringify(images) : primaryImage;
 
+    const requiresUpload = serviceData.requiresUpload === true || serviceData.requiresUpload === 'true' || serviceData.requiresUpload === 'on';
+    const deliveryMode = serviceData.deliveryMode || (requiresUpload ? 'online' : 'flexible');
+    const uploadPrompt = serviceData.uploadPrompt ? serviceData.uploadPrompt.trim() : '';
+
+    // Embed delivery metadata in description for seamless database compatibility
+    let finalDescription = (serviceData.description || '').trim();
+    if (requiresUpload || deliveryMode !== 'flexible' || uploadPrompt) {
+        const metaTag = `\n\n<!--CC_DELIVERY:${JSON.stringify({ requiresUpload, deliveryMode, uploadPrompt })}-->`;
+        finalDescription += metaTag;
+    }
+
     // Send only valid columns recognized by Supabase services table
     const payload = {
         title: serviceData.title,
-        description: serviceData.description,
+        description: finalDescription,
         price: serviceData.price,
         category: serviceData.category,
         image: imagePayload,
@@ -84,6 +120,26 @@ exports.updateService = async (serviceId, providerId, updates) => {
         const primaryImage = images.length > 0 ? images[0] : null;
         updatesPayload.image = images.length > 1 ? JSON.stringify(images) : primaryImage;
         delete updatesPayload.images;
+    }
+
+    const requiresUpload = updates.requiresUpload !== undefined
+        ? (updates.requiresUpload === true || updates.requiresUpload === 'true' || updates.requiresUpload === 'on')
+        : (service.requiresUpload === true);
+    const deliveryMode = updates.deliveryMode || service.deliveryMode || 'flexible';
+    const uploadPrompt = updates.uploadPrompt !== undefined ? updates.uploadPrompt.trim() : (service.uploadPrompt || '');
+
+    delete updatesPayload.requiresUpload;
+    delete updatesPayload.deliveryMode;
+    delete updatesPayload.uploadPrompt;
+
+    let baseDescription = (updatesPayload.description !== undefined ? updatesPayload.description : (service.description || ''));
+    baseDescription = baseDescription.replace(/<!--CC_DELIVERY:[\s\S]*?-->/g, '').trim();
+
+    if (requiresUpload || deliveryMode !== 'flexible' || uploadPrompt) {
+        const metaTag = `\n\n<!--CC_DELIVERY:${JSON.stringify({ requiresUpload, deliveryMode, uploadPrompt })}-->`;
+        updatesPayload.description = baseDescription + metaTag;
+    } else {
+        updatesPayload.description = baseDescription;
     }
 
     const updated = await servicesStorage.update(serviceId, updatesPayload);
@@ -119,14 +175,17 @@ exports.getServicesByProvider = async (providerId) => {
 };
 
 exports.searchServices = async (query = {}, category, minPrice, maxPrice, sortBy) => {
-    let services = await servicesStorage.getAll();
-    services = services.map(normalizeService);
+    // Run services and users queries in parallel for high speed
+    const [rawServices, users] = await Promise.all([
+        servicesStorage.getAll(),
+        usersStorage.getAll().catch(() => [])
+    ]);
+    let services = rawServices.map(normalizeService);
 
     // Populate partner/provider username & profile details
     try {
-        const users = await usersStorage.getAll();
         const userMap = new Map();
-        users.forEach(u => {
+        (users || []).forEach(u => {
             if (u && u.id) {
                 const displayName = u.name || u.username || (u.email ? u.email.split('@')[0] : 'Partner');
                 userMap.set(u.id, {

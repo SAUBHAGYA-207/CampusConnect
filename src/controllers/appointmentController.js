@@ -34,15 +34,46 @@ exports.postBookAppointment = async (req, res, next) => {
     try {
         const { serviceId, date, time, notes, transactionId } = req.body;
         
-        if (!req.file) {
+        let paymentScreenshotFile = null;
+        let referenceMediaFile = null;
+
+        if (req.files) {
+            if (req.files.paymentScreenshot && req.files.paymentScreenshot[0]) {
+                paymentScreenshotFile = req.files.paymentScreenshot[0];
+            }
+            if (req.files.referenceMedia && req.files.referenceMedia[0]) {
+                referenceMediaFile = req.files.referenceMedia[0];
+            }
+        } else if (req.file) {
+            paymentScreenshotFile = req.file;
+        }
+
+        if (!paymentScreenshotFile) {
             req.flash('error', 'Please upload a screenshot of your QR payment to complete the booking.');
             return res.redirect('/marketplace/' + serviceId);
         }
 
-        const screenshotUrl = await storageService.uploadMulterFile(req.file, 'payments');
+        const screenshotUrl = await storageService.uploadMulterFile(paymentScreenshotFile, 'payments');
+        
+        let referenceMediaUrl = null;
+        let referenceMediaType = null;
+        let referenceMediaName = null;
+
+        if (referenceMediaFile) {
+            referenceMediaUrl = await storageService.uploadMulterFile(referenceMediaFile, 'requirements');
+            referenceMediaType = referenceMediaFile.mimetype.startsWith('video/') ? 'video' : (referenceMediaFile.mimetype.startsWith('image/') ? 'image' : 'document');
+            referenceMediaName = referenceMediaFile.originalname;
+        }
+
         const paymentData = {
             paymentScreenshot: screenshotUrl,
             transactionId: transactionId ? transactionId.trim() : null
+        };
+
+        const referenceData = {
+            referenceMediaUrl,
+            referenceMediaType,
+            referenceMediaName
         };
 
         await appointmentService.createAppointment(
@@ -51,10 +82,11 @@ exports.postBookAppointment = async (req, res, next) => {
             date,
             time,
             notes,
-            paymentData
+            paymentData,
+            referenceData
         );
 
-        req.flash('success', 'Booking requested! Payment screenshot submitted for verification.');
+        req.flash('success', 'Booking requested! Payment screenshot and deliverables submitted.');
         res.redirect('/appointments/my-bookings');
     } catch (error) {
         req.flash('error', error.message);
