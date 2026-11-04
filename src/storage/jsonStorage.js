@@ -1,6 +1,9 @@
 const fs = require('fs').promises;
 const path = require('path');
+const os = require('os');
 const { getSupabaseClient, isSupabaseConfigured } = require('../config/supabase');
+
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.LAMBDA_TASK_ROOT);
 
 // Fast in-memory cache with short TTL (5 seconds) to eliminate redundant Supabase round-trips
 const tableCache = new Map();
@@ -34,18 +37,32 @@ class JsonStorage {
 
     async _read() {
         try {
+            if (isServerless) {
+                const tmpPath = path.join(os.tmpdir(), `${this.tableName}.json`);
+                try {
+                    const tmpData = await fs.readFile(tmpPath, 'utf8');
+                    return JSON.parse(tmpData);
+                } catch (e) {
+                    // Fall back to bundled data file
+                }
+            }
             const data = await fs.readFile(this.filePath, 'utf8');
             return JSON.parse(data);
         } catch (error) {
             if (error.code === 'ENOENT') {
                 return [];
             }
-            throw error;
+            return [];
         }
     }
 
     async _write(data) {
-        await fs.writeFile(this.filePath, JSON.stringify(data, null, 2), 'utf8');
+        try {
+            const targetPath = isServerless ? path.join(os.tmpdir(), `${this.tableName}.json`) : this.filePath;
+            await fs.writeFile(targetPath, JSON.stringify(data, null, 2), 'utf8');
+        } catch (error) {
+            console.warn(`[JsonStorage Warning] Failed to write local JSON backup for ${this.tableName}:`, error.message);
+        }
     }
 
     async getAll() {

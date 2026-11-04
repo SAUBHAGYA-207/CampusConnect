@@ -120,20 +120,54 @@ async function uploadToSupabase(source, destinationPath, mimeType) {
 async function uploadMulterFile(multerFile, subfolder) {
     if (!multerFile) return null;
 
-    const localRelativePath = `/uploads/${subfolder}/${multerFile.filename}`;
+    const ext = path.extname(multerFile.originalname || '').toLowerCase() || 
+                (multerFile.mimetype ? '.' + multerFile.mimetype.split('/')[1] : '.jpg');
+    const filename = multerFile.filename || `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+    const source = multerFile.buffer || multerFile.path;
+    const destPath = `${subfolder}/${filename}`;
 
-    if (!isSupabaseConfigured()) {
-        return localRelativePath;
+    if (isSupabaseConfigured()) {
+        try {
+            const publicUrl = await uploadToSupabase(source, destPath, multerFile.mimetype);
+            console.log(`☁️ [Supabase Storage] File uploaded successfully to bucket '${BUCKET_NAME}': ${publicUrl}`);
+            return publicUrl;
+        } catch (err) {
+            console.warn(`⚠️ [Supabase Storage] Upload error: ${err.message}`);
+        }
     }
 
+    // Local disk fallback (if Supabase not configured or failed)
+    const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.LAMBDA_TASK_ROOT);
+    
+    if (isServerless) {
+        // On serverless, filesystem is read-only. Fall back to Base64 data URL so image works everywhere without crashing!
+        if (Buffer.isBuffer(source)) {
+            const mime = multerFile.mimetype || 'image/jpeg';
+            return `data:${mime};base64,${source.toString('base64')}`;
+        }
+        return `/uploads/${subfolder}/${filename}`;
+    }
+
+    // Local development writable disk
     try {
-        const destPath = `${subfolder}/${multerFile.filename}`;
-        const publicUrl = await uploadToSupabase(multerFile.path, destPath, multerFile.mimetype);
-        console.log(`☁️ [Supabase Storage] File uploaded successfully to bucket '${BUCKET_NAME}': ${publicUrl}`);
-        return publicUrl;
-    } catch (err) {
-        console.warn(`⚠️ [Supabase Storage] Fallback to local file path due to upload error: ${err.message}`);
-        return localRelativePath;
+        const destDir = path.join(process.cwd(), 'uploads', subfolder);
+        if (!fs.existsSync(destDir)) {
+            fs.mkdirSync(destDir, { recursive: true });
+        }
+        const filePath = path.join(destDir, filename);
+        if (Buffer.isBuffer(source)) {
+            fs.writeFileSync(filePath, source);
+        } else if (typeof source === 'string' && source !== filePath && fs.existsSync(source)) {
+            fs.copyFileSync(source, filePath);
+        }
+        return `/uploads/${subfolder}/${filename}`;
+    } catch (diskErr) {
+        console.warn(`⚠️ [Local Storage] Could not write to disk: ${diskErr.message}`);
+        if (Buffer.isBuffer(source)) {
+            const mime = multerFile.mimetype || 'image/jpeg';
+            return `data:${mime};base64,${source.toString('base64')}`;
+        }
+        return `/uploads/${subfolder}/${filename}`;
     }
 }
 

@@ -2,18 +2,10 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const createStorage = (subfolder) => {
-    return multer.diskStorage({
-        destination: (req, file, cb) => {
-            const dest = path.join(__dirname, `../../uploads/${subfolder}`);
-            fs.mkdirSync(dest, { recursive: true });
-            cb(null, dest);
-        },
-        filename: (req, file, cb) => {
-            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-            cb(null, uniqueSuffix + path.extname(file.originalname));
-        }
-    });
+const createStorage = () => {
+    // Use in-memory buffer storage so uploads work seamlessly on serverless/read-only
+    // environments (such as Vercel/AWS Lambda) without triggering EROFS file system errors.
+    return multer.memoryStorage();
 };
 
 const fileFilter = (req, file, cb) => {
