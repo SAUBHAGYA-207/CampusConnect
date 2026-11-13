@@ -1,0 +1,901 @@
+<div class="container-fluid py-3 px-lg-4">
+    <!-- Top Executive Header -->
+    <div class="row align-items-center mb-4 pb-3 border-bottom">
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                <span class="badge bg-warning text-dark px-3 py-1 text-uppercase fw-bold shadow-sm" style="letter-spacing: 0.5px;">
+                    🔒 Master Control Desk
+                </span>
+                <span class="badge bg-dark text-white px-2 py-1 small">
+                    Exclusive Access: <%= adminUser.email %>
+                </span>
+                <span class="badge bg-info bg-opacity-25 text-primary border border-info border-opacity-50 px-2 py-1 small">
+                    Reference Baseline: 20 Oct 2026
+                </span>
+            </div>
+            <h2 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
+                <span>🎭 Persona & Marketplace Simulation Hub</span>
+            </h2>
+            <p class="text-muted mb-0 small">
+                Manage all dummy personas, launch campus services, manage orders, and control all real-time chat rooms from one master console.
+                All simulated records sync 100% with the public marketplace with <strong>zero trace</strong> to visitors.
+            </p>
+        </div>
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0 d-flex justify-content-lg-end gap-2 flex-wrap">
+            <a href="/admin/dashboard" class="btn btn-outline-secondary btn-sm fw-semibold shadow-sm">
+                ← Super Admin Center
+            </a>
+            <a href="/marketplace" target="_blank" class="btn btn-outline-primary btn-sm fw-semibold shadow-sm">
+                🌐 View Live Marketplace ↗
+            </a>
+            <a href="/admin/logout" class="btn btn-outline-danger btn-sm fw-semibold">
+                Logout
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="card border-0 shadow-sm p-3 rounded-4" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color: #fff;">
+                <div class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Dummy Partners</div>
+                <div class="fs-3 fw-bold mt-1"><%= stats.simulatedPartnersCount %></div>
+                <small class="text-white-50" style="font-size: 0.7rem;">Active Service Providers</small>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="card border-0 shadow-sm p-3 rounded-4" style="background: linear-gradient(135deg, #059669 0%, #065f46 100%); color: #fff;">
+                <div class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Dummy Students</div>
+                <div class="fs-3 fw-bold mt-1"><%= stats.simulatedCustomersCount %></div>
+                <small class="text-white-50" style="font-size: 0.7rem;">Active Student Buyers</small>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="card border-0 shadow-sm p-3 rounded-4" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #fff;">
+                <div class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Live Services</div>
+                <div class="fs-3 fw-bold mt-1"><%= stats.simulatedServicesCount %></div>
+                <small class="text-white-50" style="font-size: 0.7rem;">Listed in Marketplace</small>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="card border-0 shadow-sm p-3 rounded-4" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: #fff;">
+                <div class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Bookings / Orders</div>
+                <div class="fs-3 fw-bold mt-1"><%= stats.simulatedBookingsCount %></div>
+                <small class="text-white-50" style="font-size: 0.7rem;">Orders generated</small>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="card border-0 shadow-sm p-3 rounded-4" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); color: #fff;">
+                <div class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Chat Rooms</div>
+                <div class="fs-3 fw-bold mt-1"><%= chatRooms.length %></div>
+                <small class="text-white-50" style="font-size: 0.7rem;">Unified Master Inbox</small>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="card border-0 shadow-sm p-3 rounded-4" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #fff;">
+                <div class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.7rem;">Timeline Origin</div>
+                <div class="fs-4 fw-bold mt-1 text-warning">20 Oct 2026</div>
+                <small class="text-white-50" style="font-size: 0.7rem;">Baseline Reference</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-pills nav-fill bg-white p-2 rounded-4 shadow-sm mb-4 border" id="simTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold <%= activeTab === 'overview' ? 'active' : '' %>" id="tab-overview-btn" data-bs-toggle="tab" data-bs-target="#tab-overview" type="button" role="tab">
+                📊 Control & Timeline Engine
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold <%= activeTab === 'personas' ? 'active' : '' %>" id="tab-personas-btn" data-bs-toggle="tab" data-bs-target="#tab-personas" type="button" role="tab">
+                👥 Dummy Personas (<%= users.length %>)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold <%= activeTab === 'services' ? 'active' : '' %>" id="tab-services-btn" data-bs-toggle="tab" data-bs-target="#tab-services" type="button" role="tab">
+                🛍️ Services & Orders (<%= services.length %> / <%= appointments.length %>)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold position-relative <%= activeTab === 'chat' ? 'active' : '' %>" id="tab-chat-btn" data-bs-toggle="tab" data-bs-target="#tab-chat" type="button" role="tab">
+                💬 Master Unified Chat Hub
+                <span class="badge bg-danger ms-1"><%= chatRooms.length %></span>
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="simTabsContent">
+
+        <!-- ========================================================================= -->
+        <!-- TAB 1: OVERVIEW & TIMELINE ENGINE -->
+        <!-- ========================================================================= -->
+        <div class="tab-pane fade <%= activeTab === 'overview' ? 'show active' : '' %>" id="tab-overview" role="tabpanel">
+            <div class="row g-4">
+                <!-- Preset Seeder Card -->
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 p-4 bg-white">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                                <span>⚡ 1-Click Campus Ecosystem Seeder</span>
+                            </h5>
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">Instant Setup</span>
+                        </div>
+                        <p class="text-muted small">
+                            Instantly populate your marketplace with authentic IIT Patna dummy personas, coding & design services, and completed booking orders with realistic chat histories starting from <strong>20 October 2026</strong>.
+                        </p>
+                        <div class="bg-light p-3 rounded-3 mb-3 border">
+                            <div class="fw-semibold small text-dark mb-2">Included In This Preset:</div>
+                            <ul class="list-unstyled mb-0 small text-muted">
+                                <li class="mb-1">✓ <strong>Rohan Sharma</strong> (Partner) — C++ & DSA Guidance (`₹350`)</li>
+                                <li class="mb-1">✓ <strong>Priya Verma</strong> (Partner) — Fest Posters & UI/UX Design (`₹250`)</li>
+                                <li class="mb-1">✓ <strong>Aman Gupta</strong> (Student Buyer) — Booked DSA slot + verified payment</li>
+                                <li class="mb-1">✓ <strong>Sneha Patel</strong> (Student Buyer) — Booked Fest Poster + verified payment</li>
+                                <li>✓ <strong>12 Backdated WhatsApp Chat Messages</strong> with ticks and conversations from 20-22 Oct 2026.</li>
+                            </ul>
+                        </div>
+                        <form action="/admin/simulation/seed-presets" method="POST" onsubmit="return confirm('Seed realistic campus presets starting from 20 October 2026?')">
+                            <button type="submit" class="btn btn-success fw-bold w-100 py-2 shadow-sm d-flex align-items-center justify-content-center gap-2">
+                                <span>🚀 Seed Preset Campus Personas & History</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Timeline & Metadata Shifter Card -->
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 p-4 bg-white">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                                <span>⏳ Timeline & Metadata Alignment Engine</span>
+                            </h5>
+                            <span class="badge bg-warning bg-opacity-25 text-dark border border-warning border-opacity-50 px-2 py-1">Baseline Alignment</span>
+                        </div>
+                        <p class="text-muted small">
+                            Synchronizes and spaces out all simulated accounts, services, bookings, and chat messages starting from <strong>20 October 2026</strong> so all timestamps and order history look organic and established.
+                        </p>
+                        <form action="/admin/simulation/shift-metadata" method="POST" onsubmit="return confirm('Align all simulated data timestamps to start from the selected baseline date?')">
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-muted">Simulation Baseline Date</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">📅</span>
+                                    <input type="date" name="baselineDate" class="form-control" value="2026-10-20" required>
+                                </div>
+                                <div class="form-text small">Default reference date requested: <strong>20 October 2026</strong>. All dummy records will be timestamped relative to this origin.</div>
+                            </div>
+                            <div class="p-3 bg-warning bg-opacity-10 border border-warning border-opacity-25 rounded-3 mb-3 text-dark small">
+                                💡 <strong>How it works:</strong> Retains all message texts, attachments, and payment records, but adjusts their internal database timestamps (`createdAt`, `timestamp`, `date`) progressively from 20 Oct 2026 onwards.
+                            </div>
+                            <button type="submit" class="btn btn-dark fw-bold w-100 py-2 shadow-sm d-flex align-items-center justify-content-center gap-2">
+                                <span>⏱️ Align All Metadata to Baseline Date</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 2: PERSONAS MANAGER -->
+        <!-- ========================================================================= -->
+        <div class="tab-pane fade <%= activeTab === 'personas' ? 'show active' : '' %>" id="tab-personas" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                    <div>
+                        <h5 class="fw-bold mb-1 text-dark">Managed Dummy Personas</h5>
+                        <p class="text-muted small mb-0">Create new simulated student buyers and service partners. Click <strong>Switch Persona</strong> to preview the app as them.</p>
+                    </div>
+                    <button type="button" class="btn btn-primary fw-bold shadow-sm d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#createPersonaModal">
+                        <span>+ Add New Dummy Persona</span>
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr class="small text-muted text-uppercase" style="font-size: 0.75rem;">
+                                <th>Display Name & Email</th>
+                                <th>Role</th>
+                                <th>Services</th>
+                                <th>Bookings</th>
+                                <th>Created Timestamp</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (users.length === 0) { %>
+                                <tr>
+                                    <td colspan="6" class="text-center py-5 text-muted">
+                                        <div class="fs-4 mb-2">👥</div>
+                                        <div>No dummy personas created yet.</div>
+                                        <div class="small mt-1">Use the <strong>Add New Dummy Persona</strong> button or seed presets from the Overview tab.</div>
+                                    </td>
+                                </tr>
+                            <% } else { %>
+                                <% users.forEach(u => { %>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shadow-sm" style="width: 38px; height: 38px; background: <%= u.role === 'provider' ? '#4f46e5' : '#059669' %>; font-size: 0.85rem;">
+                                                    <%= u.displayName ? u.displayName.charAt(0).toUpperCase() : 'U' %>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold text-dark"><%= u.displayName %></div>
+                                                    <div class="text-muted small font-monospace"><%= u.email %></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge <%= u.role === 'provider' ? 'bg-primary' : 'bg-success' %> px-2 py-1">
+                                                <%= u.role === 'provider' ? 'Partner (Seller)' : 'Student (Buyer)' %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="fw-semibold"><%= u.servicesCount %></span>
+                                        </td>
+                                        <td>
+                                            <span class="fw-semibold"><%= u.bookingsCount %></span>
+                                        </td>
+                                        <td>
+                                            <span class="small text-muted">
+                                                <%= u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '20 Oct 2026' %>
+                                            </span>
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="d-flex justify-content-end gap-2">
+                                                <a href="/admin/simulation/users/<%= u.id %>/login-as" class="btn btn-sm btn-outline-dark fw-bold d-inline-flex align-items-center gap-1" title="Log in as this user to test marketplace experience">
+                                                    <span>⚡ Switch Persona</span>
+                                                </a>
+                                                <form action="/admin/simulation/users/<%= u.id %>/delete" method="POST" class="d-inline" onsubmit="return confirm('Delete dummy persona <%= u.email %>?')">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">✕</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 3: SERVICES & ORDERS -->
+        <!-- ========================================================================= -->
+        <div class="tab-pane fade <%= activeTab === 'services' ? 'show active' : '' %>" id="tab-services" role="tabpanel">
+            <div class="row g-4 mb-4">
+                <!-- Services Section -->
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold mb-0 text-dark">🛍️ Dummy Services (<%= services.length %>)</h5>
+                            <button type="button" class="btn btn-primary btn-sm fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#createServiceModal">
+                                + List New Service
+                            </button>
+                        </div>
+                        <p class="text-muted small">Services listed under your dummy partners appear on the real public marketplace with zero trace.</p>
+
+                        <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light sticky-top">
+                                    <tr class="small text-muted text-uppercase" style="font-size: 0.72rem;">
+                                        <th>Service</th>
+                                        <th>Partner</th>
+                                        <th>Price</th>
+                                        <th>Date</th>
+                                        <th class="text-end">View</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (services.length === 0) { %>
+                                        <tr><td colspan="5" class="text-center py-4 text-muted small">No simulated services created yet.</td></tr>
+                                    <% } else { %>
+                                        <% services.forEach(s => { %>
+                                            <tr>
+                                                <td>
+                                                    <div class="fw-bold small text-truncate" style="max-width: 180px;"><%= s.title %></div>
+                                                    <span class="badge bg-light text-dark border" style="font-size: 0.65rem;"><%= s.category %></span>
+                                                </td>
+                                                <td>
+                                                    <small class="text-muted font-monospace"><%= s.providerEmail ? s.providerEmail.split('@')[0] : 'Partner' %></small>
+                                                </td>
+                                                <td>
+                                                    <span class="fw-bold text-success small">₹<%= s.price %></span>
+                                                </td>
+                                                <td>
+                                                    <small class="text-muted" style="font-size: 0.7rem;">
+                                                        <%= s.createdAt ? new Date(s.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : '20 Oct' %>
+                                                    </small>
+                                                </td>
+                                                <td class="text-end">
+                                                    <a href="/services/<%= s.id %>" target="_blank" class="btn btn-xs btn-outline-primary py-0 px-2 small">↗ View</a>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders / Appointments Section -->
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold mb-0 text-dark">📑 Dummy Orders / Bookings (<%= appointments.length %>)</h5>
+                            <button type="button" class="btn btn-success btn-sm fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#createAppointmentModal">
+                                + Create Booking
+                            </button>
+                        </div>
+                        <p class="text-muted small">Generate completed or active orders between dummy student buyers and partners.</p>
+
+                        <div class="table-responsive" style="max-height: 480px; overflow-y: auto;">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light sticky-top">
+                                    <tr class="small text-muted text-uppercase" style="font-size: 0.72rem;">
+                                        <th>Service & Buyer</th>
+                                        <th>Partner</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th class="text-end">Chat</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (appointments.length === 0) { %>
+                                        <tr><td colspan="6" class="text-center py-4 text-muted small">No simulated orders created yet.</td></tr>
+                                    <% } else { %>
+                                        <% appointments.forEach(a => { %>
+                                            <tr>
+                                                <td>
+                                                    <div class="fw-semibold small text-truncate" style="max-width: 160px;"><%= a.serviceTitle %></div>
+                                                    <small class="text-muted"><%= a.customerEmail ? a.customerEmail.split('@')[0] : 'Buyer' %></small>
+                                                </td>
+                                                <td>
+                                                    <small class="text-muted font-monospace"><%= a.providerEmail ? a.providerEmail.split('@')[0] : 'Partner' %></small>
+                                                </td>
+                                                <td>
+                                                    <span class="fw-bold text-success small">₹<%= a.paymentAmount %></span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-<%= a.status === 'completed' ? 'success' : a.status === 'accepted' ? 'primary' : 'warning text-dark' %>" style="font-size: 0.65rem;">
+                                                        <%= a.status %>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <small class="text-muted" style="font-size: 0.7rem;"><%= a.date %></small>
+                                                </td>
+                                                <td class="text-end">
+                                                    <a href="/admin/simulation?tab=chat&room=<%= a.id %>" class="btn btn-xs btn-outline-dark py-0 px-2 small">💬 Chat</a>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- TAB 4: UNIFIED LIVE CHAT HUB -->
+        <!-- ========================================================================= -->
+        <div class="tab-pane fade <%= activeTab === 'chat' ? 'show active' : '' %>" id="tab-chat" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mb-4">
+                <div class="row g-0" style="min-height: 680px;">
+
+                    <!-- LEFT: Chat Rooms List -->
+                    <div class="col-lg-4 border-end bg-light d-flex flex-direction-column flex-column" style="height: 680px;">
+                        <div class="p-3 border-bottom bg-white">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold mb-0 text-dark">All Dummy Chat Rooms</h6>
+                                <span class="badge bg-primary rounded-pill"><%= chatRooms.length %></span>
+                            </div>
+                            <input type="text" id="simChatSearch" class="form-control form-control-sm rounded-pill" placeholder="🔍 Search by student, partner, or service..." onkeyup="filterSimChatRooms()">
+                        </div>
+
+                        <div class="overflow-auto flex-grow-1" id="simChatRoomsList">
+                            <% if (chatRooms.length === 0) { %>
+                                <div class="p-4 text-center text-muted small">
+                                    No active chat rooms. Seed presets or create a booking to start chatting!
+                                </div>
+                            <% } else { %>
+                                <% chatRooms.forEach(room => { %>
+                                    <a href="/admin/simulation?tab=chat&room=<%= room.appointmentId %>" 
+                                       class="p-3 border-bottom d-block text-decoration-none transition-hover sim-room-item <%= activeRoom && activeRoom.appointmentId === room.appointmentId ? 'bg-primary bg-opacity-10 border-start border-4 border-primary' : 'bg-white' %>"
+                                       data-search="<%= room.serviceTitle %> <%= room.customer.name %> <%= room.provider.name %>">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <strong class="text-dark small text-truncate" style="max-width: 180px;"><%= room.serviceTitle %></strong>
+                                            <span class="badge bg-<%= room.status === 'completed' ? 'success' : 'primary' %>" style="font-size: 0.65rem;">
+                                                <%= room.status %>
+                                            </span>
+                                        </div>
+                                        <div class="d-flex justify-content-between text-muted small mb-1" style="font-size: 0.75rem;">
+                                            <span>👤 <strong><%= room.customer.name %></strong> (Buyer)</span>
+                                            <span>💼 <strong><%= room.provider.name %></strong> (Seller)</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center text-muted" style="font-size: 0.72rem;">
+                                            <span class="text-truncate" style="max-width: 200px;"><%= room.lastMessage %></span>
+                                            <span class="text-nowrap ms-1"><%= room.lastMessageTimestamp ? new Date(room.lastMessageTimestamp).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : '' %></span>
+                                        </div>
+                                    </a>
+                                <% }) %>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: Interactive Chat Console -->
+                    <div class="col-lg-8 d-flex flex-column" style="height: 680px; background-color: #f8fafc;">
+                        <% if (!activeRoom) { %>
+                            <div class="m-auto text-center p-5 text-muted">
+                                <div class="fs-1 mb-2">💬</div>
+                                <h5>Select a Chat Room from the left</h5>
+                                <p class="small text-muted">You can speak as either the Customer or the Partner and backdate message timestamps from 20 Oct 2026!</p>
+                            </div>
+                        <% } else { %>
+                            <!-- Room Header -->
+                            <div class="p-3 border-bottom bg-white d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <h6 class="fw-bold mb-0 text-dark"><%= activeRoom.serviceTitle %></h6>
+                                        <span class="badge bg-info text-dark" style="font-size: 0.65rem;">Booking #<%= activeRoom.appointmentId %></span>
+                                    </div>
+                                    <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                        Buyer: <strong><%= activeRoom.customer.email %></strong> | Partner: <strong><%= activeRoom.provider.email %></strong> | Scheduled: <%= activeRoom.date %> <%= activeRoom.time %>
+                                    </small>
+                                </div>
+                                <div>
+                                    <a href="/appointments/my-bookings/<%= activeRoom.appointmentId %>" target="_blank" class="btn btn-sm btn-outline-secondary py-1" title="View Customer perspective">Customer View ↗</a>
+                                    <a href="/appointments/provider/<%= activeRoom.appointmentId %>" target="_blank" class="btn btn-sm btn-outline-primary py-1 ms-1" title="View Partner perspective">Partner View ↗</a>
+                                </div>
+                            </div>
+
+                            <!-- Messages Scroll Body -->
+                            <div class="flex-grow-1 p-3 overflow-auto d-flex flex-column gap-2" id="simChatBox" style="background-color: #efeae2;">
+                                <% if (activeRoomMessages.length === 0) { %>
+                                    <div class="text-center text-muted my-auto small">No messages in this room yet. Send the first message below!</div>
+                                <% } else { %>
+                                    <% activeRoomMessages.forEach(msg => { %>
+                                        <% const isCustomer = msg.senderRole === 'customer'; %>
+                                        <div class="message-bubble <%= isCustomer ? 'align-self-start' : 'align-self-end' %>" style="max-width: 80%; padding: 8px 12px; border-radius: 12px; background-color: <%= isCustomer ? '#ffffff' : '#d9fdd3' %>; box-shadow: 0 1px 1px rgba(0,0,0,0.1);">
+                                            <div class="d-flex justify-content-between align-items-center gap-2 mb-1" style="font-size: 0.7rem;">
+                                                <strong style="color: <%= isCustomer ? '#2563eb' : '#15803d' %>;">
+                                                    <%= isCustomer ? '👤 ' + activeRoom.customer.name + ' (Customer)' : '💼 ' + activeRoom.provider.name + ' (Partner)' %>
+                                                </strong>
+                                                <span class="text-muted">
+                                                    <%= msg.timestamp ? new Date(msg.timestamp).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '' %>
+                                                </span>
+                                            </div>
+                                            <% if (msg.imageUrl) { %>
+                                                <img src="<%= msg.imageUrl %>" class="img-fluid rounded border mb-2 d-block" style="max-height: 200px; cursor: pointer;" onclick="openImageLightbox('<%= msg.imageUrl %>', 'Chat Attachment')">
+                                            <% } %>
+                                            <div style="font-size: 0.92rem; color: #111b21;"><%= msg.text %></div>
+                                        </div>
+                                    <% }) %>
+                                <% } %>
+                            </div>
+
+                            <!-- Master Sender Bar -->
+                            <div class="p-3 bg-white border-top">
+                                <!-- Persona Switcher -->
+                                <div class="d-flex align-items-center justify-content-between mb-2 p-2 rounded-3 bg-light border flex-wrap gap-2">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="small fw-bold text-dark">Send Message As:</span>
+                                        <div class="form-check form-check-inline m-0">
+                                            <input class="form-check-input" type="radio" name="simSender" id="senderCust" value="customer" checked onchange="updatePersonaColor()">
+                                            <label class="form-check-label small fw-bold text-primary" for="senderCust">
+                                                👤 Customer: <%= activeRoom.customer.name %>
+                                            </label>
+                                        </div>
+                                        <div class="form-check form-check-inline m-0">
+                                            <input class="form-check-input" type="radio" name="simSender" id="senderPart" value="provider" onchange="updatePersonaColor()">
+                                            <label class="form-check-label small fw-bold text-success" for="senderPart">
+                                                💼 Partner: <%= activeRoom.provider.name %>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="small text-muted" style="font-size: 0.75rem;">Status:</span>
+                                        <select id="simMsgStatus" class="form-select form-select-sm py-0" style="width: 100px; font-size: 0.75rem;">
+                                            <option value="read" selected>Read (✓✓ Blue)</option>
+                                            <option value="delivered">Delivered (✓✓)</option>
+                                            <option value="sent">Sent (✓)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Input Box & Options -->
+                                <form id="simChatForm" class="d-flex align-items-center gap-2">
+                                    <input type="file" id="simFileInput" accept="image/*" class="d-none">
+                                    <button type="button" class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center p-0" style="width: 42px; height: 42px; min-width: 42px;" onclick="document.getElementById('simFileInput').click()" title="Attach Photo">
+                                        📷
+                                    </button>
+                                    <input type="text" id="simChatInput" class="form-control rounded-pill px-3" placeholder="Type message as selected persona..." required autocomplete="off">
+                                    <input type="datetime-local" id="simCustomTimestamp" class="form-control form-control-sm rounded-pill" style="max-width: 180px; font-size: 0.75rem;" title="Custom Backdated Timestamp (defaults to Live Now)">
+                                    <button type="submit" id="simSendBtn" class="btn btn-primary rounded-pill px-4 fw-bold">
+                                        Send
+                                    </button>
+                                </form>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL 1: CREATE DUMMY PERSONA -->
+<!-- ========================================================================= -->
+<div class="modal fade" id="createPersonaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark">Add New Dummy Persona</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/admin/simulation/users/create" method="POST">
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">Creates an authentic college user or partner account with zero public trace of being a test persona.</p>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-muted">Persona Name / Handle</label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. Vikram Aditya, Neha Singh" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-muted">Email Address (Unique)</label>
+                        <input type="email" name="email" class="form-control" placeholder="e.g. vikram.aditya.iitp@gmail.com" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-muted">Account Role</label>
+                        <select name="role" class="form-select" id="personaRoleSelect" onchange="togglePartnerFields()">
+                            <option value="provider">💼 Campus Partner (Can list services)</option>
+                            <option value="customer">🎓 Student Buyer (Books services)</option>
+                        </select>
+                    </div>
+
+                    <div id="partnerFields">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Partner UPI ID</label>
+                            <input type="text" name="partnerUpiId" class="form-control" placeholder="e.g. vikram@okhdfcbank">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-muted">Registration Baseline Date</label>
+                        <input type="date" name="customDate" class="form-control" value="2026-10-20">
+                        <div class="form-text small">Default baseline: <strong>20 October 2026</strong></div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary fw-bold px-4">Create Persona</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL 2: LIST SERVICE AS DUMMY PARTNER -->
+<!-- ========================================================================= -->
+<div class="modal fade" id="createServiceModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark">List Service As Dummy Partner</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/admin/simulation/services/create" method="POST" enctype="multipart/form-data">
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">Select Partner</label>
+                            <select name="providerId" class="form-select" required>
+                                <% users.filter(u => u.role === 'provider').forEach(p => { %>
+                                    <option value="<%= p.id %>"><%= p.displayName %> (<%= p.email %>)</option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">Category</label>
+                            <select name="category" class="form-select">
+                                <option value="Tech & Coding">Tech & Coding</option>
+                                <option value="Academics">Academics & Tutoring</option>
+                                <option value="Design & Media">Design & Creative Media</option>
+                                <option value="Music & Hobbies">Music & Hobbies</option>
+                                <option value="Campus Errands">Campus Errands & Daily Help</option>
+                            </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold text-muted">Service Title</label>
+                            <input type="text" name="title" class="form-control" placeholder="e.g. Python & Machine Learning Project Mentorship" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">Price (₹)</label>
+                            <input type="number" name="price" class="form-control" placeholder="e.g. 299" min="0" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">Listing Date</label>
+                            <input type="date" name="customDate" class="form-control" value="2026-10-20">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold text-muted">Description</label>
+                            <textarea name="description" class="form-control" rows="3" placeholder="Describe the service offering, deliverables, and schedule..." required></textarea>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">Preset Banner Image</label>
+                            <select name="imagePreset" class="form-select">
+                                <option value="/images/banners/banner-tech.jpg">💻 Tech & Coding Banner</option>
+                                <option value="/images/banners/banner-teach.jpg">📚 Academics & Teaching Banner</option>
+                                <option value="/images/banners/banner-arts.jpg">🎨 Design & Arts Banner</option>
+                                <option value="/images/banners/banner-partner.jpg">🤝 Campus Partner Banner</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">Or Upload Custom Image</label>
+                            <input type="file" name="image" class="form-control" accept="image/*">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary fw-bold px-4">Publish Service</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- MODAL 3: CREATE SIMULATED BOOKING -->
+<!-- ========================================================================= -->
+<div class="modal fade" id="createAppointmentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark">Create Simulated Order / Booking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/admin/simulation/appointments/create" method="POST" enctype="multipart/form-data">
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">Select Student Buyer (Customer)</label>
+                            <select name="customerId" class="form-select" required>
+                                <% users.filter(u => u.role === 'customer').forEach(c => { %>
+                                    <option value="<%= c.id %>"><%= c.displayName %> (<%= c.email %>)</option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">Select Service</label>
+                            <select name="serviceId" class="form-select" required>
+                                <% allServices.forEach(s => { %>
+                                    <option value="<%= s.id %>"><%= s.title %> — ₹<%= s.price %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">Booking Date</label>
+                            <input type="date" name="date" class="form-control" value="2026-10-21" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">Time Slot</label>
+                            <input type="text" name="time" class="form-control" value="16:00" placeholder="e.g. 14:00, 18:30" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">Order Status</label>
+                            <select name="status" class="form-select">
+                                <option value="accepted" selected>Accepted (Active in-progress)</option>
+                                <option value="completed">Completed (Successfully delivered)</option>
+                                <option value="pending">Pending (Awaiting partner response)</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">Payment Status</label>
+                            <select name="paymentStatus" class="form-select">
+                                <option value="verified" selected>Verified (Paid ✓)</option>
+                                <option value="submitted">Submitted (Screenshot uploaded)</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">UPI Transaction ID / UTR</label>
+                            <input type="text" name="transactionId" class="form-control" value="UPI/20261021/984321">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-muted">Payment Proof Image (Optional)</label>
+                            <input type="file" name="paymentScreenshot" class="form-control" accept="image/*">
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold text-muted">Booking Notes / Requirements</label>
+                            <textarea name="notes" class="form-control" rows="2" placeholder="e.g. Need assistance with upcoming midterm exam preparation..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success fw-bold px-4">Generate Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function togglePartnerFields() {
+    const role = document.getElementById('personaRoleSelect').value;
+    const partnerFields = document.getElementById('partnerFields');
+    if (role === 'provider') {
+        partnerFields.style.display = 'block';
+    } else {
+        partnerFields.style.display = 'none';
+    }
+}
+
+function updatePersonaColor() {
+    const isCustomer = document.getElementById('senderCust').checked;
+    const sendBtn = document.getElementById('simSendBtn');
+    if (sendBtn) {
+        if (isCustomer) {
+            sendBtn.className = 'btn btn-primary rounded-pill px-4 fw-bold';
+            sendBtn.textContent = 'Send as Customer';
+        } else {
+            sendBtn.className = 'btn btn-success rounded-pill px-4 fw-bold';
+            sendBtn.textContent = 'Send as Partner';
+        }
+    }
+}
+
+function filterSimChatRooms() {
+    const query = (document.getElementById('simChatSearch').value || '').toLowerCase().trim();
+    const items = document.querySelectorAll('.sim-room-item');
+    items.forEach(el => {
+        const text = (el.getAttribute('data-search') || '').toLowerCase();
+        if (text.includes(query)) {
+            el.style.display = 'block';
+        } else {
+            el.style.display = 'none';
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    updatePersonaColor();
+
+    const simChatBox = document.getElementById('simChatBox');
+    if (simChatBox) {
+        simChatBox.scrollTop = simChatBox.scrollHeight;
+    }
+
+    <% if (activeRoom) { %>
+        const activeAppointmentId = "<%= activeRoom.appointmentId %>";
+        const customerId = "<%= activeRoom.customer.id %>";
+        const providerId = "<%= activeRoom.provider.id %>";
+
+        // Connect socket for real-time live chat inside simulation room
+        if (window.socket) {
+            window.socket.emit('join_appointment_room', { 
+                appointmentId: activeAppointmentId, 
+                userId: customerId, 
+                isMasterAdmin: true 
+            });
+
+            window.socket.on('new_message', (msg) => {
+                if (msg.appointmentId === activeAppointmentId) {
+                    appendSimMessage(msg);
+                }
+            });
+        }
+
+        const simChatForm = document.getElementById('simChatForm');
+        if (simChatForm) {
+            simChatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const textInput = document.getElementById('simChatInput');
+                const fileInput = document.getElementById('simFileInput');
+                const timeInput = document.getElementById('simCustomTimestamp');
+                const statusInput = document.getElementById('simMsgStatus');
+                const isCustomer = document.getElementById('senderCust').checked;
+
+                const text = textInput.value.trim();
+                const file = fileInput.files ? fileInput.files[0] : null;
+
+                if (!text && !file) return;
+
+                const senderRole = isCustomer ? 'customer' : 'provider';
+                const senderId = isCustomer ? customerId : providerId;
+
+                const formData = new FormData();
+                formData.append('senderId', senderId);
+                formData.append('senderRole', senderRole);
+                formData.append('text', text);
+                formData.append('status', statusInput.value);
+                if (timeInput && timeInput.value) {
+                    formData.append('customTimestamp', timeInput.value);
+                }
+                if (file) {
+                    formData.append('image', file);
+                }
+
+                try {
+                    const res = await fetch(`/admin/simulation/api/chat/${activeAppointmentId}/send`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+                    if (data.success && data.message) {
+                        appendSimMessage(data.message);
+                        textInput.value = '';
+                        fileInput.value = '';
+                    } else {
+                        alert('Error sending message: ' + (data.error || 'Unknown error'));
+                    }
+                } catch (err) {
+                    console.error('Sim chat error:', err);
+                    alert('Failed to send message.');
+                }
+            });
+        }
+
+        function appendSimMessage(msg) {
+            if (!simChatBox) return;
+            const isCust = msg.senderRole === 'customer';
+            const date = new Date(msg.timestamp || Date.now());
+            const timeString = isNaN(date) ? '' : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const div = document.createElement('div');
+            div.className = `message-bubble ${isCust ? 'align-self-start' : 'align-self-end'}`;
+            div.style.maxWidth = '80%';
+            div.style.padding = '8px 12px';
+            div.style.borderRadius = '12px';
+            div.style.backgroundColor = isCust ? '#ffffff' : '#d9fdd3';
+            div.style.boxShadow = '0 1px 1px rgba(0,0,0,0.1)';
+
+            let imgHtml = '';
+            if (msg.imageUrl) {
+                imgHtml = `<img src="${msg.imageUrl}" class="img-fluid rounded border mb-2 d-block" style="max-height: 200px; cursor: pointer;" onclick="openImageLightbox('${msg.imageUrl}', 'Chat Attachment')">`;
+            }
+
+            const senderLabel = isCust ? '👤 <%= activeRoom.customer.name %> (Customer)' : '💼 <%= activeRoom.provider.name %> (Partner)';
+            const labelColor = isCust ? '#2563eb' : '#15803d';
+
+            div.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center gap-2 mb-1" style="font-size: 0.7rem;">
+                    <strong style="color: ${labelColor};">${senderLabel}</strong>
+                    <span class="text-muted">${timeString}</span>
+                </div>
+                ${imgHtml}
+                <div style="font-size: 0.92rem; color: #111b21;">${msg.text}</div>
+            `;
+
+            simChatBox.appendChild(div);
+            simChatBox.scrollTop = simChatBox.scrollHeight;
+        }
+    <% } %>
+});
+</script>

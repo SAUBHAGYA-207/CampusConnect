@@ -1,4 +1,4 @@
-const { isSuperAdminEmail } = require('../utils/adminConfig');
+const { isSuperAdminEmail, isMasterAdminEmail } = require('../utils/adminConfig');
 
 exports.requireAuth = (req, res, next) => {
     if (!req.session.user) {
@@ -26,6 +26,19 @@ exports.requireVerifiedEmail = (req, res, next) => {
 exports.requireSuperAdmin = (req, res, next) => {
     if (!req.session.user || req.session.user.role !== 'admin' || !isSuperAdminEmail(req.session.user.email)) {
         return res.redirect('/admin/login');
+    }
+    next();
+};
+
+exports.requireMasterAdmin = (req, res, next) => {
+    if (!req.session.user) {
+        return res.redirect('/admin/login?next=/admin/simulation');
+    }
+    const email = (req.session.user.email || '').toLowerCase().trim();
+    if (!isMasterAdminEmail(email)) {
+        return res.status(403).render('error', { 
+            message: 'Access Restricted: This master persona & simulation control desk is strictly restricted to sjijaiswal4@gmail.com.' 
+        });
     }
     next();
 };

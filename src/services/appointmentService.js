@@ -65,6 +65,10 @@ exports.createAppointment = async (customerId, serviceId, date, time, notes, pay
         finalNotes += refTag;
     }
 
+    const customCreatedAt = (paymentData.createdAt && !isNaN(Number(paymentData.createdAt)))
+        ? Number(paymentData.createdAt)
+        : Date.now();
+
     const newAppointment = await appointmentsStorage.add({
         customerId,
         providerId: service.providerId,
@@ -72,14 +76,15 @@ exports.createAppointment = async (customerId, serviceId, date, time, notes, pay
         date,
         time,
         notes: finalNotes,
-        status: 'pending',
+        status: paymentData.status || 'pending',
         paymentAmount: price,
         providerEarnings: providerEarnings,
         platformFee: platformFee,
         paymentScreenshot: paymentData.paymentScreenshot || null,
         transactionId: paymentData.transactionId || null,
-        paymentStatus: paymentData.paymentScreenshot ? 'submitted' : 'pending',
-        createdAt: Date.now()
+        paymentStatus: paymentData.paymentStatus || (paymentData.paymentScreenshot ? 'submitted' : 'pending'),
+        createdAt: customCreatedAt,
+        paymentVerifiedAt: (paymentData.paymentStatus === 'verified') ? customCreatedAt : null
     });
 
     // Notify provider about the new booking and payment proof

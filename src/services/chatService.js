@@ -3,7 +3,7 @@ const messagesStorage = new JsonStorage('messages');
 const adminMessagesStorage = new JsonStorage('admin_messages');
 const usersStorage = new JsonStorage('users');
 
-exports.saveMessage = async (appointmentId, senderId, senderRole, text, imageUrl, status = 'sent') => {
+exports.saveMessage = async (appointmentId, senderId, senderRole, text, imageUrl, status = 'sent', customTimestamp = null) => {
     let payloadText = text || '';
     if (imageUrl) {
         payloadText = `[IMAGE]${imageUrl}[/IMAGE]${payloadText ? ' ' + payloadText : ''}`;
@@ -12,19 +12,24 @@ exports.saveMessage = async (appointmentId, senderId, senderRole, text, imageUrl
         payloadText = `[STATUS:${status}]${payloadText}`;
     }
 
+    const finalTimestamp = (customTimestamp !== null && customTimestamp !== undefined && !isNaN(Number(customTimestamp))) 
+        ? Number(customTimestamp) 
+        : Date.now();
+
     const saved = await messagesStorage.add({
         appointmentId,
         senderId,
         senderRole,
         text: payloadText,
-        timestamp: Date.now()
+        timestamp: finalTimestamp
     });
 
     return {
         ...saved,
         text: text || '',
         imageUrl: imageUrl || null,
-        status: status || 'sent'
+        status: status || 'sent',
+        timestamp: finalTimestamp
     };
 };
 

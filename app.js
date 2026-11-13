@@ -40,6 +40,8 @@ app.use((req, res, next) => {
         res.set('Expires', '0');
     }
     res.locals.user = req.session.user || null;
+    res.locals.impersonatedFrom = req.session.impersonatedFrom || null;
+    res.locals.isMasterAdmin = Boolean(req.session.user && req.session.user.email && req.session.user.email.toLowerCase().trim() === 'sjijaiswal4@gmail.com');
     res.locals.path = req.path;
     res.locals.success_messages = req.flash('success');
     res.locals.error_messages = req.flash('error');
@@ -63,6 +65,8 @@ app.use('/api/notifications', notificationRoutes);
 
 const adminRoutes = require('./src/routes/adminRoutes');
 const supportRoutes = require('./src/routes/supportRoutes');
+const simulationRoutes = require('./src/routes/simulationRoutes');
+app.use('/admin/simulation', simulationRoutes);
 app.use('/admin', adminRoutes);
 app.use('/support', supportRoutes);
 

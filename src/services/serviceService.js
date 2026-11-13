@@ -101,7 +101,9 @@ exports.createService = async (providerId, serviceData) => {
         category: serviceData.category,
         image: imagePayload,
         providerId,
-        createdAt: Date.now()
+        createdAt: (serviceData.createdAt && !isNaN(Number(serviceData.createdAt))) 
+            ? Number(serviceData.createdAt) 
+            : Date.now()
     };
 
     const added = await servicesStorage.add(payload);
