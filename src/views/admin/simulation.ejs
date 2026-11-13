@@ -123,21 +123,21 @@
                             <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">Instant Setup</span>
                         </div>
                         <p class="text-muted small">
-                            Instantly populate your marketplace with authentic IIT Patna dummy personas, coding & design services, and completed booking orders with realistic chat histories starting from <strong>20 October 2026</strong>.
+                            Populates your marketplace with authentic student personas using <strong>purely personal emails</strong> (no campus/test keywords), realistic services, verified bookings, and <strong>casual Hinglish WhatsApp-style chat conversations</strong> starting from <strong>20 October 2026</strong>.
                         </p>
                         <div class="bg-light p-3 rounded-3 mb-3 border">
                             <div class="fw-semibold small text-dark mb-2">Included In This Preset:</div>
                             <ul class="list-unstyled mb-0 small text-muted">
-                                <li class="mb-1">✓ <strong>Rohan Sharma</strong> (Partner) — C++ & DSA Guidance (`₹350`)</li>
-                                <li class="mb-1">✓ <strong>Priya Verma</strong> (Partner) — Fest Posters & UI/UX Design (`₹250`)</li>
-                                <li class="mb-1">✓ <strong>Aman Gupta</strong> (Student Buyer) — Booked DSA slot + verified payment</li>
-                                <li class="mb-1">✓ <strong>Sneha Patel</strong> (Student Buyer) — Booked Fest Poster + verified payment</li>
-                                <li>✓ <strong>12 Backdated WhatsApp Chat Messages</strong> with ticks and conversations from 20-22 Oct 2026.</li>
+                                <li class="mb-1">✓ <strong>Rohan Verma</strong> (`rohanv_22@gmail.com`) — C++ & DSA Guidance (`₹350`)</li>
+                                <li class="mb-1">✓ <strong>Priya Sharma</strong> (`priya.s88@gmail.com`) — Fest Posters & UI/UX Design (`₹250`)</li>
+                                <li class="mb-1">✓ <strong>Kartik Mehta</strong> (`kartik.m94@gmail.com`) — Laptop Cleaning & Thermal Paste (`₹200`)</li>
+                                <li class="mb-1">✓ <strong>Aman Gupta</strong> (`aman.gupta02@gmail.com`), <strong>Sneha Patel</strong> (`sneha12@gmail.com`), <strong>Ritesh Kumar</strong> (`riteshk_97@gmail.com`)</li>
+                                <li>✓ <strong>Casual Hinglish chats</strong> with authentic student slang ("Bhai kal 4 baje...", "Arctic MX-4 paste...", "Neon cyberpunk vibe...").</li>
                             </ul>
                         </div>
-                        <form action="/admin/simulation/seed-presets" method="POST" onsubmit="return confirm('Seed realistic campus presets starting from 20 October 2026?')">
+                        <form action="/admin/simulation/seed-presets" method="POST" onsubmit="return confirm('Wipe old dummy entries and seed fresh realistic personal personas with Hinglish chats starting from 20 October 2026?')">
                             <button type="submit" class="btn btn-success fw-bold w-100 py-2 shadow-sm d-flex align-items-center justify-content-center gap-2">
-                                <span>🚀 Seed Preset Campus Personas & History</span>
+                                <span>🚀 Seed Realistic Personas & Hinglish Chats</span>
                             </button>
                         </form>
                     </div>
@@ -171,6 +171,23 @@
                                 <span>⏱️ Align All Metadata to Baseline Date</span>
                             </button>
                         </form>
+                    </div>
+                </div>
+
+                <!-- Reset / Wipe Card -->
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white border-start border-danger border-4">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                            <div>
+                                <h6 class="fw-bold mb-1 text-danger">⚠️ Purge All Dummy & Simulated Data</h6>
+                                <p class="text-muted small mb-0">Removes all simulated accounts, services, test bookings, and chat histories without affecting real student or partner accounts.</p>
+                            </div>
+                            <form action="/admin/simulation/clear-all" method="POST" onsubmit="return confirm('WARNING: Are you sure you want to permanently delete all simulated personas, services, and chat messages?')">
+                                <button type="submit" class="btn btn-outline-danger fw-bold px-4 py-2">
+                                    🗑️ Wipe All Dummy Data
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -551,8 +568,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label small fw-semibold text-muted">Email Address (Unique)</label>
-                        <input type="email" name="email" class="form-control" placeholder="e.g. vikram.aditya.iitp@gmail.com" required>
+                        <label class="form-label small fw-semibold text-muted">Email Address (Pure Personal)</label>
+                        <input type="email" name="email" class="form-control" placeholder="e.g. sneha12@gmail.com, rohan.v98@gmail.com" required>
+                        <div class="form-text small">Use natural personal emails with random numbers for 100% authentic profiles. Avoid tags like iitp or campus.</div>
                     </div>
 
                     <div class="mb-3">

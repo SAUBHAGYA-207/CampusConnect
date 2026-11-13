@@ -27,5 +27,6 @@ router.post('/api/chat/:appointmentId/send', upload.chatUpload.single('image'), 
 // Metadata & Seeder Operations
 router.post('/shift-metadata', simulationController.postShiftMetadata);
 router.post('/seed-presets', simulationController.postSeedPresets);
+router.post('/clear-all', simulationController.postClearAll);
 
 module.exports = router;

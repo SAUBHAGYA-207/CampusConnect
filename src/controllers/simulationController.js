@@ -237,3 +237,14 @@ exports.postSeedPresets = async (req, res, next) => {
         res.redirect('/admin/simulation?tab=overview');
     }
 };
+
+exports.postClearAll = async (req, res, next) => {
+    try {
+        const result = await simulationService.clearAllSimulatedData();
+        req.flash('success', `Cleared all dummy data: ${result.deletedUsersCount} dummy accounts, ${result.deletedServicesCount} services, ${result.deletedAppointmentsCount} bookings, and ${result.deletedMessagesCount} messages removed.`);
+        res.redirect('/admin/simulation?tab=overview');
+    } catch (error) {
+        req.flash('error', error.message);
+        res.redirect('/admin/simulation?tab=overview');
+    }
+};

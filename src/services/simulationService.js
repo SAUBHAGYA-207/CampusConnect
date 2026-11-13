@@ -14,6 +14,13 @@ const messagesStorage = new JsonStorage('messages');
 const BASELINE_DATE_STRING = '2026-10-20';
 const BASELINE_TIMESTAMP = new Date('2026-10-20T10:00:00.000Z').getTime(); // 1792490400000
 
+const LEGACY_DUMMY_EMAILS = [
+    'rohan.sharma.iitp@gmail.com',
+    'priya.verma.design@gmail.com',
+    'aman.gupta.mech@gmail.com',
+    'sneha.patel.cse@gmail.com'
+];
+
 /**
  * Checks if a user is a simulated/dummy account
  */
@@ -21,6 +28,11 @@ function isSimulatedUser(user) {
     if (!user) return false;
     if (user.otp === 'SIMULATED' || user.otp === 'SIMULATED_PERSONA') return true;
     if (user.isSimulated === true) return true;
+    if (user.email) {
+        const lower = user.email.toLowerCase();
+        if (LEGACY_DUMMY_EMAILS.includes(lower)) return true;
+        if (lower.endsWith('@campusconnect.local') && !lower.startsWith('admin')) return true;
+    }
     return false;
 }
 
@@ -459,18 +471,86 @@ async function shiftAllMetadataToBaseline(newBaselineDateStr = '2026-10-20') {
 }
 
 /**
- * 1-Click Preset Seeder: Seeds realistic IIT campus personas, services, bookings, and chats
+ * Completely wipe all simulated/dummy data (users, services, bookings, chat messages)
+ */
+async function clearAllSimulatedData() {
+    const [allUsers, allServices, allAppointments] = await Promise.all([
+        usersStorage.getAll(),
+        servicesStorage.getAll(),
+        appointmentsStorage.getAll()
+    ]);
+
+    const simUsers = allUsers.filter(isSimulatedUser);
+    const simUserIds = new Set(simUsers.map(u => u.id));
+
+    let deletedUsersCount = 0;
+    let deletedServicesCount = 0;
+    let deletedAppointmentsCount = 0;
+    let deletedMessagesCount = 0;
+
+    // 1. Delete appointments and messages
+    const simAppointments = allAppointments.filter(a => simUserIds.has(a.customerId) || simUserIds.has(a.providerId));
+    for (const app of simAppointments) {
+        try {
+            const msgs = await chatService.getMessagesForAppointment(app.id);
+            for (const m of msgs) {
+                await messagesStorage.delete(m.id);
+                deletedMessagesCount++;
+            }
+            await appointmentsStorage.delete(app.id);
+            deletedAppointmentsCount++;
+        } catch (e) {
+            console.error(`Error deleting simulated appointment ${app.id}:`, e.message);
+        }
+    }
+
+    // 2. Delete services
+    const simServices = allServices.filter(s => simUserIds.has(s.providerId));
+    for (const svc of simServices) {
+        try {
+            await servicesStorage.delete(svc.id);
+            deletedServicesCount++;
+        } catch (e) {
+            console.error(`Error deleting simulated service ${svc.id}:`, e.message);
+        }
+    }
+
+    // 3. Delete users
+    for (const user of simUsers) {
+        try {
+            await usersStorage.delete(user.id);
+            deletedUsersCount++;
+        } catch (e) {
+            console.error(`Error deleting simulated user ${user.id}:`, e.message);
+        }
+    }
+
+    return {
+        success: true,
+        deletedUsersCount,
+        deletedServicesCount,
+        deletedAppointmentsCount,
+        deletedMessagesCount
+    };
+}
+
+/**
+ * 1-Click Preset Seeder: Seeds realistic campus personas with purely personal emails,
+ * services, bookings, and casual Hinglish WhatsApp-style chat conversations starting from 20 October 2026.
  */
 async function seedCampusPresets() {
+    // 1. Clean up any previous dummy data first
+    await clearAllSimulatedData();
+
     const saltRounds = 10;
     const defaultPassword = await bcrypt.hash('campus123', saltRounds);
 
     const presetPersonas = [
         {
-            email: 'rohan.sharma.iitp@gmail.com',
-            name: 'Rohan Sharma',
+            email: 'rohanv_22@gmail.com',
+            name: 'Rohan Verma',
             role: 'provider',
-            partnerUpiId: 'rohansharma.iitp@okhdfcbank',
+            partnerUpiId: 'rohanv22@oksbi',
             partnerQrImage: '/images/banners/banner-tech.jpg',
             timeOffsetHours: 2,
             services: [
@@ -484,10 +564,10 @@ async function seedCampusPresets() {
             ]
         },
         {
-            email: 'priya.verma.design@gmail.com',
-            name: 'Priya Verma',
+            email: 'priya.s88@gmail.com',
+            name: 'Priya Sharma',
             role: 'provider',
-            partnerUpiId: 'priyaverma@okaxis',
+            partnerUpiId: 'priyasharma88@okhdfcbank',
             partnerQrImage: '/images/banners/banner-arts.jpg',
             timeOffsetHours: 4,
             services: [
@@ -501,16 +581,39 @@ async function seedCampusPresets() {
             ]
         },
         {
-            email: 'aman.gupta.mech@gmail.com',
+            email: 'kartik.m94@gmail.com',
+            name: 'Kartik Mehta',
+            role: 'provider',
+            partnerUpiId: 'kartik.m94@okaxis',
+            partnerQrImage: '/images/banners/banner-partner.jpg',
+            timeOffsetHours: 5,
+            services: [
+                {
+                    title: 'Laptop Cleaning, Thermal Paste & Minor Fixes',
+                    description: 'Internal laptop dust cleaning, high-performance thermal paste replacement (Arctic MX-4), thermal throttling fix, and minor screw/hinge repairs in hostel.',
+                    price: 200,
+                    category: 'Repairs & Tech',
+                    image: '/images/banners/banner-partner.jpg'
+                }
+            ]
+        },
+        {
+            email: 'aman.gupta02@gmail.com',
             name: 'Aman Gupta',
             role: 'customer',
             timeOffsetHours: 6
         },
         {
-            email: 'sneha.patel.cse@gmail.com',
+            email: 'sneha12@gmail.com',
             name: 'Sneha Patel',
             role: 'customer',
             timeOffsetHours: 8
+        },
+        {
+            email: 'riteshk_97@gmail.com',
+            name: 'Ritesh Kumar',
+            role: 'customer',
+            timeOffsetHours: 9
         }
     ];
 
@@ -518,103 +621,120 @@ async function seedCampusPresets() {
     const createdServices = [];
 
     for (const p of presetPersonas) {
-        let user = await usersStorage.find(u => u.email === p.email);
-        if (!user) {
-            const createdAt = BASELINE_TIMESTAMP + (p.timeOffsetHours * 3600 * 1000);
-            user = await usersStorage.add({
-                email: p.email,
-                password: defaultPassword,
-                role: p.role,
-                isVerified: true,
-                otp: 'SIMULATED',
-                otpExpires: null,
-                partnerUpiId: p.partnerUpiId || null,
-                partnerQrImage: p.partnerQrImage || null,
-                createdAt
-            });
-        }
+        const createdAt = BASELINE_TIMESTAMP + (p.timeOffsetHours * 3600 * 1000);
+        const user = await usersStorage.add({
+            name: p.name,
+            email: p.email,
+            password: defaultPassword,
+            role: p.role,
+            isVerified: true,
+            otp: 'SIMULATED',
+            otpExpires: null,
+            partnerUpiId: p.partnerUpiId || null,
+            partnerQrImage: p.partnerQrImage || null,
+            createdAt
+        });
         createdUsers.push(user);
 
         if (p.services && p.services.length > 0) {
             for (const s of p.services) {
-                const existingSvc = await servicesStorage.find(item => item.providerId === user.id && item.title === s.title);
-                if (!existingSvc) {
-                    const svc = await serviceService.createService(user.id, {
-                        ...s,
-                        createdAt: user.createdAt + (2 * 3600 * 1000)
-                    });
-                    createdServices.push(svc);
-                } else {
-                    createdServices.push(existingSvc);
-                }
+                const svc = await serviceService.createService(user.id, {
+                    ...s,
+                    createdAt: user.createdAt + (2 * 3600 * 1000)
+                });
+                createdServices.push(svc);
             }
         }
     }
 
-    // Create realistic preset appointments and chats
-    const rohan = createdUsers.find(u => u.email === 'rohan.sharma.iitp@gmail.com');
-    const priya = createdUsers.find(u => u.email === 'priya.verma.design@gmail.com');
-    const aman = createdUsers.find(u => u.email === 'aman.gupta.mech@gmail.com');
-    const sneha = createdUsers.find(u => u.email === 'sneha.patel.cse@gmail.com');
+    const rohan = createdUsers.find(u => u.email === 'rohanv_22@gmail.com');
+    const priya = createdUsers.find(u => u.email === 'priya.s88@gmail.com');
+    const kartik = createdUsers.find(u => u.email === 'kartik.m94@gmail.com');
+    const aman = createdUsers.find(u => u.email === 'aman.gupta02@gmail.com');
+    const sneha = createdUsers.find(u => u.email === 'sneha12@gmail.com');
+    const ritesh = createdUsers.find(u => u.email === 'riteshk_97@gmail.com');
 
     const codingSvc = createdServices.find(s => s.providerId === rohan?.id);
     const designSvc = createdServices.find(s => s.providerId === priya?.id);
+    const laptopSvc = createdServices.find(s => s.providerId === kartik?.id);
 
-    // Appointment 1: Aman bookings Rohan's coding class
+    // Appointment 1: Aman & Rohan (DSA / Coding) - Casual Hinglish Chat
     if (rohan && aman && codingSvc) {
-        const existingApp = await appointmentsStorage.find(a => a.customerId === aman.id && a.serviceId === codingSvc.id);
-        if (!existingApp) {
-            const appTime = BASELINE_TIMESTAMP + (24 * 3600 * 1000); // Oct 21, 2026
-            const app = await createSimulatedAppointment({
-                customerId: aman.id,
-                providerId: rohan.id,
-                serviceId: codingSvc.id,
-                date: '2026-10-21',
-                time: '16:00',
-                notes: 'Need urgent help with dynamic programming (knapsack and grid DP) for upcoming company coding round.',
-                status: 'accepted',
-                paymentStatus: 'verified',
-                transactionId: 'UPI/20261020/987123',
-                customDate: appTime
-            });
+        const appTime = BASELINE_TIMESTAMP + (24 * 3600 * 1000); // 21 Oct 2026
+        const app = await createSimulatedAppointment({
+            customerId: aman.id,
+            providerId: rohan.id,
+            serviceId: codingSvc.id,
+            date: '2026-10-21',
+            time: '16:00',
+            notes: 'Bhai dynamic programming aur graphs me bohot doubt hai, placement round ke liye practice karni hai.',
+            status: 'accepted',
+            paymentStatus: 'verified',
+            transactionId: 'UPI/20261021/987123',
+            customDate: appTime
+        });
 
-            // Seed realistic chat history starting from Oct 20, 2026
-            await chatService.saveMessage(app.id, aman.id, 'customer', 'Hi Rohan, I booked your DSA guidance slot for tomorrow 4 PM. Are you free to cover DP?', null, 'read', appTime + (10 * 60 * 1000));
-            await chatService.saveMessage(app.id, rohan.id, 'provider', 'Hey Aman! Yes, absolutely. We will start with 0/1 knapsack and then transition into tree DP. Have you solved LeetCode 322?', null, 'read', appTime + (25 * 60 * 1000));
-            await chatService.saveMessage(app.id, aman.id, 'customer', 'Yes, solved Coin Change but got stuck on state transition optimizations.', null, 'read', appTime + (32 * 60 * 1000));
-            await chatService.saveMessage(app.id, rohan.id, 'provider', 'Perfect, I will prepare 4 focused problems and we will walk through the recursion trees together. See you on Google Meet!', null, 'read', appTime + (45 * 60 * 1000));
-        }
+        await chatService.saveMessage(app.id, aman.id, 'customer', 'Bhai Rohan, kal 4 baje ka slot book kiya hai DSA ke liye. Dynamic Programming aur Graph ke doubts the.', null, 'read', appTime + (15 * 60 * 1000));
+        await chatService.saveMessage(app.id, rohan.id, 'provider', 'Haan bhai done! Bilkul tension mat le. Knapsack aur BFS/DFS ke questions se start karenge. Pehle basic patterns clear kar lenge.', null, 'read', appTime + (28 * 60 * 1000));
+        await chatService.saveMessage(app.id, aman.id, 'customer', 'Haan bhai LeetCode pe submit karne me time complexity ka issue aa raha tha baar baar.', null, 'read', appTime + (35 * 60 * 1000));
+        await chatService.saveMessage(app.id, rohan.id, 'provider', 'Arey standard memoization wala pattern hai, kal code walk-through karenge to ek baar me click ho jayega. Kal 3:55 PM pe GMeet link bhej dunga.', null, 'read', appTime + (48 * 60 * 1000));
+        await chatService.saveMessage(app.id, aman.id, 'customer', 'Sahi hai bhai, thanks a lot! Kal milte hain 👍', null, 'read', appTime + (55 * 60 * 1000));
+        await chatService.saveMessage(app.id, rohan.id, 'provider', 'Bilkul bhai, see you!', null, 'read', appTime + (60 * 60 * 1000));
     }
 
-    // Appointment 2: Sneha bookings Priya's design service
+    // Appointment 2: Sneha & Priya (Design) - Casual Hinglish Chat
     if (priya && sneha && designSvc) {
-        const existingApp = await appointmentsStorage.find(a => a.customerId === sneha.id && a.serviceId === designSvc.id);
-        if (!existingApp) {
-            const appTime = BASELINE_TIMESTAMP + (48 * 3600 * 1000); // Oct 22, 2026
-            const app = await createSimulatedAppointment({
-                customerId: sneha.id,
-                providerId: priya.id,
-                serviceId: designSvc.id,
-                date: '2026-10-22',
-                time: '18:30',
-                notes: 'Need a tech fest poster for Robotics Club workshop.',
-                status: 'completed',
-                paymentStatus: 'verified',
-                transactionId: 'UPI/20261021/874512',
-                customDate: appTime
-            });
+        const appTime = BASELINE_TIMESTAMP + (48 * 3600 * 1000); // 22 Oct 2026
+        const app = await createSimulatedAppointment({
+            customerId: sneha.id,
+            providerId: priya.id,
+            serviceId: designSvc.id,
+            date: '2026-10-22',
+            time: '18:30',
+            notes: 'Tech workshop ke liye dark cyberpunk neon poster chahiye.',
+            status: 'completed',
+            paymentStatus: 'verified',
+            transactionId: 'UPI/20261022/874512',
+            customDate: appTime
+        });
 
-            // Seed realistic chat history
-            await chatService.saveMessage(app.id, sneha.id, 'customer', 'Hello Priya! Sent over the booking for Robotics Club poster. We need a dark cyberpunk theme.', null, 'read', appTime + (15 * 60 * 1000));
-            await chatService.saveMessage(app.id, priya.id, 'provider', 'Hey Sneha! Got the booking and payment. Do you have the club logo and sponsor logos in PNG format?', null, 'read', appTime + (35 * 60 * 1000));
-            await chatService.saveMessage(app.id, sneha.id, 'customer', 'Yes! Sending the drive link right now.', null, 'read', appTime + (42 * 60 * 1000));
-            await chatService.saveMessage(app.id, priya.id, 'provider', 'Received! I will share the first draft by tomorrow noon.', null, 'read', appTime + (50 * 60 * 1000));
-        }
+        await chatService.saveMessage(app.id, sneha.id, 'customer', 'Hey Priya! Tech workshop ke poster ke liye book kiya tha. Ek clean aesthetic neon cyberpunk vibe chahiye.', null, 'read', appTime + (20 * 60 * 1000));
+        await chatService.saveMessage(app.id, priya.id, 'provider', 'Hey Sneha! Haan maine booking dekh li. Theme kaafi mast lagegi! Logo aur speakers ke high-res PNGs bhej sakti ho?', null, 'read', appTime + (42 * 60 * 1000));
+        await chatService.saveMessage(app.id, sneha.id, 'customer', 'Haan bilkul, drive ka link chat me share kar diya hai. Text content bhi doc file me add kar diya hai.', null, 'read', appTime + (50 * 60 * 1000));
+        await chatService.saveMessage(app.id, priya.id, 'provider', 'Mil gaya! Mai kal dopehar tak first draft ready kar dungi, fir jo bhi tweaks honge discuss kar lenge 🎨', null, 'read', appTime + (75 * 60 * 1000));
+        await chatService.saveMessage(app.id, sneha.id, 'customer', 'Awesome! Jaldi chahiye tha thoda kyunki publicity team ko circulate karna hai.', null, 'read', appTime + (82 * 60 * 1000));
+        await chatService.saveMessage(app.id, priya.id, 'provider', "Haan haan pakka, 2 PM se pehle finalized HD export bhej dungi don't worry 💯", null, 'read', appTime + (95 * 60 * 1000));
+        await chatService.saveMessage(app.id, sneha.id, 'customer', 'Superb, thank you so much Priya!', null, 'read', appTime + (100 * 60 * 1000));
+    }
+
+    // Appointment 3: Ritesh & Kartik (Laptop Cleaning) - Casual Hinglish Chat
+    if (kartik && ritesh && laptopSvc) {
+        const appTime = BASELINE_TIMESTAMP + (72 * 3600 * 1000); // 23 Oct 2026
+        const app = await createSimulatedAppointment({
+            customerId: ritesh.id,
+            providerId: kartik.id,
+            serviceId: laptopSvc.id,
+            date: '2026-10-23',
+            time: '17:00',
+            notes: 'Gaming me laptop bohot heat ho raha hai aur fan ka aawaz aa raha hai.',
+            status: 'accepted',
+            paymentStatus: 'verified',
+            transactionId: 'UPI/20261023/551290',
+            customDate: appTime
+        });
+
+        await chatService.saveMessage(app.id, ritesh.id, 'customer', 'Bhai Kartik, laptop games me bohot zyada garam ho raha hai aur fan ka aawaz aa raha hai, kal check ho sakta hai kya?', null, 'read', appTime + (10 * 60 * 1000));
+        await chatService.saveMessage(app.id, kartik.id, 'provider', 'Haan bhai dust accumulation aur thermal paste dry ho gaya hoga. Kal shaam ko 5 baje room pe le aana, Arctic MX-4 paste laga dunga.', null, 'read', appTime + (25 * 60 * 1000));
+        await chatService.saveMessage(app.id, ritesh.id, 'customer', 'Kitna time lagega approx bhai?', null, 'read', appTime + (32 * 60 * 1000));
+        await chatService.saveMessage(app.id, kartik.id, 'provider', 'Bas 30-40 min lagega samne hi khol ke clean karke test kar lenge.', null, 'read', appTime + (40 * 60 * 1000));
+        await chatService.saveMessage(app.id, ritesh.id, 'customer', 'Great bhai, advance payment UPI kar diya hai check kar lena.', null, 'read', appTime + (48 * 60 * 1000));
+        await chatService.saveMessage(app.id, kartik.id, 'provider', 'Haan payment receive ho gaya bhai. Kal 5 baje call kar lena aate waqt! 👍', null, 'read', appTime + (65 * 60 * 1000));
+        await chatService.saveMessage(app.id, ritesh.id, 'customer', 'Done bhai, thanks!', null, 'read', appTime + (72 * 60 * 1000));
     }
 
     return {
         success: true,
-        message: 'Campus simulation presets successfully seeded starting from 20 October 2026!'
+        message: 'Campus simulation successfully seeded with purely personal emails and casual Hinglish chats starting from 20 October 2026!'
     };
 }
 
@@ -633,5 +753,6 @@ module.exports = {
     getAllSimulatedChatRooms,
     sendSimulatedMessage,
     shiftAllMetadataToBaseline,
-    seedCampusPresets
+    seedCampusPresets,
+    clearAllSimulatedData
 };
