@@ -23,8 +23,9 @@ exports.postRegister = async (req, res) => {
     try {
         const { email, password, role, isPartner, referralCode } = req.body;
         const refCode = referralCode ? referralCode.trim().toUpperCase() : '';
+        const cleanEmail = (email || '').toLowerCase().trim();
 
-        const existingUser = await usersStorage.find(u => u.email === email);
+        const existingUser = await usersStorage.find(u => u && u.email && u.email.toLowerCase().trim() === cleanEmail);
         if (existingUser) {
             if (!existingUser.isVerified) {
                 // If user registered earlier but never verified, issue fresh OTP and redirect to verification
@@ -109,8 +110,9 @@ exports.postPartnerRegister = async (req, res) => {
     try {
         const { email, password, referralCode } = req.body;
         const refCode = referralCode ? referralCode.trim().toUpperCase() : '';
+        const cleanEmail = (email || '').toLowerCase().trim();
 
-        const existingUser = await usersStorage.find(u => u.email === email);
+        const existingUser = await usersStorage.find(u => u && u.email && u.email.toLowerCase().trim() === cleanEmail);
         if (existingUser) {
             if (!existingUser.isVerified) {
                 const otp = generateOTP();
@@ -172,7 +174,8 @@ exports.postPartnerRegister = async (req, res) => {
 exports.postPartnerLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await usersStorage.find(u => u.email === email);
+        const cleanEmail = (email || '').toLowerCase().trim();
+        const user = await usersStorage.find(u => u && u.email && u.email.toLowerCase().trim() === cleanEmail);
         
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.render('auth/partner-login', { error: 'Invalid partner credentials' });
@@ -245,7 +248,8 @@ exports.postConvertToPartner = async (req, res) => {
 exports.postLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await usersStorage.find(u => u.email === email);
+        const cleanEmail = (email || '').toLowerCase().trim();
+        const user = await usersStorage.find(u => u && u.email && u.email.toLowerCase().trim() === cleanEmail);
         
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.render('auth/login', { error: 'Invalid credentials' });

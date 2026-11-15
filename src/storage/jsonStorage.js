@@ -92,6 +92,15 @@ class JsonStorage {
                     const localData = await this._read().catch(() => []);
                     const localMap = new Map(localData.map(i => [i.id, i]));
                     const merged = (data || []).map(item => ({ ...item, ...(localMap.get(item.id) || {}) }));
+
+                    // Also include any local records that aren't yet in Supabase
+                    const supabaseIds = new Set((data || []).map(item => item.id));
+                    for (const localItem of localData) {
+                        if (localItem && localItem.id && !supabaseIds.has(localItem.id)) {
+                            merged.push(localItem);
+                        }
+                    }
+
                     setCachedData(this.tableName, merged);
                     return merged;
                 } catch (err) {

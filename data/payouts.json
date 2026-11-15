@@ -78,5 +78,21 @@
     "createdAt": 1794724690880,
     "id": "1794724690881qyda",
     "partnerQrImage": null
+  },
+  {
+    "partnerId": "test_user_wallet_1794726108466",
+    "partnerEmail": "cust_1794726108470@campusconnect.local",
+    "amount": 150,
+    "status": "cleared",
+    "type": "refund",
+    "partnerUpiId": null,
+    "notes": "Refund for cancelled booking #17947261 (Money Refund Test Service)",
+    "appointmentId": "1794726142406dqxtxn",
+    "adminPaymentProof": "/uploads/admin_refund_receipt.jpg",
+    "adminTransactionId": "UPI-REFUND-CLEARED-999",
+    "clearedAt": 1794726152943,
+    "createdAt": 1794726148658,
+    "id": "1794726148658ncyfxb",
+    "partnerQrImage": null
   }
 ]
