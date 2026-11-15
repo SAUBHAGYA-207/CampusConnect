@@ -15,6 +15,7 @@ exports.getPlatformStats = async () => {
 
     const customers = allUsers.filter(u => u.role === 'customer');
     const partners = allUsers.filter(u => u.role === 'provider');
+    const serviceMap = new Map(allServices.map(s => [s.id, s]));
 
     // Revenue calculations
     // Only completed bookings are considered realized revenue
@@ -22,19 +23,35 @@ exports.getPlatformStats = async () => {
     let totalGrossRevenue = 0;
     let totalPlatformCommission = 0; // 10% platform
     let totalPartnerShare = 0; // 90% partner
+    let totalCoinsBurned = 0; // Coins redeemed on completed bookings (worth ₹1 each)
 
     completedApps.forEach(app => {
-        const amount = Number(app.paymentAmount || (app.service ? app.service.price : 0)) || 0;
-        const partnerEarnings = app.providerEarnings !== undefined && app.providerEarnings !== null
-            ? Number(app.providerEarnings)
-            : parseFloat((amount * 0.90).toFixed(2));
-        const platformFee = app.platformFee !== undefined && app.platformFee !== null
-            ? Number(app.platformFee)
-            : parseFloat((amount * 0.10).toFixed(2));
+        const service = app.service || serviceMap.get(app.serviceId);
+        const servicePrice = service ? Number(service.price) : 0;
+        const coinsUsed = Math.max(0, Number(app.coinsUsed) || 0);
+        const cashAmount = (app.paymentAmount !== undefined && app.paymentAmount !== null && !isNaN(Number(app.paymentAmount)))
+            ? Number(app.paymentAmount)
+            : Math.max(0, servicePrice - coinsUsed);
 
-        totalGrossRevenue += amount;
+        const totalOrderValue = (servicePrice > 0) ? servicePrice : (cashAmount + coinsUsed);
+        const partnerEarnings = (app.providerEarnings !== undefined && app.providerEarnings !== null)
+            ? Number(app.providerEarnings)
+            : parseFloat((totalOrderValue * 0.90).toFixed(2));
+        const platformFee = (app.platformFee !== undefined && app.platformFee !== null)
+            ? Number(app.platformFee)
+            : parseFloat((totalOrderValue * 0.10).toFixed(2));
+
+        totalGrossRevenue += totalOrderValue;
         totalPlatformCommission += platformFee;
         totalPartnerShare += partnerEarnings;
+        totalCoinsBurned += coinsUsed;
+    });
+
+    // All-time active & completed coin burn across the platform (excluding cancelled/rejected)
+    const activeAndCompletedApps = allAppointments.filter(a => a.status !== 'cancelled' && a.status !== 'rejected');
+    let totalAllTimeCoinsUsed = 0;
+    activeAndCompletedApps.forEach(a => {
+        totalAllTimeCoinsUsed += Math.max(0, Number(a.coinsUsed) || 0);
     });
 
     // Payout stats
@@ -47,6 +64,9 @@ exports.getPlatformStats = async () => {
     // Current unsettled partner liability = realized partner share - cleared payouts
     const unsettledPartnerLiability = Math.max(0, totalPartnerShare - totalClearedPayouts);
 
+    // Actual Net Profit = Platform Commission minus Coins Burned (Discounts Subsidized)
+    const actualNetProfit = totalPlatformCommission - totalCoinsBurned;
+
     return {
         totalUsers: customers.length,
         totalPartners: partners.length,
@@ -58,6 +78,13 @@ exports.getPlatformStats = async () => {
         totalGrossRevenue: totalGrossRevenue.toFixed(2),
         totalPlatformCommission: totalPlatformCommission.toFixed(2),
         totalPartnerShare: totalPartnerShare.toFixed(2),
+        totalCoinsBurned: totalCoinsBurned, // Coins redeemed on completed bookings
+        totalCoinsBurnedValue: totalCoinsBurned.toFixed(2), // 1 coin = ₹1
+        totalAllTimeCoinsUsed: totalAllTimeCoinsUsed,
+        totalAllTimeCoinsBurnValue: totalAllTimeCoinsUsed.toFixed(2),
+        inFlightCoinsBurned: Math.max(0, totalAllTimeCoinsUsed - totalCoinsBurned),
+        actualNetProfit: actualNetProfit.toFixed(2),
+        isProfitable: actualNetProfit >= 0,
         totalClearedPayouts: totalClearedPayouts.toFixed(2),
         totalPendingPayouts: totalPendingPayouts.toFixed(2),
         unsettledPartnerLiability: unsettledPartnerLiability.toFixed(2)

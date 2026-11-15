@@ -2678,5 +2678,309 @@
     "read": false,
     "createdAt": 1794734320599,
     "id": "17947343205990lumb9"
+  },
+  {
+    "userId": "test_partner_wallet_1794735735095",
+    "message": "🎉 Service Verified! +10 coins have been unlocked and credited to your wallet!",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735739090,
+    "id": "1794735739090320tev"
+  },
+  {
+    "userId": "test_partner_wallet_1794735735095",
+    "message": "🎉 Your service \"Python Coding Help\" has been verified by Super Admin! 10 coins added to your wallet.",
+    "link": "/dashboard",
+    "read": false,
+    "createdAt": 1794735739387,
+    "id": "1794735739387fozavw"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "🪙 -50 Coins redeemed. Redeemed 50 coins on booking for \"Python Coding Help\"",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735741023,
+    "id": "1794735741023ffqsmg"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "🪙 +50 Coins added to your wallet! Earned 10% coin bonus for booking \"Python Coding Help\"",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735741905,
+    "id": "1794735741905fhhnk"
+  },
+  {
+    "userId": "test_partner_wallet_1794735735095",
+    "message": "🪙 +50 Coins added to your wallet! Earned 10% partner reward for booking on \"Python Coding Help\"",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735742480,
+    "id": "1794735742480ftxuf4"
+  },
+  {
+    "userId": "test_partner_wallet_1794735735095",
+    "message": "New booking request for \"Python Coding Help\" (₹500)",
+    "link": "/appointments/provider/1794735741173zhk3n",
+    "read": false,
+    "createdAt": 1794735742652,
+    "id": "1794735742652w2umz8"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "🪙 -50 Coins redeemed. Redeemed 50 coins on booking for \"Quick Help Session\"",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735744687,
+    "id": "1794735744687phyyon"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "🪙 +5 Coins added to your wallet! Earned 10% coin bonus for booking \"Quick Help Session\"",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735745608,
+    "id": "1794735745608vlbygj"
+  },
+  {
+    "userId": "test_partner_wallet_1794735735095",
+    "message": "🪙 +5 Coins added to your wallet! Earned 10% partner reward for booking on \"Quick Help Session\"",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735746202,
+    "id": "1794735746202d0nqha"
+  },
+  {
+    "userId": "test_partner_wallet_1794735735095",
+    "message": "New booking request for \"Quick Help Session\" (₹50)",
+    "link": "/appointments/provider/1794735744845ggg5ne",
+    "read": false,
+    "createdAt": 1794735746347,
+    "id": "1794735746348tk4wko"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "🪙 +100 Coins added to your wallet! Test credit",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735751227,
+    "id": "1794735751227tre4i"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "🪙 -40 Coins redeemed. Redeemed 40 coins on booking for \"Coin Refund Test Service\"",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735752691,
+    "id": "1794735752691pcsq7q"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "🪙 +4 Coins added to your wallet! Earned 10% coin bonus for booking \"Coin Refund Test Service\"",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735753552,
+    "id": "179473575355246ncjd"
+  },
+  {
+    "userId": "test_partner_wallet_1794735735095",
+    "message": "🪙 +4 Coins added to your wallet! Earned 10% partner reward for booking on \"Coin Refund Test Service\"",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735754142,
+    "id": "179473575414204q91q"
+  },
+  {
+    "userId": "test_partner_wallet_1794735735095",
+    "message": "New booking request for \"Coin Refund Test Service\" (₹40)",
+    "link": "/appointments/provider/1794735752844pvrheq",
+    "read": false,
+    "createdAt": 1794735754288,
+    "id": "1794735754288ats22g"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "🪙 +40 Coins added to your wallet! Refund for rejected booking: \"Coin Refund Test Service\"",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735755638,
+    "id": "17947357556380qojud"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "🪙 -4 Coins redeemed. Booking bonus reversed for rejected booking #17947357",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735756232,
+    "id": "1794735756232y9kxk"
+  },
+  {
+    "userId": "test_partner_wallet_1794735735095",
+    "message": "🪙 -4 Coins redeemed. Partner reward reversed for rejected booking #17947357",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735756847,
+    "id": "17947357568479iehx"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "Your booking for \"Coin Refund Test Service\" was rejected. 40 Coins have been automatically refunded to your wallet!",
+    "link": "/appointments/my-bookings/1794735752844pvrheq",
+    "read": false,
+    "createdAt": 1794735757007,
+    "id": "1794735757007zzguun"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "Appointment status updated to rejected",
+    "link": "/appointments/my-bookings/1794735752844pvrheq",
+    "read": false,
+    "createdAt": 1794735758057,
+    "id": "179473575805876ochk"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "🪙 +15 Coins added to your wallet! Earned 10% coin bonus for booking \"Money Refund Test Service\"",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735759448,
+    "id": "1794735759448c6as28"
+  },
+  {
+    "userId": "test_partner_wallet_1794735735095",
+    "message": "🪙 +15 Coins added to your wallet! Earned 10% partner reward for booking on \"Money Refund Test Service\"",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735760039,
+    "id": "1794735760039szrf1o"
+  },
+  {
+    "userId": "test_partner_wallet_1794735735095",
+    "message": "New booking request for \"Money Refund Test Service\" (₹150)",
+    "link": "/appointments/provider/17947357587580319f",
+    "read": false,
+    "createdAt": 1794735760196,
+    "id": "1794735760196hljzt"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "Appointment status updated to accepted",
+    "link": "/appointments/my-bookings/17947357587580319f",
+    "read": false,
+    "createdAt": 1794735760810,
+    "id": "1794735760810q3mat"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "🪙 -15 Coins redeemed. Booking bonus reversed for cancelled booking #17947357",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735762103,
+    "id": "1794735762103qjbml5"
+  },
+  {
+    "userId": "test_partner_wallet_1794735735095",
+    "message": "🪙 -15 Coins redeemed. Partner reward reversed for cancelled booking #17947357",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735762711,
+    "id": "17947357627113c5bs9"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "Your booking for \"Money Refund Test Service\" was cancelled. A refund request of ₹150 has been queued for Super Admin to process via UPI.",
+    "link": "/appointments/my-bookings/17947357587580319f",
+    "read": false,
+    "createdAt": 1794735762855,
+    "id": "1794735762855phj6eo"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "Appointment status updated to cancelled",
+    "link": "/appointments/my-bookings/17947357587580319f",
+    "read": false,
+    "createdAt": 1794735763856,
+    "id": "17947357638572hko7"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "✓ Your refund of ₹150 has been cleared and transferred to your UPI!",
+    "link": "/appointments/my-bookings/17947357587580319f",
+    "read": false,
+    "createdAt": 1794735764983,
+    "id": "1794735764983j4sbik"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "🪙 +50 Coins added to your wallet! Referral Bonus: Invited referee_1794735735101@campusconnect.local to CampusConnect!",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735768624,
+    "id": "1794735768624un7spy"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "🎉 Refer & Earn! Your friend (referee_1794735735101@campusconnect.local) verified their account. +50 Coins added to your E-Wallet!",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735768917,
+    "id": "1794735768917qamkog"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "🪙 +10 Coins added to your wallet! Earned 10% coin bonus for booking \"Feedback Test Tutoring\"",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735771223,
+    "id": "17947357712230i2km2"
+  },
+  {
+    "userId": "test_partner_wallet_1794735735095",
+    "message": "🪙 +10 Coins added to your wallet! Earned 10% partner reward for booking on \"Feedback Test Tutoring\"",
+    "link": "/profile",
+    "read": false,
+    "createdAt": 1794735771854,
+    "id": "1794735771855qht3e9"
+  },
+  {
+    "userId": "test_partner_wallet_1794735735095",
+    "message": "New booking request for \"Feedback Test Tutoring\" (₹100)",
+    "link": "/appointments/provider/1794735770497i7foz9",
+    "read": false,
+    "createdAt": 1794735772017,
+    "id": "1794735772017q1weja"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "Appointment status updated to accepted",
+    "link": "/appointments/my-bookings/1794735770497i7foz9",
+    "read": false,
+    "createdAt": 1794735772687,
+    "id": "1794735772687x9pkzw"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/my-bookings/1794735770497i7foz9",
+    "read": false,
+    "createdAt": 1794735773481,
+    "id": "17947357734814laaee"
+  },
+  {
+    "userId": "test_user_wallet_1794735735095",
+    "message": "⭐ How was your service with partner_1794735735895? Click to leave your review and feedback!",
+    "link": "/appointments/my-bookings/1794735770497i7foz9#feedback-card",
+    "read": false,
+    "createdAt": 1794735774112,
+    "id": "1794735774112biw87"
+  },
+  {
+    "userId": "test_partner_wallet_1794735735095",
+    "message": "⭐ You received a 5-star review for booking #17947357!",
+    "link": "/appointments/provider/1794735770497i7foz9",
+    "read": false,
+    "createdAt": 1794735774826,
+    "id": "1794735774826qxgepg"
   }
 ]

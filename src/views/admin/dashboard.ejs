@@ -27,42 +27,100 @@
 </div>
 
 <!-- Financial Revenue Dashboard -->
-<div class="row g-3 mb-4">
-    <div class="col-lg-3 col-md-6">
-        <div class="card p-3 border-0 shadow-sm" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #ffffff; border-radius: 16px;">
+<div class="row g-3 mb-3">
+    <div class="col-xl-2 col-lg-4 col-md-6">
+        <div class="card p-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #ffffff; border-radius: 16px;">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Gross Volume</span>
-                <span class="badge bg-white text-dark fw-bold">Completed</span>
+                <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Gross Volume</span>
+                <span class="badge bg-white text-dark fw-bold" style="font-size: 0.65rem;">Completed</span>
             </div>
-            <div class="fs-2 fw-bold text-white">₹<%= stats.totalGrossRevenue %></div>
+            <div class="fs-3 fw-bold text-white mt-1">₹<%= stats.totalGrossRevenue %></div>
+            <small class="text-white-50" style="font-size: 0.7rem;">Realized volume</small>
         </div>
     </div>
-    <div class="col-lg-3 col-md-6">
-        <div class="card p-3 border-0 shadow-sm" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; border-radius: 16px;">
+    <div class="col-xl-2 col-lg-4 col-md-6">
+        <div class="card p-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; border-radius: 16px;">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Platform Revenue</span>
+                <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Platform Fee</span>
+                <span class="badge bg-white text-primary fw-bold" style="font-size: 0.65rem;">10% Fee</span>
             </div>
-            <div class="fs-2 fw-bold text-white">₹<%= stats.totalPlatformCommission %></div>
+            <div class="fs-3 fw-bold text-white mt-1">₹<%= stats.totalPlatformCommission %></div>
+            <small class="text-white-50" style="font-size: 0.7rem;">Nominal commission</small>
         </div>
     </div>
-    <div class="col-lg-3 col-md-6">
-        <div class="card p-3 border-0 shadow-sm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; border-radius: 16px;">
+    <div class="col-xl-2 col-lg-4 col-md-6">
+        <div class="card p-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: #ffffff; border-radius: 16px;">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Partner Net Earnings</span>
-                <span class="badge bg-white text-success fw-bold">Total Earned</span>
+                <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">🔥 Coin Burn</span>
+                <span class="badge bg-warning text-dark fw-bold" style="font-size: 0.65rem;">🪙 Discounts</span>
             </div>
-            <div class="fs-2 fw-bold text-white">₹<%= stats.totalPartnerShare %></div>
+            <div class="fs-3 fw-bold text-white mt-1">−₹<%= stats.totalCoinsBurnedValue %></div>
+            <small class="text-white-50" style="font-size: 0.7rem;">🪙 <%= stats.totalCoinsBurned %> burned (<%= stats.totalAllTimeCoinsUsed %> total)</small>
         </div>
     </div>
-    <div class="col-lg-3 col-md-6">
-        <div class="card p-3 border-0 shadow-sm" style="background-color: #fffbeb; border: 1px solid #fef3c7 !important; color: #92400e; border-radius: 16px;">
+    <div class="col-xl-2 col-lg-4 col-md-6">
+        <div class="card p-3 border-0 shadow-sm h-100" style="background: <%= stats.isProfitable ? 'linear-gradient(135deg, #059669 0%, #047857 100%)' : 'linear-gradient(135deg, #b45309 0%, #78350f 100%)' %>; color: #ffffff; border-radius: 16px;">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="small text-muted text-uppercase fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Pending Settlements</span>
-                <span class="badge bg-<%= Number(stats.totalPendingPayouts) > 0 ? 'warning text-dark' : 'success' %> fw-bold">
+                <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Actual Net Profit</span>
+                <span class="badge <%= stats.isProfitable ? 'bg-white text-success' : 'bg-warning text-dark' %> fw-bold" style="font-size: 0.65rem;">
+                    <%= stats.isProfitable ? '✓ Net Profit' : 'Promotional' %>
+                </span>
+            </div>
+            <div class="fs-3 fw-bold text-white mt-1">₹<%= stats.actualNetProfit %></div>
+            <small class="text-white-50" style="font-size: 0.7rem;">After coin burn deduction</small>
+        </div>
+    </div>
+    <div class="col-xl-2 col-lg-4 col-md-6">
+        <div class="card p-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; border-radius: 16px;">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Partner Share</span>
+                <span class="badge bg-white text-info fw-bold" style="font-size: 0.65rem;">90% Payout</span>
+            </div>
+            <div class="fs-3 fw-bold text-white mt-1">₹<%= stats.totalPartnerShare %></div>
+            <small class="text-white-50" style="font-size: 0.7rem;">Earned by partners</small>
+        </div>
+    </div>
+    <div class="col-xl-2 col-lg-4 col-md-6">
+        <div class="card p-3 border-0 shadow-sm h-100" style="background-color: #fffbeb; border: 1px solid #fef3c7 !important; color: #92400e; border-radius: 16px;">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="small text-muted text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Pending Payouts</span>
+                <span class="badge bg-<%= Number(stats.totalPendingPayouts) > 0 ? 'warning text-dark' : 'success' %> fw-bold" style="font-size: 0.65rem;">
                     <%= Number(stats.totalPendingPayouts) > 0 ? 'Action Needed' : 'All Clear' %>
                 </span>
             </div>
-            <div class="fs-2 fw-bold text-dark">₹<%= stats.totalPendingPayouts %></div>
+            <div class="fs-3 fw-bold text-dark mt-1">₹<%= stats.totalPendingPayouts %></div>
+            <small class="text-muted" style="font-size: 0.7rem;">Awaiting admin transfer</small>
+        </div>
+    </div>
+</div>
+
+<!-- Unit Economics Equation Bar -->
+<div class="card p-3 border shadow-sm rounded-4 bg-white mb-4">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle bg-danger bg-opacity-10 text-danger p-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                <span class="fs-5">🔥</span>
+            </div>
+            <div>
+                <h6 class="fw-bold mb-0 text-dark">Platform Unit Economics & Coin Burn Equation</h6>
+                <small class="text-muted">Coins redeemed by users act as platform-funded promotional discount subsidies (1 Coin = ₹1). Actual Net Profit reflects realized gross fees minus coin burn.</small>
+            </div>
+        </div>
+        <div class="d-flex align-items-center flex-wrap gap-2 font-monospace">
+            <div class="px-3 py-1 bg-light border rounded-3 text-center">
+                <span class="d-block text-muted text-uppercase fw-semibold" style="font-size: 0.68rem;">Platform Comm. (10%)</span>
+                <span class="fs-6 fw-bold text-primary">+₹<%= stats.totalPlatformCommission %></span>
+            </div>
+            <span class="fw-bold fs-5 text-muted">−</span>
+            <div class="px-3 py-1 bg-danger bg-opacity-10 border border-danger-subtle rounded-3 text-center">
+                <span class="d-block text-danger text-uppercase fw-semibold" style="font-size: 0.68rem;">🔥 Realized Coin Burn</span>
+                <span class="fs-6 fw-bold text-danger">−₹<%= stats.totalCoinsBurnedValue %></span>
+            </div>
+            <span class="fw-bold fs-5 text-muted">=</span>
+            <div class="px-3 py-1 rounded-3 text-center border <%= stats.isProfitable ? 'bg-success-subtle text-success border-success-subtle' : 'bg-danger-subtle text-danger border-danger-subtle' %>">
+                <span class="d-block text-uppercase fw-semibold" style="font-size: 0.68rem;">✨ Actual Net Profit</span>
+                <span class="fs-6 fw-bold">₹<%= stats.actualNetProfit %></span>
+            </div>
         </div>
     </div>
 </div>
@@ -337,8 +395,18 @@
                                     <td class="px-3 py-3 small"><%= app.customer ? app.customer.email : 'Unknown' %></td>
                                     <td class="px-3 py-3 small"><%= app.partner ? app.partner.email : 'Unknown' %></td>
                                     <td class="px-3 py-3">
-                                        <div class="fw-bold text-success">₹<%= app.paymentAmount || (app.service ? app.service.price : 0) %></div>
-                                        <small class="text-muted" style="font-size: 0.7rem;">Platform Revenue: ₹<%= (Number(app.paymentAmount || 0) * 0.10).toFixed(2) %></small>
+                                        <div class="fw-bold text-dark">₹<%= app.paymentAmount !== undefined ? app.paymentAmount : (app.service ? app.service.price : 0) %></div>
+                                        <div class="small text-muted" style="font-size: 0.72rem;">Comm: +₹<%= (Number(app.platformFee !== undefined ? app.platformFee : (Number(app.paymentAmount || 0) * 0.10))).toFixed(2) %></div>
+                                        <% if (app.coinsUsed > 0) { %>
+                                            <div class="badge bg-danger-subtle text-danger border border-danger-subtle fw-bold mt-1" style="font-size: 0.68rem;">
+                                                🔥 <%= app.coinsUsed %> Coin Burn
+                                            </div>
+                                            <% if (app.status === 'completed') { %>
+                                                <div class="small fw-semibold <%= ((Number(app.platformFee || 0)) - Number(app.coinsUsed)) >= 0 ? 'text-success' : 'text-danger' %>" style="font-size: 0.68rem;">
+                                                    Net: ₹<%= ((Number(app.platformFee !== undefined ? app.platformFee : (Number(app.paymentAmount || 0) * 0.10))) - Number(app.coinsUsed)).toFixed(2) %>
+                                                </div>
+                                            <% } %>
+                                        <% } %>
                                     </td>
                                     <td class="px-3 py-3">
                                         <% if (app.paymentScreenshot === 'Paid by Coins' || (!app.paymentAmount && app.coinsUsed > 0)) { %>
