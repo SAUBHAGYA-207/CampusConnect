@@ -25,7 +25,7 @@ const fileFilter = (req, file, cb) => {
 
 const serviceUpload = multer({
     storage: createStorage('services'),
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    limits: { fileSize: 4 * 1024 * 1024 }, // 4MB per file
     fileFilter: fileFilter
 });
 
@@ -67,7 +67,9 @@ const serviceMultiUpload = (req, res, next) => {
     ])(req, res, (err) => {
         if (err) {
             console.warn('[Upload Middleware Warning]:', err.message);
-            req.uploadError = err.message || 'Error uploading selected image(s).';
+            req.uploadError = err.code === 'LIMIT_FILE_SIZE'
+                ? 'One or more images exceed the maximum allowed size (4MB per file). Please select smaller or compressed images.'
+                : (err.message || 'Error uploading selected image(s).');
         }
         // Consolidate files into req.files array for convenient consumption
         const allFiles = [];

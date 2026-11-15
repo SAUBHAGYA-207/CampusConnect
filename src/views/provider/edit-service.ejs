@@ -17,7 +17,7 @@
                 </div>
             <% } %>
 
-            <form action="/services/<%= service.id %>/edit" method="POST" enctype="multipart/form-data">
+            <form action="/services/<%= service.id %>/edit" method="POST" enctype="multipart/form-data" id="editServiceForm" onsubmit="return handleEditServiceSubmit(event)">
                 <div class="mb-3">
                     <label for="title" class="form-label text-muted fw-medium small">Service Title</label>
                     <input type="text" class="form-control bg-light border-0 py-2" id="title" name="title" value="<%= service.title %>" required>
@@ -120,7 +120,7 @@
 
                 <div class="d-flex gap-2">
                     <a href="/services/my-services" class="btn btn-light border py-3 flex-grow-1 fw-bold">Cancel</a>
-                    <button type="submit" class="btn btn-primary py-3 flex-grow-1 fw-bold shadow-sm">Save Changes</button>
+                    <button type="submit" id="btnSubmitEditService" class="btn btn-primary py-3 flex-grow-1 fw-bold shadow-sm">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -128,6 +128,8 @@
 </div>
 
 <script>
+let isOptimizing = false;
+
 function removeExistingImg(btn) {
     const card = btn.closest('.existing-img-card');
     if (card) {
@@ -142,19 +144,53 @@ function updateExistingCount() {
     if (badge) badge.innerText = cards.length;
 }
 
-function previewNewImages(input) {
+async function previewNewImages(input) {
     const container = document.getElementById('newImagesPreview');
     const badge = document.getElementById('newImageCountBadge');
     container.innerHTML = '';
     
     if (!input.files || input.files.length === 0) {
         container.style.setProperty('display', 'none', 'important');
+        badge.className = 'badge bg-light text-primary border';
         badge.innerText = '0 new';
         return;
     }
+
+    const existingCount = document.querySelectorAll('.existing-img-card').length;
+    const maxAllowedNew = Math.max(0, 8 - existingCount);
     
+    if (input.files.length > maxAllowedNew) {
+        alert(`You can upload at most ${maxAllowedNew} additional image(s) to stay within the 8 image maximum.`);
+        if (window.updateFileInputWithFiles) {
+            window.updateFileInputWithFiles(input, Array.from(input.files).slice(0, maxAllowedNew));
+        }
+    }
+
+    // Show optimizing status
+    isOptimizing = true;
+    badge.className = 'badge bg-warning text-dark border';
+    badge.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Optimizing images...';
+
+    try {
+        if (window.optimizeImagesList) {
+            const optimized = await window.optimizeImagesList(input.files);
+            if (window.updateFileInputWithFiles) {
+                window.updateFileInputWithFiles(input, optimized);
+            }
+        }
+    } catch (err) {
+        console.warn('Image optimization warning:', err);
+    } finally {
+        isOptimizing = false;
+    }
+
     const count = input.files.length;
-    badge.innerText = `${count} new`;
+    const totalBytes = Array.from(input.files).reduce((sum, f) => sum + f.size, 0);
+    const sizeMB = (totalBytes / (1024 * 1024)).toFixed(1);
+
+    badge.className = 'badge bg-success-subtle text-success border border-success-subtle';
+    badge.innerText = `${count} new • ${sizeMB} MB (Ready ✓)`;
+    
     container.style.removeProperty('display');
     container.style.display = 'flex';
     
@@ -184,6 +220,49 @@ function previewNewImages(input) {
         };
         reader.readAsDataURL(file);
     });
+}
+
+async function handleEditServiceSubmit(event) {
+    if (isOptimizing) {
+        event.preventDefault();
+        alert('Images are still being optimized for upload. Please wait a moment and submit again.');
+        return false;
+    }
+
+    const input = document.getElementById('images');
+    if (input && input.files && input.files.length > 0) {
+        const totalBytes = Array.from(input.files).reduce((sum, f) => sum + f.size, 0);
+        if (totalBytes > 4.2 * 1024 * 1024) {
+            event.preventDefault();
+            const btn = document.getElementById('btnSubmitEditService');
+            if (btn) btn.disabled = true;
+
+            try {
+                if (window.optimizeImagesList) {
+                    const reoptimized = await window.optimizeImagesList(input.files, 3.5 * 1024 * 1024);
+                    if (window.updateFileInputWithFiles) {
+                        window.updateFileInputWithFiles(input, reoptimized);
+                    }
+                    const newTotal = Array.from(input.files).reduce((sum, f) => sum + f.size, 0);
+                    if (newTotal <= 4.2 * 1024 * 1024) {
+                        event.target.submit();
+                        return true;
+                    }
+                }
+            } catch (e) {}
+
+            alert('Selected images are too large (Total: ' + (totalBytes / (1024 * 1024)).toFixed(1) + 'MB). Server limit is 4MB. Please select fewer or smaller photos.');
+            if (btn) btn.disabled = false;
+            return false;
+        }
+    }
+
+    const submitBtn = document.getElementById('btnSubmitEditService');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving Changes...';
+    }
+    return true;
 }
 
 function toggleUploadPrompt(checked) {

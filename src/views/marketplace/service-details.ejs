@@ -899,11 +899,22 @@
     });
 
     // Preview uploaded payment screenshot
-    function previewScreenshot(event) {
-        const file = event.target.files[0];
+    async function previewScreenshot(event) {
+        let file = event.target.files[0];
         const container = document.getElementById('screenshotPreviewContainer');
         const img = document.getElementById('screenshotPreview');
         if (file) {
+            if (window.compressImageFile && file.type && file.type.startsWith('image/')) {
+                try {
+                    const compressed = await window.compressImageFile(file, 1600, 0.82);
+                    if (window.updateFileInputWithFiles) {
+                        window.updateFileInputWithFiles(event.target, [compressed]);
+                        file = compressed;
+                    }
+                } catch (e) {
+                    console.warn('Screenshot compression error:', e);
+                }
+            }
             const reader = new FileReader();
             reader.onload = function(e) {
                 img.src = e.target.result;

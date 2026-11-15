@@ -487,10 +487,21 @@
 </div>
 
 <script>
-    // Avatar photo preview before upload
-    function previewAvatar(event) {
-        const file = event.target.files && event.target.files[0];
+    // Avatar photo preview before upload with auto-compression
+    async function previewAvatar(event) {
+        let file = event.target.files && event.target.files[0];
         if (file) {
+            if (window.compressImageFile && file.type && file.type.startsWith('image/')) {
+                try {
+                    const compressed = await window.compressImageFile(file, 800, 0.85);
+                    if (window.updateFileInputWithFiles) {
+                        window.updateFileInputWithFiles(event.target, [compressed]);
+                        file = compressed;
+                    }
+                } catch (e) {
+                    console.warn('Avatar compression error:', e);
+                }
+            }
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = document.getElementById('avatarPreviewImg');
