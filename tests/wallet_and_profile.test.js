@@ -182,22 +182,28 @@ describe('E-Wallet, Coins & Profile UPI OTP System', () => {
                 }
             );
 
-            const appt = await appointmentService.createAppointment(
-                customerId,
-                cheapService.id,
-                '2026-11-26',
-                '14:00',
-                '100% coins booking',
-                {
-                    coinsUsed: 50
-                }
-            );
+            let appt;
+            try {
+                appt = await appointmentService.createAppointment(
+                    customerId,
+                    cheapService.id,
+                    '2026-11-26',
+                    '14:00',
+                    '100% coins booking',
+                    {
+                        coinsUsed: 50
+                    }
+                );
 
-            expect(appt).toBeDefined();
-            expect(appt.paymentAmount).toBe(0);
-            expect(appt.coinsUsed).toBe(50);
-            expect(appt.paymentScreenshot).toBe('Paid by Coins');
-            expect(appt.paymentStatus).toBe('verified');
+                expect(appt).toBeDefined();
+                expect(appt.paymentAmount).toBe(0);
+                expect(appt.coinsUsed).toBe(50);
+                expect(appt.paymentScreenshot).toBe('Paid by Coins');
+                expect(appt.paymentStatus).toBe('verified');
+            } finally {
+                if (appt) await appointmentsStorage.delete(appt.id);
+                if (cheapService) await servicesStorage.delete(cheapService.id);
+            }
         });
     });
 

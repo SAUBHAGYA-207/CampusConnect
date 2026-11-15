@@ -34,15 +34,12 @@ exports.getPlatformStats = async () => {
     const partners = allUsers.filter(u => u.role === 'provider');
     const serviceMap = new Map(allServices.map(s => [s.id, s]));
 
-    // Revenue calculations
-    // Only completed bookings are considered realized revenue
+    // Revenue calculations across order lifecycles
+    const pendingApps = allAppointments.filter(a => a.status === 'pending');
+    const confirmedApps = allAppointments.filter(a => a.status === 'accepted' || a.status === 'confirmed');
     const completedApps = allAppointments.filter(a => a.status === 'completed');
-    let totalGrossRevenue = 0;
-    let totalPlatformCommission = 0; // 10% platform
-    let totalPartnerShare = 0; // 90% partner
-    let totalCoinsBurned = 0; // Coins redeemed on completed bookings (worth ₹1 each)
 
-    completedApps.forEach(app => {
+    function calculateOrderMetrics(app) {
         const service = app.service || serviceMap.get(app.serviceId);
         const servicePrice = service ? Number(service.price) : 0;
         const coinsUsed = getAppointmentCoinsUsed(app, service);
@@ -58,19 +55,55 @@ exports.getPlatformStats = async () => {
             ? Number(app.platformFee)
             : parseFloat((totalOrderValue * 0.10).toFixed(2));
 
-        totalGrossRevenue += totalOrderValue;
-        totalPlatformCommission += platformFee;
-        totalPartnerShare += partnerEarnings;
-        totalCoinsBurned += coinsUsed;
+        return { totalOrderValue, cashAmount, coinsUsed, partnerEarnings, platformFee };
+    }
+
+    // 1. Pending (ordered but yet to confirm)
+    let pendingRevenue = 0;
+    let pendingPlatformFee = 0;
+    let pendingCoinsUsed = 0;
+    pendingApps.forEach(app => {
+        const m = calculateOrderMetrics(app);
+        pendingRevenue += m.totalOrderValue;
+        pendingPlatformFee += m.platformFee;
+        pendingCoinsUsed += m.coinsUsed;
     });
 
-    // All-time active & completed coin burn across the platform (excluding cancelled/rejected)
+    // 2. Confirmed (confirmed but yet to complete)
+    let confirmedRevenue = 0;
+    let confirmedPlatformFee = 0;
+    let confirmedCoinsUsed = 0;
+    confirmedApps.forEach(app => {
+        const m = calculateOrderMetrics(app);
+        confirmedRevenue += m.totalOrderValue;
+        confirmedPlatformFee += m.platformFee;
+        confirmedCoinsUsed += m.coinsUsed;
+    });
+
+    // 3. Completed (realized & delivered)
+    let completedRevenue = 0;
+    let completedPlatformCommission = 0; // 10% platform
+    let completedPartnerShare = 0; // 90% partner
+    let completedCoinsBurned = 0; // Coins redeemed on completed bookings
+    completedApps.forEach(app => {
+        const m = calculateOrderMetrics(app);
+        completedRevenue += m.totalOrderValue;
+        completedPlatformCommission += m.platformFee;
+        completedPartnerShare += m.partnerEarnings;
+        completedCoinsBurned += m.coinsUsed;
+    });
+
+    // 4. Coin Burn across active & completed appointments (excluding cancelled/rejected)
     const activeAndCompletedApps = allAppointments.filter(a => a.status !== 'cancelled' && a.status !== 'rejected');
-    let totalAllTimeCoinsUsed = 0;
+    let totalCoinsBurned = 0;
     activeAndCompletedApps.forEach(a => {
         const service = a.service || serviceMap.get(a.serviceId);
-        totalAllTimeCoinsUsed += getAppointmentCoinsUsed(a, service);
+        totalCoinsBurned += getAppointmentCoinsUsed(a, service);
     });
+
+    // 5. Profit: Confirmed minus Coin Burn as explicitly defined: Profit(confirmed - coin burn)
+    const profitConfirmedMinusBurn = confirmedRevenue - totalCoinsBurned;
+    const profitAllConfirmedMinusBurn = (confirmedRevenue + completedRevenue) - totalCoinsBurned;
 
     // Payout stats
     const clearedPayouts = allPayouts.filter(p => p.status === 'cleared');
@@ -80,29 +113,50 @@ exports.getPlatformStats = async () => {
     const totalPendingPayouts = pendingPayouts.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
 
     // Current unsettled partner liability = realized partner share - cleared payouts
-    const unsettledPartnerLiability = Math.max(0, totalPartnerShare - totalClearedPayouts);
+    const unsettledPartnerLiability = Math.max(0, completedPartnerShare - totalClearedPayouts);
 
-    // Actual Net Profit = Platform Commission minus Coins Burned (Discounts Subsidized)
-    const actualNetProfit = totalPlatformCommission - totalCoinsBurned;
+    // Net profit on realized bookings
+    const actualNetProfit = completedPlatformCommission - completedCoinsBurned;
 
     return {
         totalUsers: customers.length,
         totalPartners: partners.length,
         totalServices: allServices.length,
-        activeServices: allServices.filter(s => s.status === 'published').length,
+        activeServices: allServices.filter(s => s.status === 'published' || !s.status || s.status === 'active').length,
         totalAppointments: allAppointments.length,
+
+        // Separate status counts
+        pendingAppointments: pendingApps.length,
+        confirmedAppointments: confirmedApps.length,
         completedAppointments: completedApps.length,
-        pendingAppointments: allAppointments.filter(a => a.status === 'pending').length,
-        totalGrossRevenue: totalGrossRevenue.toFixed(2),
-        totalPlatformCommission: totalPlatformCommission.toFixed(2),
-        totalPartnerShare: totalPartnerShare.toFixed(2),
-        totalCoinsBurned: totalCoinsBurned, // Coins redeemed on completed bookings
-        totalCoinsBurnedValue: totalCoinsBurned.toFixed(2), // 1 coin = ₹1
-        totalAllTimeCoinsUsed: totalAllTimeCoinsUsed,
-        totalAllTimeCoinsBurnValue: totalAllTimeCoinsUsed.toFixed(2),
-        inFlightCoinsBurned: Math.max(0, totalAllTimeCoinsUsed - totalCoinsBurned),
+
+        // Separate amounts
+        pendingRevenue: pendingRevenue.toFixed(2),
+        confirmedRevenue: confirmedRevenue.toFixed(2),
+        completedRevenue: completedRevenue.toFixed(2),
+
+        // Coin Burn (Redeemed)
+        totalCoinsBurned: totalCoinsBurned,
+        totalCoinsBurnedValue: totalCoinsBurned.toFixed(2),
+        completedCoinsBurned: completedCoinsBurned,
+        confirmedCoinsBurned: confirmedCoinsUsed,
+        pendingCoinsBurned: pendingCoinsUsed,
+
+        // Profit (confirmed - coin burn)
+        profitConfirmedMinusBurn: profitConfirmedMinusBurn.toFixed(2),
+        profitAllConfirmedMinusBurn: profitAllConfirmedMinusBurn.toFixed(2),
+        isProfitConfirmedPositive: profitConfirmedMinusBurn >= 0,
+        isProfitable: profitConfirmedMinusBurn >= 0,
+
+        // Backward compatibility & detailed breakdown
+        totalGrossRevenue: completedRevenue.toFixed(2),
+        totalPlatformCommission: completedPlatformCommission.toFixed(2),
+        totalPartnerShare: completedPartnerShare.toFixed(2),
+        totalAllTimeCoinsUsed: totalCoinsBurned,
+        totalAllTimeCoinsBurnValue: totalCoinsBurned.toFixed(2),
+        inFlightCoinsBurned: Math.max(0, totalCoinsBurned - completedCoinsBurned),
         actualNetProfit: actualNetProfit.toFixed(2),
-        isProfitable: actualNetProfit >= 0,
+
         totalClearedPayouts: totalClearedPayouts.toFixed(2),
         totalPendingPayouts: totalPendingPayouts.toFixed(2),
         unsettledPartnerLiability: unsettledPartnerLiability.toFixed(2)

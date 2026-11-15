@@ -198,5 +198,35 @@
     "referenceId": "welcome_bonus",
     "createdAt": 1794723471407,
     "id": "1794723471653yrwrjx"
+  },
+  {
+    "userId": "17947608086067h8mb8",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1794760815954,
+    "id": "17947608160856lv5ke"
+  },
+  {
+    "userId": "17947608179860hawm5",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1794760819880,
+    "id": "1794760820022xmudvh"
+  },
+  {
+    "userId": "1794760820917xv23z",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1794760822543,
+    "id": "17947608229693yeu0h"
   }
 ]

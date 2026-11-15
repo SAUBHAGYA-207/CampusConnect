@@ -74,6 +74,12 @@ describe('Super Admin Portal, Revenue, Moderation & Payout Settlements', () => {
 
     afterAll(async () => {
         if (testServiceId) {
+            const allApps = await appointmentsStorage.getAll();
+            for (const a of allApps) {
+                if (a.serviceId === testServiceId || a.providerId === partnerId) {
+                    await appointmentsStorage.delete(a.id).catch(() => {});
+                }
+            }
             await servicesStorage.delete(testServiceId).catch(() => {});
         }
         if (partnerId) {
@@ -176,8 +182,9 @@ describe('Super Admin Portal, Revenue, Moderation & Payout Settlements', () => {
         const dashRes = await adminAgent.get('/admin/dashboard');
         expect(dashRes.statusCode).toEqual(200);
         expect(dashRes.text).toContain('Executive Dashboard & Revenue Center');
-        expect(dashRes.text).toContain('Platform Revenue');
-        expect(dashRes.text).toContain('Partner Net Earnings');
+        expect(dashRes.text).toContain('Pending Orders');
+        expect(dashRes.text).toContain('Confirmed Orders');
+        expect(dashRes.text).toContain('Profit');
         expect(dashRes.text).not.toContain('<nav class="navbar navbar-expand-lg">');
         expect(dashRes.text).toContain('Guitar Lessons Pro');
     });

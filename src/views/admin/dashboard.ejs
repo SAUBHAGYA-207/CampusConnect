@@ -28,68 +28,77 @@
 
 <!-- Financial Revenue Dashboard -->
 <div class="row g-3 mb-3">
+    <!-- 1. Pending (Ordered but yet to confirm) -->
     <div class="col-xl-2 col-lg-4 col-md-6">
-        <div class="card p-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #ffffff; border-radius: 16px;">
+        <div class="card p-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: #ffffff; border-radius: 16px;">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Gross Volume</span>
-                <span class="badge bg-white text-dark fw-bold" style="font-size: 0.65rem;">Completed</span>
+                <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Pending Orders</span>
+                <span class="badge bg-white text-dark fw-bold" style="font-size: 0.65rem;"><%= stats.pendingAppointments %> Orders</span>
             </div>
-            <div class="fs-3 fw-bold text-white mt-1">₹<%= stats.totalGrossRevenue %></div>
-            <small class="text-white-50" style="font-size: 0.7rem;">Realized volume</small>
+            <div class="fs-3 fw-bold text-white mt-1">₹<%= stats.pendingRevenue %></div>
+            <small class="text-white-50" style="font-size: 0.7rem;">Ordered, yet to confirm</small>
         </div>
     </div>
+
+    <!-- 2. Confirmed (Confirmed but yet to complete) -->
     <div class="col-xl-2 col-lg-4 col-md-6">
         <div class="card p-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; border-radius: 16px;">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Platform Fee</span>
-                <span class="badge bg-white text-primary fw-bold" style="font-size: 0.65rem;">10% Fee</span>
+                <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Confirmed Orders</span>
+                <span class="badge bg-white text-primary fw-bold" style="font-size: 0.65rem;"><%= stats.confirmedAppointments %> Active</span>
             </div>
-            <div class="fs-3 fw-bold text-white mt-1">₹<%= stats.totalPlatformCommission %></div>
-            <small class="text-white-50" style="font-size: 0.7rem;">Nominal commission</small>
+            <div class="fs-3 fw-bold text-white mt-1">₹<%= stats.confirmedRevenue %></div>
+            <small class="text-white-50" style="font-size: 0.7rem;">Confirmed, yet to complete</small>
         </div>
     </div>
+
+    <!-- 3. Completed (Complete) -->
+    <div class="col-xl-2 col-lg-4 col-md-6">
+        <div class="card p-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #ffffff; border-radius: 16px;">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Completed</span>
+                <span class="badge bg-white text-dark fw-bold" style="font-size: 0.65rem;"><%= stats.completedAppointments %> Done</span>
+            </div>
+            <div class="fs-3 fw-bold text-white mt-1">₹<%= stats.completedRevenue %></div>
+            <small class="text-white-50" style="font-size: 0.7rem;">Realized completed volume</small>
+        </div>
+    </div>
+
+    <!-- 4. Coin-Redeemed (Burn) -->
     <div class="col-xl-2 col-lg-4 col-md-6">
         <div class="card p-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); color: #ffffff; border-radius: 16px;">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">🔥 Coin Burn</span>
-                <span class="badge bg-warning text-dark fw-bold" style="font-size: 0.65rem;">🪙 Discounts</span>
+                <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">🔥 Coin-Redeemed</span>
+                <span class="badge bg-warning text-dark fw-bold" style="font-size: 0.65rem;">🪙 Burn</span>
             </div>
             <div class="fs-3 fw-bold text-white mt-1">−₹<%= stats.totalCoinsBurnedValue %></div>
-            <small class="text-white-50" style="font-size: 0.7rem;">🪙 <%= stats.totalCoinsBurned %> burned (<%= stats.totalAllTimeCoinsUsed %> total)</small>
+            <small class="text-white-50" style="font-size: 0.7rem;">🪙 <%= stats.totalCoinsBurned %> coins redeemed (₹1/coin)</small>
         </div>
     </div>
+
+    <!-- 5. Profit (Confirmed - Coin Burn) -->
     <div class="col-xl-2 col-lg-4 col-md-6">
-        <div class="card p-3 border-0 shadow-sm h-100" style="background: <%= stats.isProfitable ? 'linear-gradient(135deg, #059669 0%, #047857 100%)' : 'linear-gradient(135deg, #b45309 0%, #78350f 100%)' %>; color: #ffffff; border-radius: 16px;">
+        <div class="card p-3 border-0 shadow-sm h-100" style="background: <%= stats.isProfitConfirmedPositive ? 'linear-gradient(135deg, #059669 0%, #047857 100%)' : 'linear-gradient(135deg, #b45309 0%, #78350f 100%)' %>; color: #ffffff; border-radius: 16px;">
             <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Actual Net Profit</span>
-                <span class="badge <%= stats.isProfitable ? 'bg-white text-success' : 'bg-warning text-dark' %> fw-bold" style="font-size: 0.65rem;">
-                    <%= stats.isProfitable ? '✓ Net Profit' : 'Promotional' %>
+                <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Profit</span>
+                <span class="badge <%= stats.isProfitConfirmedPositive ? 'bg-white text-success' : 'bg-warning text-dark' %> fw-bold" style="font-size: 0.65rem;">
+                    <%= stats.isProfitConfirmedPositive ? '✓ Positive' : 'Deficit' %>
                 </span>
             </div>
-            <div class="fs-3 fw-bold text-white mt-1">₹<%= stats.actualNetProfit %></div>
-            <small class="text-white-50" style="font-size: 0.7rem;">After coin burn deduction</small>
+            <div class="fs-3 fw-bold text-white mt-1">₹<%= stats.profitConfirmedMinusBurn %></div>
+            <small class="text-white-50" style="font-size: 0.7rem;">Confirmed (₹<%= stats.confirmedRevenue %>) − Burn (₹<%= stats.totalCoinsBurnedValue %>)</small>
         </div>
     </div>
+
+    <!-- 6. Partner Share & Payouts -->
     <div class="col-xl-2 col-lg-4 col-md-6">
-        <div class="card p-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; border-radius: 16px;">
+        <div class="card p-3 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%); color: #ffffff; border-radius: 16px;">
             <div class="d-flex justify-content-between align-items-center mb-1">
                 <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Partner Share</span>
-                <span class="badge bg-white text-info fw-bold" style="font-size: 0.65rem;">90% Payout</span>
+                <span class="badge bg-white text-primary fw-bold" style="font-size: 0.65rem;">90% Payout</span>
             </div>
             <div class="fs-3 fw-bold text-white mt-1">₹<%= stats.totalPartnerShare %></div>
-            <small class="text-white-50" style="font-size: 0.7rem;">Earned by partners</small>
-        </div>
-    </div>
-    <div class="col-xl-2 col-lg-4 col-md-6">
-        <div class="card p-3 border-0 shadow-sm h-100" style="background-color: #fffbeb; border: 1px solid #fef3c7 !important; color: #92400e; border-radius: 16px;">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="small text-muted text-uppercase fw-bold" style="font-size: 0.72rem; letter-spacing: 0.5px;">Pending Payouts</span>
-                <span class="badge bg-<%= Number(stats.totalPendingPayouts) > 0 ? 'warning text-dark' : 'success' %> fw-bold" style="font-size: 0.65rem;">
-                    <%= Number(stats.totalPendingPayouts) > 0 ? 'Action Needed' : 'All Clear' %>
-                </span>
-            </div>
-            <div class="fs-3 fw-bold text-dark mt-1">₹<%= stats.totalPendingPayouts %></div>
-            <small class="text-muted" style="font-size: 0.7rem;">Awaiting admin transfer</small>
+            <small class="text-white-50" style="font-size: 0.7rem;">Pending Payouts: ₹<%= stats.totalPendingPayouts %></small>
         </div>
     </div>
 </div>
