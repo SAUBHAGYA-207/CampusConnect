@@ -7,6 +7,23 @@ const servicesStorage = new JsonStorage('services');
 const appointmentsStorage = new JsonStorage('appointments');
 const payoutsStorage = new JsonStorage('payouts');
 
+function getAppointmentCoinsUsed(app, service) {
+    if (app.coinsUsed !== undefined && app.coinsUsed !== null && !isNaN(Number(app.coinsUsed)) && Number(app.coinsUsed) > 0) {
+        return Number(app.coinsUsed);
+    }
+    if (app.notes && typeof app.notes === 'string') {
+        const match = app.notes.match(/🪙\s*(\d+)\s*Coins\s*Redeemed/i) || app.notes.match(/(\d+)\s*Coins\s*Redeemed/i);
+        if (match && match[1]) return Number(match[1]);
+    }
+    if (app.paymentScreenshot === 'Paid by Coins' || (app.transactionId && String(app.transactionId).startsWith('COINS_'))) {
+        if (service && Number(service.price) > 0) return Number(service.price);
+        if (app.platformFee && Number(app.platformFee) > 0) return Math.round(Number(app.platformFee) / 0.10);
+        if (app.providerEarnings && Number(app.providerEarnings) > 0) return Math.round(Number(app.providerEarnings) / 0.90);
+    }
+    return 0;
+}
+exports.getAppointmentCoinsUsed = getAppointmentCoinsUsed;
+
 exports.getPlatformStats = async () => {
     const allUsers = await usersStorage.getAll();
     const allServices = await servicesStorage.getAll();
@@ -28,7 +45,7 @@ exports.getPlatformStats = async () => {
     completedApps.forEach(app => {
         const service = app.service || serviceMap.get(app.serviceId);
         const servicePrice = service ? Number(service.price) : 0;
-        const coinsUsed = Math.max(0, Number(app.coinsUsed) || 0);
+        const coinsUsed = getAppointmentCoinsUsed(app, service);
         const cashAmount = (app.paymentAmount !== undefined && app.paymentAmount !== null && !isNaN(Number(app.paymentAmount)))
             ? Number(app.paymentAmount)
             : Math.max(0, servicePrice - coinsUsed);
@@ -51,7 +68,8 @@ exports.getPlatformStats = async () => {
     const activeAndCompletedApps = allAppointments.filter(a => a.status !== 'cancelled' && a.status !== 'rejected');
     let totalAllTimeCoinsUsed = 0;
     activeAndCompletedApps.forEach(a => {
-        totalAllTimeCoinsUsed += Math.max(0, Number(a.coinsUsed) || 0);
+        const service = a.service || serviceMap.get(a.serviceId);
+        totalAllTimeCoinsUsed += getAppointmentCoinsUsed(a, service);
     });
 
     // Payout stats
@@ -163,12 +181,17 @@ exports.getAllAppointments = async () => {
     const userMap = new Map(users.map(u => [u.id, u]));
     const serviceMap = new Map(services.map(s => [s.id, s]));
 
-    return appointments.map(app => ({
-        ...app,
-        customer: userMap.get(app.customerId) || { email: 'Unknown Customer' },
-        partner: userMap.get(app.providerId) || { email: 'Unknown Partner' },
-        service: app.service || serviceMap.get(app.serviceId) || { title: 'Unknown Service', price: 0 }
-    })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    return appointments.map(app => {
+        const service = app.service || serviceMap.get(app.serviceId) || { title: 'Unknown Service', price: 0 };
+        const coinsUsed = getAppointmentCoinsUsed(app, service);
+        return {
+            ...app,
+            coinsUsed,
+            customer: userMap.get(app.customerId) || { email: 'Unknown Customer' },
+            partner: userMap.get(app.providerId) || { email: 'Unknown Partner' },
+            service
+        };
+    }).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 };
 
 exports.getAllUsers = async () => {

@@ -44,13 +44,29 @@ describe('E-Wallet, Coins & Profile UPI OTP System', () => {
     afterAll(async () => {
         if (createdServiceId) await servicesStorage.delete(createdServiceId);
         if (createdAppointmentId) await appointmentsStorage.delete(createdAppointmentId);
+        
+        // Cleanup all appointments created by test users
+        const allApps = await appointmentsStorage.getAll();
+        for (const a of allApps) {
+            if (a.customerId === customerId || a.providerId === partnerId || (a.customerId && a.customerId.startsWith('test_user_wallet_')) || (a.providerId && a.providerId.startsWith('test_partner_wallet_'))) {
+                await appointmentsStorage.delete(a.id);
+            }
+        }
+
+        // Cleanup all test users
         await usersStorage.delete(customerId);
         await usersStorage.delete(partnerId);
+        const allUsers = await usersStorage.getAll();
+        for (const u of allUsers) {
+            if (u.id.startsWith('test_user_wallet_') || u.id.startsWith('test_partner_wallet_') || (u.email && u.email.endsWith('@campusconnect.local'))) {
+                await usersStorage.delete(u.id);
+            }
+        }
         
         // Cleanup transactions for test users
         const allTx = await walletTransactionsStorage.getAll();
         for (const tx of allTx) {
-            if (tx.userId === customerId || tx.userId === partnerId) {
+            if (tx.userId === customerId || tx.userId === partnerId || (tx.userId && tx.userId.startsWith('test_'))) {
                 await walletTransactionsStorage.delete(tx.id);
             }
         }
@@ -285,6 +301,9 @@ describe('E-Wallet, Coins & Profile UPI OTP System', () => {
     describe('6. Partner Cancellation & Rejection Refund Automation', () => {
         let coinBookingService;
         let moneyBookingService;
+        let testCoinApptId;
+        let testMoneyApptId;
+        let testRefundPayoutId;
 
         beforeAll(async () => {
             coinBookingService = await serviceService.createService(partnerId, {
@@ -305,6 +324,9 @@ describe('E-Wallet, Coins & Profile UPI OTP System', () => {
         afterAll(async () => {
             if (coinBookingService) await servicesStorage.delete(coinBookingService.id);
             if (moneyBookingService) await servicesStorage.delete(moneyBookingService.id);
+            if (testCoinApptId) await appointmentsStorage.delete(testCoinApptId);
+            if (testMoneyApptId) await appointmentsStorage.delete(testMoneyApptId);
+            if (testRefundPayoutId) await payoutsStorage.delete(testRefundPayoutId);
         });
 
         it('should auto-refund coins to customer when partner rejects a coin-paid booking', async () => {
@@ -321,6 +343,7 @@ describe('E-Wallet, Coins & Profile UPI OTP System', () => {
                 'Coin refund test',
                 { coinsUsed: 40 }
             );
+            testCoinApptId = appt.id;
 
             expect(appt.paymentAmount).toBe(0);
             expect(appt.coinsUsed).toBe(40);
@@ -360,6 +383,7 @@ describe('E-Wallet, Coins & Profile UPI OTP System', () => {
                     coinsUsed: 0
                 }
             );
+            testMoneyApptId = appt.id;
 
             expect(appt.paymentAmount).toBe(150);
             expect(appt.status).toBe('pending');
@@ -369,6 +393,7 @@ describe('E-Wallet, Coins & Profile UPI OTP System', () => {
 
             // Partner cancels the accepted booking
             const cancelledAppt = await appointmentService.updateStatus(appt.id, partnerId, 'provider', 'cancelled');
+            testRefundPayoutId = cancelledAppt.refundPayoutId;
 
             expect(cancelledAppt.status).toBe('cancelled');
             expect(cancelledAppt.refundProcessed).toBe(true);

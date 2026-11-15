@@ -27,8 +27,28 @@ function normalizeAppointment(appt) {
         } catch (e) {}
     }
 
+    let coinsUsed = (appt.coinsUsed !== undefined && appt.coinsUsed !== null && !isNaN(Number(appt.coinsUsed)) && Number(appt.coinsUsed) > 0)
+        ? Number(appt.coinsUsed)
+        : 0;
+
+    if (!coinsUsed && appt.notes && typeof appt.notes === 'string') {
+        const matchCoins = appt.notes.match(/🪙\s*(\d+)\s*Coins\s*Redeemed/i) || appt.notes.match(/(\d+)\s*Coins\s*Redeemed/i);
+        if (matchCoins && matchCoins[1]) {
+            coinsUsed = Number(matchCoins[1]);
+        }
+    }
+
+    if (!coinsUsed && (appt.paymentScreenshot === 'Paid by Coins' || (appt.transactionId && String(appt.transactionId).startsWith('COINS_')))) {
+        if (appt.platformFee && Number(appt.platformFee) > 0) {
+            coinsUsed = Math.round(Number(appt.platformFee) / 0.10);
+        } else if (appt.providerEarnings && Number(appt.providerEarnings) > 0) {
+            coinsUsed = Math.round(Number(appt.providerEarnings) / 0.90);
+        }
+    }
+
     return {
         ...appt,
+        coinsUsed,
         referenceMedia,
         referenceMediaType: referenceMediaType || 'image',
         referenceMediaName: referenceMediaName || 'Reference Media',

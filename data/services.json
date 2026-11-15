@@ -149,5 +149,16 @@
     "status": "under_processing",
     "createdAt": 1794735743217,
     "id": "1794735743217fwckiq"
+  },
+  {
+    "title": "Quick Help Session",
+    "description": "Help for 15 mins",
+    "price": 50,
+    "category": "Teach",
+    "image": null,
+    "providerId": "test_partner_wallet_1794737820513",
+    "status": "under_processing",
+    "createdAt": 1794737829601,
+    "id": "1794737829601fdsfjb"
   }
 ]

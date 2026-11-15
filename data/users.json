@@ -1,35 +1,5 @@
 [
   {
-    "id": "test_user_wallet_1794718001109",
-    "email": "cust_1794718001120@campusconnect.local",
-    "password": "hashedpassword",
-    "role": "customer",
-    "isVerified": true,
-    "otp": null,
-    "otpExpires": null,
-    "partnerUpiId": null,
-    "partnerQrImage": null,
-    "createdAt": null,
-    "coins": 99
-  },
-  {
-    "id": "test_partner_wallet_1794718001109",
-    "email": "partner_1794718002542@campusconnect.local",
-    "password": "hashedpassword",
-    "role": "provider",
-    "isVerified": true,
-    "partnerUpiId": "testpartner@okaxis",
-    "otp": null,
-    "otpExpires": null,
-    "partnerQrImage": null,
-    "createdAt": null,
-    "coins": 159,
-    "tempPendingUpiId": null,
-    "upiOtp": null,
-    "upiOtpExpires": null,
-    "upiId": "testpartner@okaxis"
-  },
-  {
     "id": "1793528406036ijcbv9",
     "coins": 9,
     "tempPendingUpiId": null,
