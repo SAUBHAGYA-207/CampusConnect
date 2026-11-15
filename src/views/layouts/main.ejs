@@ -298,8 +298,8 @@
 <body>
     <% if (typeof impersonatedFrom !== 'undefined' && impersonatedFrom) { %>
         <div class="bg-dark text-warning px-3 py-2 text-center small fw-bold d-flex justify-content-center align-items-center gap-3 shadow-sm border-bottom border-warning sticky-top" style="z-index: 1090;">
-            <span>🎭 You are currently impersonating <strong><%= user.email %></strong> (<%= user.role.toUpperCase() %>)</span>
-            <a href="/admin/simulation/revert-admin" class="btn btn-sm btn-outline-warning py-0 px-2 fw-bold" style="font-size: 0.75rem;">Exit Persona & Return to Master Console</a>
+            <span>🎭 You are currently impersonating <strong><%= (user && user.email) ? user.email : 'Simulated Persona' %></strong> (<%= (user && user.role) ? user.role.toUpperCase() : 'USER' %>)</span>
+            <a href="/admin/simulation/revert-admin" class="btn btn-sm btn-warning text-dark py-1 px-3 fw-bold rounded-pill shadow-sm" style="font-size: 0.8rem; text-decoration: none;">✕ Exit Persona & Return to Master Console</a>
         </div>
     <% } %>
     <% if (!user || user.role !== 'admin') { %>

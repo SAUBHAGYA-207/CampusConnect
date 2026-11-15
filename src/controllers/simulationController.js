@@ -3,6 +3,7 @@ const serviceService = require('../services/serviceService');
 const chatService = require('../services/chatService');
 const storageService = require('../services/storageService');
 const JsonStorage = require('../storage/jsonStorage');
+const { isSuperAdminEmail, isMasterAdminEmail } = require('../utils/adminConfig');
 const usersStorage = new JsonStorage('users');
 const appointmentsStorage = new JsonStorage('appointments');
 
@@ -79,16 +80,23 @@ exports.getLoginAsUser = async (req, res, next) => {
         }
 
         // Store original admin email for easy switchback
-        req.session.impersonatedFrom = req.session.user.email;
+        req.session.impersonatedFrom = (req.session.user && req.session.user.email) ? req.session.user.email : 'sjijaiswal4@gmail.com';
         req.session.user = {
             id: user.id,
             email: user.email,
             role: user.role,
-            isVerified: user.isVerified
+            isVerified: user.isVerified,
+            name: user.name || null,
+            profilePhoto: user.profilePhoto || null,
+            coins: (user.coins !== undefined && user.coins !== null) ? user.coins : 99,
+            partnerUpiId: user.partnerUpiId || null
         };
 
         req.flash('success', `Switched persona to: ${user.email} (${user.role.toUpperCase()}). You are now experiencing CampusConnect as this user!`);
-        res.redirect(user.role === 'provider' ? '/dashboard' : '/marketplace');
+        req.session.save((err) => {
+            if (err) console.error('Error saving session on switch persona:', err);
+            res.redirect(user.role === 'provider' ? '/dashboard' : '/marketplace');
+        });
     } catch (error) {
         next(error);
     }
@@ -96,19 +104,32 @@ exports.getLoginAsUser = async (req, res, next) => {
 
 exports.getRevertToAdmin = async (req, res, next) => {
     try {
-        const masterAdmin = await usersStorage.find(u => u.email === 'sjijaiswal4@gmail.com');
-        if (masterAdmin) {
-            delete req.session.impersonatedFrom;
-            req.session.user = {
-                id: masterAdmin.id,
-                email: masterAdmin.email,
-                role: masterAdmin.role,
-                isVerified: masterAdmin.isVerified
-            };
-            req.flash('success', 'Restored master administrative session.');
-            return res.redirect('/admin/simulation');
+        const targetEmail = req.session.impersonatedFrom || 'sjijaiswal4@gmail.com';
+        const cleanTarget = (targetEmail || '').toLowerCase().trim();
+        let masterAdmin = await usersStorage.find(u => u && u.email && u.email.toLowerCase().trim() === cleanTarget);
+
+        if (!masterAdmin) {
+            masterAdmin = await usersStorage.find(u => u && u.email && isSuperAdminEmail(u.email));
         }
-        res.redirect('/admin/login');
+
+        const adminId = masterAdmin ? masterAdmin.id : 'master_admin_001';
+        const adminEmail = masterAdmin ? masterAdmin.email : 'sjijaiswal4@gmail.com';
+
+        delete req.session.impersonatedFrom;
+        req.session.user = {
+            id: adminId,
+            email: adminEmail,
+            role: 'admin',
+            isVerified: true,
+            name: masterAdmin?.name || 'Master Admin',
+            coins: (masterAdmin?.coins !== undefined && masterAdmin?.coins !== null) ? masterAdmin.coins : 99
+        };
+
+        req.flash('success', 'Restored master administrative session.');
+        req.session.save((err) => {
+            if (err) console.error('Error saving session on revert-admin:', err);
+            res.redirect('/admin/simulation');
+        });
     } catch (error) {
         next(error);
     }

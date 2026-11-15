@@ -48,7 +48,10 @@ app.use(async (req, res, next) => {
     }
     res.locals.user = req.session.user || null;
     res.locals.impersonatedFrom = req.session.impersonatedFrom || null;
-    res.locals.isMasterAdmin = Boolean(req.session.user && req.session.user.email && req.session.user.email.toLowerCase().trim() === 'sjijaiswal4@gmail.com');
+    res.locals.isMasterAdmin = Boolean(
+        (req.session.user && req.session.user.email && req.session.user.email.toLowerCase().trim() === 'sjijaiswal4@gmail.com') ||
+        (req.session.impersonatedFrom && req.session.impersonatedFrom.toLowerCase().trim() === 'sjijaiswal4@gmail.com')
+    );
     res.locals.path = req.path;
     res.locals.success_messages = req.flash('success');
     res.locals.error_messages = req.flash('error');

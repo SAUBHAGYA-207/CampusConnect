@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
+const simulationController = require('../controllers/simulationController');
 const { requireSuperAdmin } = require('../middleware/auth');
 const { payoutUpload } = require('../middleware/upload');
 
@@ -13,6 +14,9 @@ router.get('/verify-otp', adminController.getVerifyOtp);
 router.post('/verify-otp', adminController.postVerifyOtp);
 router.get('/resend-otp', adminController.resendOtp);
 router.get('/logout', adminController.logout);
+
+// Revert persona route alias
+router.get('/revert-admin', simulationController.getRevertToAdmin);
 
 // Protected Super Admin Portal Routes
 router.get('/dashboard', requireSuperAdmin, adminController.getDashboard);

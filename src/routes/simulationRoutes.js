@@ -4,6 +4,9 @@ const simulationController = require('../controllers/simulationController');
 const { requireMasterAdmin } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
+// Revert from persona back to admin (MUST be accessible while impersonating)
+router.get('/revert-admin', simulationController.getRevertToAdmin);
+
 // Strict Protection: Only accessible by sjijaiswal4@gmail.com
 router.use(requireMasterAdmin);
 
@@ -14,7 +17,6 @@ router.get('/', simulationController.getDashboard);
 router.post('/users/create', simulationController.postCreateUser);
 router.post('/users/:id/delete', simulationController.postDeleteUser);
 router.get('/users/:id/login-as', simulationController.getLoginAsUser);
-router.get('/revert-admin', simulationController.getRevertToAdmin);
 
 // Service & Booking Management
 router.post('/services/create', upload.serviceUpload.single('image'), simulationController.postCreateService);
