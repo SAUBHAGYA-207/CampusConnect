@@ -389,6 +389,32 @@ exports.sendOTP = async (email, otp) => {
     return { previewUrl: result.previewUrl, otp, isRealDelivery: result.isRealDelivery };
 };
 
+exports.sendUpiVerificationOTP = async (email, otp, upiId) => {
+    const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 500px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; margin: 0 auto;">
+            <div style="background: #146B4F; color: white; padding: 12px 18px; border-radius: 8px; font-weight: bold; font-size: 16px;">
+                CampusConnect • Security Verification
+            </div>
+            <h3 style="color: #2c1810; margin-top: 20px;">Authorize UPI ID Registration / Update</h3>
+            <p style="color: #475569; font-size: 15px;">You requested to set your payout UPI ID to <strong>${upiId}</strong>. To confirm this change, enter the one-time security code below:</p>
+            <div style="background: #EBF7F1; color: #146B4F; font-size: 32px; font-weight: bold; letter-spacing: 6px; padding: 14px 20px; border-radius: 8px; text-align: center; margin: 16px 0; border: 1px dashed #146B4F;">
+                ${otp}
+            </div>
+            <p style="color: #64748b; font-size: 13px; margin-bottom: 0;">This security code expires in 10 minutes. If you did not initiate this change, please ignore this email or contact support immediately.</p>
+        </div>
+    `;
+    const text = `Your OTP code to authorize setting your UPI ID to ${upiId} on CampusConnect is: ${otp}. It is valid for 10 minutes.`;
+
+    const result = await sendMailUniversal({
+        to: email,
+        subject: 'UPI ID Verification Code - CampusConnect',
+        text,
+        html
+    });
+
+    return { previewUrl: result.previewUrl, otp, isRealDelivery: result.isRealDelivery };
+};
+
 exports.sendPasswordResetOTP = async (email, otp) => {
     const html = `
         <div style="font-family: Arial, sans-serif; max-width: 500px; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; margin: 0 auto;">
@@ -434,6 +460,51 @@ exports.sendStatusEmail = async (email, status) => {
     const subject = `Appointment Status Update: ${status} - CampusConnect`;
     const text = `Your appointment status has been updated to: ${status}. Log in to view details.`;
     await sendMailUniversal({ to: email, subject, text, html: `<p>${text}</p>` });
+};
+
+exports.sendServiceCompletedFeedbackEmail = async (customerEmail, customerName, serviceTitle, partnerName, appointmentId) => {
+    const subject = `⭐ How was your experience with "${serviceTitle}"? Share Your Feedback - CampusConnect`;
+    const text = `Hi ${customerName},\n\nYour service "${serviceTitle}" with partner ${partnerName} has been completed! Please share your feedback to help fellow students.\n\nReview link: http://localhost:3000/appointments/my-bookings/${appointmentId}\n\nThank you for choosing CampusConnect!`;
+    const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 24px; border: 1px solid #fed7aa; border-radius: 12px; background: #fffaf5; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #146B4F 0%, #0d4a36 100%); color: white; padding: 14px 20px; border-radius: 8px; font-weight: bold; font-size: 16px;">
+                ✓ Service Completed • Share Your Feedback
+            </div>
+            <h3 style="color: #2c1810; margin-top: 20px;">Hi ${customerName}, how did it go?</h3>
+            <p style="color: #475569; font-size: 15px; line-height: 1.5;">
+                Your booking for <strong>"${serviceTitle}"</strong> with partner <strong>${partnerName}</strong> has been marked as <strong>Completed</strong>.
+            </p>
+            <div style="background: #ffffff; border: 1.5px solid #fed7aa; padding: 20px; margin: 20px 0; border-radius: 10px; text-align: center;">
+                <div style="font-size: 14px; font-weight: bold; color: #7c2d12; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    Rate Your Experience
+                </div>
+                <div style="font-size: 28px; margin-bottom: 14px; letter-spacing: 6px;">
+                    ⭐⭐⭐⭐⭐
+                </div>
+                <p style="color: #64748b; font-size: 13px; margin-bottom: 16px;">
+                    Your ratings & comments help fellow students find reliable peers and help partner ${partnerName} build their reputation.
+                </p>
+                <a href="http://localhost:3000/appointments/my-bookings/${appointmentId}#feedback-card" 
+                   style="display: inline-block; background: #146B4F; color: #ffffff; padding: 12px 24px; border-radius: 8px; font-weight: bold; text-decoration: none; font-size: 15px;">
+                    ⭐ Leave Review & Feedback →
+                </a>
+            </div>
+            <p style="color: #94a3b8; font-size: 12px; margin-bottom: 0;">
+                CampusConnect • Empowering student entrepreneurship and campus collaboration.
+            </p>
+        </div>
+    `;
+
+    console.log('\n============================================================');
+    console.log('⭐  [CAMPUSCONNECT] SERVICE COMPLETED FEEDBACK EMAIL DISPATCHED');
+    console.log('------------------------------------------------------------');
+    console.log(`👤  Customer:    ${customerEmail}`);
+    console.log(`🛠️   Service:     "${serviceTitle}"`);
+    console.log(`🤝  Partner:     ${partnerName}`);
+    console.log(`🔗  Feedback:    http://localhost:3000/appointments/my-bookings/${appointmentId}`);
+    console.log('============================================================\n');
+
+    return await sendMailUniversal({ to: customerEmail, subject, text, html });
 };
 
 exports.sendServiceRemovalEmail = async (email, serviceTitle, feedback) => {
@@ -492,6 +563,37 @@ exports.sendPayoutClearedEmail = async (email, amount, utr, proofUrl) => {
             </div>
             <p style="color: #15803d; font-size: 13px;">
                 Thank you for partnering with CampusConnect! You can review your payout history in your Partner Portal.
+            </p>
+        </div>
+    `;
+
+    await sendMailUniversal({ to: email, subject, text, html });
+};
+
+exports.sendRefundClearedEmail = async (email, amount, utr, proofUrl) => {
+    const subject = `Booking Refund Cleared: ₹${amount} - CampusConnect`;
+    const text = `Your refund of ₹${amount} for your cancelled booking has been cleared by Super Admin.\nUTR/Reference: ${utr || 'Direct UPI Transfer'}`;
+    const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 24px; border: 1px solid #bbf7d0; border-radius: 12px; background: #f0fdf4;">
+            <div style="background: #16a34a; color: white; padding: 12px 18px; border-radius: 8px; font-weight: bold; font-size: 16px;">
+                ✓ Booking Refund Settled
+            </div>
+            <h3 style="color: #14532d; margin-top: 20px;">Refund Transferred to Your UPI</h3>
+            <p style="color: #166534; font-size: 15px;">
+                Super Admin has processed your refund of <strong>₹${amount}</strong> for your cancelled booking.
+            </p>
+            <div style="background: #ffffff; border: 1px solid #dcfce7; padding: 16px; margin: 16px 0; border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: #64748b;">Amount Refunded:</span>
+                    <strong style="color: #15803d; font-size: 18px;">₹${amount}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #64748b;">Bank UTR / Ref:</span>
+                    <span style="font-family: monospace; font-weight: bold;">${utr || 'Direct UPI Transfer'}</span>
+                </div>
+            </div>
+            <p style="color: #15803d; font-size: 13px;">
+                Thank you for using CampusConnect!
             </p>
         </div>
     `;

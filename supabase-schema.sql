@@ -12,10 +12,30 @@ CREATE TABLE IF NOT EXISTS "users" (
     "isVerified" BOOLEAN DEFAULT false,
     "otp" TEXT,
     "otpExpires" BIGINT,
+    "name" TEXT,
+    "profilePhoto" TEXT,
+    "avatar" TEXT,
+    "coins" NUMERIC DEFAULT 99,
     "partnerUpiId" TEXT,
+    "upiId" TEXT,
+    "tempPendingUpiId" TEXT,
+    "upiOtp" TEXT,
+    "upiOtpExpires" BIGINT,
     "partnerQrImage" TEXT,
     "createdAt" BIGINT
 );
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "name" TEXT;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "profilePhoto" TEXT;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "avatar" TEXT;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "coins" NUMERIC DEFAULT 99;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "upiId" TEXT;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "tempPendingUpiId" TEXT;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "upiOtp" TEXT;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "upiOtpExpires" BIGINT;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "referralCode" TEXT;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "referredBy" TEXT;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "referralCodeUsed" TEXT;
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "referralRewardProcessed" BOOLEAN DEFAULT false;
 
 -- 2. SERVICES TABLE
 CREATE TABLE IF NOT EXISTS "services" (
@@ -108,6 +128,21 @@ CREATE TABLE IF NOT EXISTS "notifications" (
     "createdAt" BIGINT
 );
 
+-- 8. WALLET_TRANSACTIONS TABLE (E-Wallet Coins Ledger)
+CREATE TABLE IF NOT EXISTS "wallet_transactions" (
+    "id" TEXT PRIMARY KEY,
+    "userId" TEXT NOT NULL,
+    "type" TEXT NOT NULL, -- 'credit' or 'debit'
+    "amount" NUMERIC NOT NULL,
+    "description" TEXT NOT NULL,
+    "status" TEXT DEFAULT 'completed', -- 'completed', 'under_processing', 'rejected'
+    "referenceId" TEXT,
+    "approvedAt" BIGINT,
+    "rejectedReason" TEXT,
+    "rejectedAt" BIGINT,
+    "createdAt" BIGINT
+);
+
 -- ==============================================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
 -- Service Hub backend uses server-side Node.js Supabase client.
@@ -120,6 +155,7 @@ ALTER TABLE "payouts" DISABLE ROW LEVEL SECURITY;
 ALTER TABLE "messages" DISABLE ROW LEVEL SECURITY;
 ALTER TABLE "admin_messages" DISABLE ROW LEVEL SECURITY;
 ALTER TABLE "notifications" DISABLE ROW LEVEL SECURITY;
+ALTER TABLE "wallet_transactions" DISABLE ROW LEVEL SECURITY;
 
 -- ==============================================================================
 -- 8. STORAGE BUCKET CONFIGURATION FOR ASSETS & IMAGES

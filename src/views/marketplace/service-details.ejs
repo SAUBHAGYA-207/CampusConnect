@@ -112,50 +112,8 @@
                 
                 <hr class="text-muted opacity-25 my-4">
                 
-                <!-- Online / Remote Deliverable Showcase Banner -->
-                <% if (service.requiresUpload || service.deliveryMode === 'online') { %>
-                    <div class="p-3 mb-4 rounded-3 border d-flex align-items-start gap-3 shadow-sm" style="background-color: #F0FDF4; border-color: #BBF7D0 !important;">
-                        <span class="fs-3">🎨</span>
-                        <div>
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <span class="fw-bold text-success">100% Online Delivery • No In-Person Meeting Needed</span>
-                                <span class="badge bg-success text-white rounded-pill px-2 py-0 fw-semibold" style="font-size: 0.68rem;">Remote Commission</span>
-                            </div>
-                            <p class="small text-muted mb-0">
-                                This service (such as custom portraits, sketches, digital art, video editing, or writing) can be prepared entirely remotely. You can upload your reference photo or video when booking, and coordinate deliverables with @<%= partnerDisplayName %> via in-app chat.
-                            </p>
-                        </div>
-                    </div>
-                <% } %>
-
-                <!-- Partner Profile Showcase Box -->
-                <div class="p-3 mb-4 rounded-3 border bg-light d-flex align-items-center justify-content-between flex-wrap gap-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold shadow-sm flex-shrink-0" style="width: 46px; height: 46px; font-size: 1.15rem;">
-                            <%= partnerInitial %>
-                        </div>
-                        <div>
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="fw-bold fs-6 text-dark">@<%= partnerDisplayName %></span>
-                                <span class="badge bg-success text-white rounded-pill px-2 py-0 fw-semibold" style="font-size: 0.68rem;">Verified</span>
-                            </div>
-                            <small class="text-muted d-block">CampusConnect Student Partner • Instant Chat & File Sharing</small>
-                        </div>
-                    </div>
-                </div>
-
                 <h5 class="fw-bold mb-3">About This Service</h5>
                 <p class="text-muted" style="white-space: pre-wrap; line-height: 1.8;"><%= service.description %></p>
-                
-                <div class="mt-4 p-3 bg-light rounded-3 d-flex align-items-center gap-3">
-                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 44px; height: 44px;">
-                        ✓
-                    </div>
-                    <div>
-                        <div class="fw-semibold">100% Payment Secured by CampusConnect</div>
-                        <small class="text-muted">Payment held securely in escrow and released to @<%= partnerDisplayName %> only upon service fulfillment.</small>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -188,18 +146,9 @@
                         <!-- STEP 0: Initial Overview / Call To Action (NO QR Code is pre-generated!) -->
                         <div id="bookingStateOverview" class="booking-flow-card">
                             <div class="p-3 bg-light rounded-3 mb-3 border">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
                                     <span class="text-muted small fw-semibold">Service Fee:</span>
                                     <span class="fs-4 fw-bold text-success">₹<%= service.price %></span>
-                                </div>
-                                <hr class="my-2 opacity-25">
-                                <div class="small text-muted mb-2 d-flex align-items-start gap-2">
-                                    <span class="badge bg-success-subtle text-success rounded-pill mt-1">✓</span>
-                                    <span><strong>100% Escrow Protection:</strong> Payment held securely and released only after service fulfillment.</span>
-                                </div>
-                                <div class="small text-muted d-flex align-items-start gap-2">
-                                    <span class="badge bg-primary-subtle text-primary rounded-pill mt-1">⚡</span>
-                                    <span>Direct coordination & messaging with verified student partner.</span>
                                 </div>
                             </div>
 
@@ -321,6 +270,42 @@
                                 Please fill in date, time, and your specifications before proceeding.
                             </div>
 
+                            <!-- 6. E-Wallet Coin Redemption -->
+                            <% 
+                                const userCoins = (typeof user !== 'undefined' && user && user.coins !== undefined) ? Number(user.coins) : 99; 
+                                const maxDeductibleCoins = Math.min(userCoins, Number(service.price));
+                            %>
+                            <div class="card p-3 mb-3 border-0 rounded-3 shadow-sm" style="background: linear-gradient(135deg, #FEF3C7 0%, #FFFBEB 100%); border: 1.5px solid #FDE68A !important;">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="fs-4">🪙</span>
+                                        <div>
+                                            <strong class="d-block text-dark small">Redeem E-Wallet Coins</strong>
+                                            <small class="text-muted" style="font-size: 0.75rem;">You have <strong><%= userCoins %> Coins</strong> (1 Coin = ₹1 discount)</small>
+                                        </div>
+                                    </div>
+                                    <div class="form-check form-switch m-0">
+                                        <input class="form-check-input" type="checkbox" id="useWalletCoinsCheck" name="useWalletCoins" style="width: 2.4em; height: 1.3em; cursor: pointer;" <%= userCoins > 0 ? '' : 'disabled' %>>
+                                    </div>
+                                </div>
+                                <div id="coinDeductionDetails" class="d-none mt-2 pt-2 border-top border-warning-subtle small">
+                                    <div class="d-flex justify-content-between text-muted mb-1">
+                                        <span>Original Price:</span>
+                                        <span>₹<%= service.price %></span>
+                                    </div>
+                                    <div class="d-flex justify-content-between text-success fw-bold mb-1">
+                                        <span>Coin Discount Applied:</span>
+                                        <span>- ₹<span id="displayCoinsDiscount"><%= maxDeductibleCoins %></span> (<%= maxDeductibleCoins %> Coins)</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between fw-bold text-dark pt-1 border-top">
+                                        <span>Final Payable via UPI:</span>
+                                        <span class="fs-6 text-success">₹<span id="displayFinalPayable"><%= Math.max(0, Number(service.price) - maxDeductibleCoins) %></span></span>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="coinsUsed" id="coinsUsedInput" value="0">
+                                <input type="hidden" id="maxDeductibleCoinsHidden" value="<%= maxDeductibleCoins %>">
+                            </div>
+
                             <!-- Action: Proceed to Payment Button -->
                             <button type="button" id="btnProceedToPayment" class="btn btn-success btn-lg w-100 py-3 shadow-sm fw-bold d-flex align-items-center justify-content-center gap-2">
                                 <span>💳 Proceed to Payment (₹<%= service.price %>) →</span>
@@ -408,7 +393,7 @@
                                 </div>
                                 
                                 <div class="small text-muted mt-1">
-                                    Payee: <strong class="text-dark"><%= activePayee %></strong> | Amount: <strong class="text-success fs-6">₹<%= service.price %></strong>
+                                    Payee: <strong class="text-dark"><%= activePayee %></strong> | Amount: <strong class="text-success fs-6" id="qrAmountDisplay">₹<%= service.price %></strong>
                                 </div>
                                 
                                 <div class="p-2 mt-2 bg-light rounded text-muted small" style="font-size: 0.76rem;">
@@ -609,6 +594,46 @@
 
         let timerInterval = null;
 
+        // E-Wallet Coins Toggle Handling
+        const useCoinsCheck = document.getElementById('useWalletCoinsCheck');
+        const coinDetails = document.getElementById('coinDeductionDetails');
+        const coinsInput = document.getElementById('coinsUsedInput');
+        const maxCoins = parseFloat(document.getElementById('maxDeductibleCoinsHidden')?.value || '0');
+        const btnPaymentText = btnProceedToPayment ? btnProceedToPayment.querySelector('span') : null;
+
+        function updateCoinsState() {
+            const paymentScreenshotInput = document.getElementById('paymentScreenshot');
+            if (useCoinsCheck && useCoinsCheck.checked) {
+                if (coinDetails) coinDetails.classList.remove('d-none');
+                if (coinsInput) coinsInput.value = maxCoins;
+                const finalVal = Math.max(0, parseFloat(servicePrice) - maxCoins);
+                if (btnPaymentText) {
+                    if (finalVal === 0) {
+                        btnPaymentText.innerText = `🪙 Complete Booking with Coins (₹0 to pay) →`;
+                        btnProceedToPayment.classList.remove('btn-success');
+                        btnProceedToPayment.classList.add('btn-primary');
+                        if (paymentScreenshotInput) paymentScreenshotInput.removeAttribute('required');
+                    } else {
+                        btnPaymentText.innerText = `💳 Proceed to Payment (₹${finalVal}) →`;
+                        btnProceedToPayment.classList.remove('btn-primary');
+                        btnProceedToPayment.classList.add('btn-success');
+                        if (paymentScreenshotInput) paymentScreenshotInput.setAttribute('required', 'required');
+                    }
+                }
+            } else {
+                if (coinDetails) coinDetails.classList.add('d-none');
+                if (coinsInput) coinsInput.value = '0';
+                if (btnPaymentText) btnPaymentText.innerText = `💳 Proceed to Payment (₹${servicePrice}) →`;
+                btnProceedToPayment.classList.remove('btn-primary');
+                btnProceedToPayment.classList.add('btn-success');
+                if (paymentScreenshotInput) paymentScreenshotInput.setAttribute('required', 'required');
+            }
+        }
+
+        if (useCoinsCheck) {
+            useCoinsCheck.addEventListener('change', updateCoinsState);
+        }
+
         // Service Mode selection buttons
         const modeButtons = document.querySelectorAll('.service-mode-btn');
         const selectedModeInput = document.getElementById('selectedServiceMode');
@@ -700,6 +725,22 @@
 
                 specsValidationBanner.classList.add('d-none');
 
+                // If fully paid with coins (payable amount is 0), skip payment gateway / QR generator directly!
+                const isFullyPaidByCoins = (useCoinsCheck && useCoinsCheck.checked && (parseFloat(servicePrice) - maxCoins <= 0));
+                if (isFullyPaidByCoins) {
+                    const paymentScreenshotInput = document.getElementById('paymentScreenshot');
+                    if (paymentScreenshotInput) {
+                        paymentScreenshotInput.removeAttribute('required');
+                    }
+                    btnProceedToPayment.disabled = true;
+                    btnProceedToPayment.innerHTML = '<span>⏳ Confirming Booking with Coins...</span>';
+                    const bookingForm = document.getElementById('bookingForm');
+                    if (bookingForm) {
+                        bookingForm.submit();
+                    }
+                    return;
+                }
+
                 // Switch to Generating QR Animation state
                 stateSpecs.classList.add('d-none');
                 stateGenQr.classList.remove('d-none');
@@ -750,11 +791,17 @@
                             notesSummary.innerText = trimmedNotes.length > 50 ? trimmedNotes.substring(0, 47) + '...' : trimmedNotes;
                         }
 
+                        // Calculate dynamic payment amount after wallet coins discount
+                        let finalAmount = parseFloat(servicePrice) || 0;
+                        if (useCoinsCheck && useCoinsCheck.checked) {
+                            finalAmount = Math.max(0, finalAmount - maxCoins);
+                        }
+
                         // Generate Dynamic QR Code URL now (on demand, never pre-generated!)
                         const notePayload = 'CampusConnect ' + randomRef + ' ' + serviceTitle;
                         const upiPayload = 'upi://pay?pa=' + encodeURIComponent(activeUpiId) + 
                                            '&pn=' + encodeURIComponent(activePayeeName) + 
-                                           '&am=' + encodeURIComponent(servicePrice) + 
+                                           '&am=' + encodeURIComponent(finalAmount.toFixed(2)) + 
                                            '&cu=INR' + 
                                            '&tn=' + encodeURIComponent(notePayload);
 
@@ -762,6 +809,11 @@
                         const qrImgElem = document.getElementById('dynamicPaymentQrImg');
                         if (qrImgElem) {
                             qrImgElem.src = qrUrl;
+                        }
+
+                        const qrAmountDisplay = document.getElementById('qrAmountDisplay');
+                        if (qrAmountDisplay) {
+                            qrAmountDisplay.innerText = '₹' + finalAmount.toFixed(2);
                         }
 
                         // Mobile UPI app deep link

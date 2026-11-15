@@ -32,12 +32,19 @@ app.use(express.static(path.join(__dirname, 'public')));
 sessionSetup(app);
 app.use(flash());
 
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
     // Prevent browser from caching dynamic HTML so login/logout status is immediately reflected
     if (req.method === 'GET') {
         res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
         res.set('Pragma', 'no-cache');
         res.set('Expires', '0');
+    }
+    if (req.session.user && req.session.user.id) {
+        try {
+            const walletService = require('./src/services/walletService');
+            const coins = await walletService.getUserCoins(req.session.user.id);
+            req.session.user.coins = coins;
+        } catch (e) {}
     }
     res.locals.user = req.session.user || null;
     res.locals.impersonatedFrom = req.session.impersonatedFrom || null;
@@ -58,6 +65,8 @@ app.use((req, res, next) => {
 });
 
 app.use('/auth', authRoutes);
+const profileRoutes = require('./src/routes/profileRoutes');
+app.use('/profile', profileRoutes);
 app.use('/services', serviceRoutes);
 app.use('/appointments', appointmentRoutes);
 app.use('/api/chat', chatRoutes);

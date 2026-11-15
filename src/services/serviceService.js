@@ -101,12 +101,27 @@ exports.createService = async (providerId, serviceData) => {
         category: serviceData.category,
         image: imagePayload,
         providerId,
+        status: serviceData.status || 'under_processing',
         createdAt: (serviceData.createdAt && !isNaN(Number(serviceData.createdAt))) 
             ? Number(serviceData.createdAt) 
             : Date.now()
     };
 
     const added = await servicesStorage.add(payload);
+
+    // Record 10 under-processing coins reward for partner listing (credited once verified by admin)
+    try {
+        const walletService = require('./walletService');
+        await walletService.addUnderProcessingCoins(
+            providerId,
+            10,
+            `10 Coins for service listing: "${serviceData.title}" (Under Processing)`,
+            added.id
+        );
+    } catch (e) {
+        console.warn('Could not record under-processing coins for listing:', e.message);
+    }
+
     return normalizeService(added);
 };
 
@@ -210,6 +225,9 @@ exports.searchServices = async (query = {}, category, minPrice, maxPrice, sortBy
     } catch (e) {
         console.warn('Could not populate provider usernames for searchServices:', e.message);
     }
+
+    // Only display services that are verified/published (exclude services under admin processing)
+    services = services.filter(s => s.status !== 'under_processing');
 
     if (query.q) {
         const q = query.q.toLowerCase();

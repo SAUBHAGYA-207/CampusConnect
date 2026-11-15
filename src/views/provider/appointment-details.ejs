@@ -53,7 +53,12 @@
                                         <% } %>
                                     </td>
                                     <td class="px-3 py-3">
-                                        <% if (app.paymentScreenshot) { %>
+                                        <% if (app.paymentScreenshot === 'Paid by Coins' || (!app.paymentAmount && app.coinsUsed > 0)) { %>
+                                            <div>
+                                                <span class="badge bg-warning text-dark border border-warning fw-bold">🪙 Paid by Coins</span>
+                                                <div class="small text-muted mt-1"><%= app.coinsUsed %> Coins Redeemed</div>
+                                            </div>
+                                        <% } else if (app.paymentScreenshot) { %>
                                             <div class="d-flex align-items-center gap-2">
                                                 <button type="button" class="btn p-0 border-0 bg-transparent" onclick="openImageLightbox('<%= app.paymentScreenshot %>', 'Payment Proof - Booking #<%= app.id %>')" title="Click to view & download screenshot">
                                                     <img src="<%= app.paymentScreenshot %>" alt="Proof" class="rounded border shadow-sm" style="width: 48px; height: 48px; object-fit: cover; cursor: pointer;">

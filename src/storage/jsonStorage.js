@@ -74,14 +74,36 @@ class JsonStorage {
         if (isSupabaseConfigured()) {
             const client = getSupabaseClient();
             if (client) {
-                const { data, error } = await client.from(this.tableName).select('*');
-                if (error) {
-                    console.error(`[Supabase Storage Error] getAll on ${this.tableName}:`, error.message);
-                    throw error;
+                try {
+                    const { data, error } = await client.from(this.tableName).select('*');
+                    if (error) {
+                        if (error.message && (error.message.includes('Could not find the table') || error.message.includes('relation') || error.code === '42P01')) {
+                            // Table not yet created in Supabase schema: smoothly fallback to local JSON
+                            return this.lock.then(async () => {
+                                const result = await this._read();
+                                setCachedData(this.tableName, result);
+                                return result;
+                            });
+                        }
+                        console.error(`[Supabase Storage Error] getAll on ${this.tableName}:`, error.message);
+                        throw error;
+                    }
+                    // Merge local JSON extra columns (e.g. coins, upiOtp) with Supabase data
+                    const localData = await this._read().catch(() => []);
+                    const localMap = new Map(localData.map(i => [i.id, i]));
+                    const merged = (data || []).map(item => ({ ...item, ...(localMap.get(item.id) || {}) }));
+                    setCachedData(this.tableName, merged);
+                    return merged;
+                } catch (err) {
+                    if (err.message && (err.message.includes('Could not find the table') || err.message.includes('relation') || err.code === '42P01')) {
+                        return this.lock.then(async () => {
+                            const result = await this._read();
+                            setCachedData(this.tableName, result);
+                            return result;
+                        });
+                    }
+                    throw err;
                 }
-                const result = data || [];
-                setCachedData(this.tableName, result);
-                return result;
             }
         }
         return this.lock.then(async () => {
@@ -95,12 +117,26 @@ class JsonStorage {
         if (isSupabaseConfigured()) {
             const client = getSupabaseClient();
             if (client) {
-                const { data, error } = await client.from(this.tableName).select('*').eq('id', id).maybeSingle();
-                if (error) {
-                    console.error(`[Supabase Storage Error] getById on ${this.tableName}:`, error.message);
-                    throw error;
+                try {
+                    const { data, error } = await client.from(this.tableName).select('*').eq('id', id).maybeSingle();
+                    if (error) {
+                        if (error.message && (error.message.includes('Could not find the table') || error.message.includes('relation') || error.code === '42P01')) {
+                            const items = await this.getAll();
+                            return items.find(item => item.id === id) || null;
+                        }
+                        console.error(`[Supabase Storage Error] getById on ${this.tableName}:`, error.message);
+                        throw error;
+                    }
+                    const localData = await this._read().catch(() => []);
+                    const localItem = localData.find(i => i.id === id) || {};
+                    return data ? { ...data, ...localItem } : (localItem.id ? localItem : null);
+                } catch (err) {
+                    if (err.message && (err.message.includes('Could not find the table') || err.message.includes('relation') || err.code === '42P01')) {
+                        const items = await this.getAll();
+                        return items.find(item => item.id === id) || null;
+                    }
+                    throw err;
                 }
-                return data || null;
             }
         }
         const items = await this.getAll();
@@ -124,6 +160,10 @@ class JsonStorage {
                 let { data, error } = await client.from(this.tableName).insert([currentItem]).select().single();
                 
                 while (error && error.message) {
+                    if (error.message.includes('Could not find the table') || error.message.includes('relation') || error.code === '42P01') {
+                        // Table doesn't exist on Supabase, fall through to local JSON
+                        break;
+                    }
                     const match = error.message.match(/Could not find the ['"](\w+)['"] column/i) ||
                                   error.message.match(/column ['"](\w+)['"] of relation/i) ||
                                   error.message.match(/column ['"](\w+)['"] does not exist/i);
@@ -131,6 +171,12 @@ class JsonStorage {
                         delete currentItem[match[1]];
                         const retry = await client.from(this.tableName).insert([currentItem]).select().single();
                         if (!retry.error) {
+                            await this.lock.then(async () => {
+                                const items = await this._read();
+                                items.push(newItem);
+                                await this._write(items);
+                            });
+                            invalidateCache(this.tableName);
                             return { ...newItem, ...retry.data };
                         }
                         error = retry.error;
@@ -140,11 +186,21 @@ class JsonStorage {
                 }
 
                 if (error) {
-                    console.error(`[Supabase Storage Error] add on ${this.tableName}:`, error.message);
-                    throw error;
+                    if (error.message && (error.message.includes('Could not find the table') || error.message.includes('relation') || error.code === '42P01')) {
+                        // Fall back to local JSON
+                    } else {
+                        console.error(`[Supabase Storage Error] add on ${this.tableName}:`, error.message);
+                        throw error;
+                    }
+                } else {
+                    await this.lock.then(async () => {
+                        const items = await this._read();
+                        items.push({ ...newItem, ...(data || {}) });
+                        await this._write(items);
+                    });
+                    invalidateCache(this.tableName);
+                    return { ...newItem, ...(data || {}) };
                 }
-                invalidateCache(this.tableName);
-                return { ...newItem, ...(data || {}) };
             }
         }
         return new Promise((resolve, reject) => {
@@ -171,15 +227,50 @@ class JsonStorage {
                 let { data, error } = await client.from(this.tableName).update(currentUpdates).eq('id', id).select().maybeSingle();
                 
                 while (error && error.message) {
+                    if (error.message.includes('Could not find the table') || error.message.includes('relation') || error.code === '42P01') {
+                        break;
+                    }
                     const match = error.message.match(/Could not find the ['"](\w+)['"] column/i) ||
                                   error.message.match(/column ['"](\w+)['"] of relation/i) ||
                                   error.message.match(/column ['"](\w+)['"] does not exist/i);
                     if (match && match[1] && currentUpdates[match[1]] !== undefined) {
                         delete currentUpdates[match[1]];
+                        if (Object.keys(currentUpdates).length === 0) {
+                            let mergedResult = { ...updates };
+                            await this.lock.then(async () => {
+                                const items = await this._read();
+                                const index = items.findIndex(item => item.id === id);
+                                if (index !== -1) {
+                                    items[index] = { ...items[index], ...updates };
+                                    mergedResult = items[index];
+                                } else {
+                                    const newItem = { id, ...updates };
+                                    items.push(newItem);
+                                    mergedResult = newItem;
+                                }
+                                await this._write(items);
+                            });
+                            invalidateCache(this.tableName);
+                            return mergedResult;
+                        }
                         const retry = await client.from(this.tableName).update(currentUpdates).eq('id', id).select().maybeSingle();
                         if (!retry.error) {
+                            let mergedResult = { ...(retry.data || {}), ...updates };
+                            await this.lock.then(async () => {
+                                const items = await this._read();
+                                const index = items.findIndex(item => item.id === id);
+                                if (index !== -1) {
+                                    items[index] = { ...items[index], ...(retry.data || {}), ...updates };
+                                    mergedResult = items[index];
+                                } else {
+                                    const newItem = { id, ...(retry.data || {}), ...updates };
+                                    items.push(newItem);
+                                    mergedResult = newItem;
+                                }
+                                await this._write(items);
+                            });
                             invalidateCache(this.tableName);
-                            return retry.data || null;
+                            return mergedResult;
                         }
                         error = retry.error;
                     } else {
@@ -188,11 +279,41 @@ class JsonStorage {
                 }
 
                 if (error) {
-                    console.error(`[Supabase Storage Error] update on ${this.tableName}:`, error.message);
-                    throw error;
+                    // Fall back to updating local JSON so application state and extra columns are never lost
+                    let mergedResult = { ...updates };
+                    await this.lock.then(async () => {
+                        const items = await this._read();
+                        const index = items.findIndex(item => item.id === id);
+                        if (index !== -1) {
+                            items[index] = { ...items[index], ...updates };
+                            mergedResult = items[index];
+                        } else {
+                            const newItem = { id, ...updates };
+                            items.push(newItem);
+                            mergedResult = newItem;
+                        }
+                        await this._write(items);
+                    });
+                    invalidateCache(this.tableName);
+                    return mergedResult;
+                } else {
+                    let mergedResult = { ...(data || {}), ...updates };
+                    await this.lock.then(async () => {
+                        const items = await this._read();
+                        const index = items.findIndex(item => item.id === id);
+                        if (index !== -1) {
+                            items[index] = { ...items[index], ...(data || {}), ...updates };
+                            mergedResult = items[index];
+                        } else {
+                            const newItem = { id, ...(data || {}), ...updates };
+                            items.push(newItem);
+                            mergedResult = newItem;
+                        }
+                        await this._write(items);
+                    });
+                    invalidateCache(this.tableName);
+                    return mergedResult;
                 }
-                invalidateCache(this.tableName);
-                return data || null;
             }
         }
         return new Promise((resolve, reject) => {
@@ -221,28 +342,24 @@ class JsonStorage {
                 try {
                     let { error } = await client.from(this.tableName).delete().eq('id', id);
                     if (error) {
-                        // Retry once on transient network glitch
-                        const retry = await client.from(this.tableName).delete().eq('id', id);
-                        if (!retry.error) {
-                            invalidateCache(this.tableName);
-                            return true;
+                        if (error.message && (error.message.includes('Could not find the table') || error.message.includes('relation') || error.code === '42P01')) {
+                            // Table not on Supabase, proceed to local JSON delete below
+                        } else {
+                            // Retry once on transient network glitch
+                            const retry = await client.from(this.tableName).delete().eq('id', id);
+                            if (retry.error) {
+                                console.error(`[Supabase Storage Error] delete on ${this.tableName}:`, error.message);
+                                throw error;
+                            }
                         }
-                        console.error(`[Supabase Storage Error] delete on ${this.tableName}:`, error.message);
-                        throw error;
                     }
-                    invalidateCache(this.tableName);
-                    return true;
                 } catch (err) {
-                    // Try one immediate retry on transient connection glitch
-                    try {
-                        const retry = await client.from(this.tableName).delete().eq('id', id);
-                        if (!retry.error) {
-                            invalidateCache(this.tableName);
-                            return true;
-                        }
-                    } catch (retryErr) {}
-                    console.error(`[Supabase Storage Error] delete on ${this.tableName}:`, err.message);
-                    throw err;
+                    if (err.message && (err.message.includes('Could not find the table') || err.message.includes('relation') || err.code === '42P01')) {
+                        // Table not on Supabase, proceed to local JSON delete below
+                    } else {
+                        console.error(`[Supabase Storage Error] delete on ${this.tableName}:`, err.message);
+                        throw err;
+                    }
                 }
             }
         }

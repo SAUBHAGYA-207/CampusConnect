@@ -22,4 +22,7 @@ router.post('/:id/payment-status', requireRole('provider'), appointmentControlle
 // Shared status transition route
 router.post('/:id/status', appointmentController.updateStatus);
 
+// Customer Service Feedback & Review route
+router.post('/:id/feedback', appointmentController.postFeedback);
+
 module.exports = router;

@@ -5,14 +5,25 @@ const { sendOTP, sendPasswordResetOTP } = require('../services/emailService');
 const { isSuperAdminEmail } = require('../utils/adminConfig');
 
 const usersStorage = new JsonStorage('users');
+const walletService = require('../services/walletService');
+const { createNotification } = require('../services/notificationService');
+
+function generateReferralCode(email, name) {
+    const clean = (name || email || 'CC').replace(/[^a-zA-Z0-9]/g, '').substring(0, 4).toUpperCase();
+    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+    return `${clean}${random}`;
+}
 
 exports.getRegister = (req, res) => {
-    res.render('auth/register', { error: null });
+    const refCode = req.query.ref || req.query.referral || '';
+    res.render('auth/register', { error: null, refCode });
 };
 
 exports.postRegister = async (req, res) => {
     try {
-        const { email, password, role, isPartner } = req.body;
+        const { email, password, role, isPartner, referralCode } = req.body;
+        const refCode = referralCode ? referralCode.trim().toUpperCase() : '';
+
         const existingUser = await usersStorage.find(u => u.email === email);
         if (existingUser) {
             if (!existingUser.isVerified) {
@@ -28,7 +39,7 @@ exports.postRegister = async (req, res) => {
                     res.redirect('/auth/verify-email?sent=1');
                 });
             }
-            return res.render('auth/register', { error: 'Email already registered and verified. Please log in.' });
+            return res.render('auth/register', { error: 'Email already registered and verified. Please log in.', refCode });
         }
 
         const isPartnerTicked = isPartner === 'provider' || isPartner === 'on' || isPartner === 'true' || isPartner === true || role === 'provider';
@@ -37,13 +48,27 @@ exports.postRegister = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const otp = generateOTP();
 
+        // Check if referral code is valid
+        let referredById = null;
+        if (refCode) {
+            const referrer = await usersStorage.find(u => (u.referralCode || '').toUpperCase() === refCode);
+            if (referrer && referrer.email !== email) {
+                referredById = referrer.id;
+            }
+        }
+
         const user = await usersStorage.add({
             email,
             password: hashedPassword,
             role: assignedRole,
             isVerified: false,
             otp,
-            otpExpires: Date.now() + 10 * 60 * 1000 // 10 minutes
+            otpExpires: Date.now() + 10 * 60 * 1000, // 10 minutes
+            coins: 99,
+            referralCode: generateReferralCode(email),
+            referredBy: referredById,
+            referralCodeUsed: refCode || null,
+            referralRewardProcessed: false
         });
 
         await sendOTP(email, otp);
@@ -51,13 +76,13 @@ exports.postRegister = async (req, res) => {
         req.session.save((err) => {
             if (err) {
                 console.error('Session save error on register:', err);
-                return res.render('auth/register', { error: 'Registration succeeded but session save failed' });
+                return res.render('auth/register', { error: 'Registration succeeded but session save failed', refCode });
             }
             res.redirect('/auth/verify-email');
         });
     } catch (error) {
         console.error(error);
-        res.render('auth/register', { error: 'Registration failed' });
+        res.render('auth/register', { error: 'Registration failed', refCode: req.body ? req.body.referralCode : '' });
     }
 };
 
@@ -76,12 +101,15 @@ exports.getPartnerLogin = (req, res) => {
 };
 
 exports.getPartnerRegister = (req, res) => {
-    res.render('auth/partner-register', { error: null });
+    const refCode = req.query.ref || req.query.referral || '';
+    res.render('auth/partner-register', { error: null, refCode });
 };
 
 exports.postPartnerRegister = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, referralCode } = req.body;
+        const refCode = referralCode ? referralCode.trim().toUpperCase() : '';
+
         const existingUser = await usersStorage.find(u => u.email === email);
         if (existingUser) {
             if (!existingUser.isVerified) {
@@ -96,11 +124,20 @@ exports.postPartnerRegister = async (req, res) => {
                     res.redirect('/auth/verify-email?sent=1');
                 });
             }
-            return res.render('auth/partner-register', { error: 'Email already registered and verified. Please log in.' });
+            return res.render('auth/partner-register', { error: 'Email already registered and verified. Please log in.', refCode });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const otp = generateOTP();
+
+        // Check if referral code is valid
+        let referredById = null;
+        if (refCode) {
+            const referrer = await usersStorage.find(u => (u.referralCode || '').toUpperCase() === refCode);
+            if (referrer && referrer.email !== email) {
+                referredById = referrer.id;
+            }
+        }
 
         // Partner registration always assigns 'provider' role
         const user = await usersStorage.add({
@@ -109,7 +146,12 @@ exports.postPartnerRegister = async (req, res) => {
             role: 'provider',
             isVerified: false,
             otp,
-            otpExpires: Date.now() + 10 * 60 * 1000
+            otpExpires: Date.now() + 10 * 60 * 1000,
+            coins: 99,
+            referralCode: generateReferralCode(email),
+            referredBy: referredById,
+            referralCodeUsed: refCode || null,
+            referralRewardProcessed: false
         });
 
         await sendOTP(email, otp);
@@ -117,13 +159,13 @@ exports.postPartnerRegister = async (req, res) => {
         req.session.save((err) => {
             if (err) {
                 console.error('Session save error on partner register:', err);
-                return res.render('auth/partner-register', { error: 'Registration succeeded but session save failed' });
+                return res.render('auth/partner-register', { error: 'Registration succeeded but session save failed', refCode });
             }
             res.redirect('/auth/verify-email');
         });
     } catch (error) {
         console.error(error);
-        res.render('auth/partner-register', { error: 'Partner registration failed' });
+        res.render('auth/partner-register', { error: 'Partner registration failed', refCode: req.body ? req.body.referralCode : '' });
     }
 };
 
@@ -150,7 +192,16 @@ exports.postPartnerLogin = async (req, res) => {
             });
         }
 
-        req.session.user = { id: user.id, email: user.email, role: user.role, isVerified: user.isVerified };
+        req.session.user = { 
+            id: user.id, 
+            email: user.email, 
+            role: user.role, 
+            isVerified: user.isVerified,
+            name: user.name || null,
+            profilePhoto: user.profilePhoto || null,
+            coins: (user.coins !== undefined && user.coins !== null) ? user.coins : 99,
+            partnerUpiId: user.partnerUpiId || null
+        };
         req.session.save((err) => {
             if (err) {
                 console.error('Session save error on partner login:', err);
@@ -214,7 +265,16 @@ exports.postLogin = async (req, res) => {
             });
         }
 
-        req.session.user = { id: user.id, email: user.email, role: user.role, isVerified: user.isVerified };
+        req.session.user = { 
+            id: user.id, 
+            email: user.email, 
+            role: user.role, 
+            isVerified: user.isVerified,
+            name: user.name || null,
+            profilePhoto: user.profilePhoto || null,
+            coins: (user.coins !== undefined && user.coins !== null) ? user.coins : 99,
+            partnerUpiId: user.partnerUpiId || null
+        };
         req.session.save((err) => {
             if (err) {
                 console.error('Session save error on login:', err);
@@ -280,7 +340,41 @@ exports.postVerifyEmail = async (req, res) => {
         }
 
         await usersStorage.update(userId, { isVerified: true, otp: null, otpExpires: null });
-        req.session.user = { id: user.id, email: user.email, role: user.role, isVerified: true };
+        
+        // Ensure 99 welcome bonus coins are recorded
+        await walletService.getUserCoins(userId);
+
+        // REFERRAL REWARD (50 COINS): If user registered with a referral code, reward the referrer!
+        if (user.referredBy && !user.referralRewardProcessed) {
+            try {
+                const referrer = await usersStorage.getById(user.referredBy);
+                if (referrer) {
+                    await walletService.addCoins(
+                        referrer.id,
+                        50,
+                        `Referral Bonus: Invited ${user.name || user.email} to CampusConnect!`,
+                        user.id
+                    );
+                    await usersStorage.update(userId, { referralRewardProcessed: true });
+                    await createNotification(
+                        referrer.id,
+                        `🎉 Refer & Earn! Your friend (${user.name || user.email}) verified their account. +50 Coins added to your E-Wallet!`,
+                        '/profile'
+                    );
+                }
+            } catch (refErr) {
+                console.error('Error awarding referral coins:', refErr);
+            }
+        }
+
+        req.session.user = { 
+            id: user.id, 
+            email: user.email, 
+            role: user.role, 
+            isVerified: true, 
+            name: user.name || null,
+            coins: (user.coins !== undefined && user.coins !== null) ? user.coins : 99 
+        };
         delete req.session.userId;
 
         req.session.save((err) => {

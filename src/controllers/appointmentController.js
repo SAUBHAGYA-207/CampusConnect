@@ -32,7 +32,7 @@ const storageService = require('../services/storageService');
 
 exports.postBookAppointment = async (req, res, next) => {
     try {
-        const { serviceId, date, time, notes, transactionId } = req.body;
+        const { serviceId, date, time, notes, transactionId, coinsUsed } = req.body;
         
         let paymentScreenshotFile = null;
         let referenceMediaFile = null;
@@ -48,12 +48,22 @@ exports.postBookAppointment = async (req, res, next) => {
             paymentScreenshotFile = req.file;
         }
 
-        if (!paymentScreenshotFile) {
-            req.flash('error', 'Please upload a screenshot of your QR payment to complete the booking.');
-            return res.redirect('/marketplace/' + serviceId);
-        }
+        const service = await serviceService.getServiceById(serviceId);
+        const parsedCoinsUsed = coinsUsed ? Math.max(0, parseInt(coinsUsed, 10)) : 0;
+        const originalPrice = service ? Number(service.price) : 0;
+        const finalPayable = Math.max(0, originalPrice - parsedCoinsUsed);
 
-        const screenshotUrl = await storageService.uploadMulterFile(paymentScreenshotFile, 'payments');
+        let screenshotUrl = null;
+        if (finalPayable === 0 && parsedCoinsUsed > 0) {
+            // Paid 100% with coins! No payment gateway screenshot required
+            screenshotUrl = 'Paid by Coins';
+        } else {
+            if (!paymentScreenshotFile) {
+                req.flash('error', 'Please upload a screenshot of your QR payment to complete the booking.');
+                return res.redirect('/marketplace/' + serviceId);
+            }
+            screenshotUrl = await storageService.uploadMulterFile(paymentScreenshotFile, 'payments');
+        }
         
         let referenceMediaUrl = null;
         let referenceMediaType = null;
@@ -67,7 +77,8 @@ exports.postBookAppointment = async (req, res, next) => {
 
         const paymentData = {
             paymentScreenshot: screenshotUrl,
-            transactionId: transactionId ? transactionId.trim() : null
+            transactionId: transactionId ? transactionId.trim() : null,
+            coinsUsed: coinsUsed ? parseInt(coinsUsed, 10) : 0
         };
 
         const referenceData = {
@@ -86,7 +97,11 @@ exports.postBookAppointment = async (req, res, next) => {
             referenceData
         );
 
-        req.flash('success', 'Booking requested! Payment screenshot and deliverables submitted.');
+        if (finalPayable === 0 && parsedCoinsUsed > 0) {
+            req.flash('success', `Booking confirmed! Fully paid with ${parsedCoinsUsed} coins (₹0 paid via gateway).`);
+        } else {
+            req.flash('success', 'Booking requested! Payment screenshot and deliverables submitted.');
+        }
         res.redirect('/appointments/my-bookings');
     } catch (error) {
         req.flash('error', error.message);
@@ -161,5 +176,40 @@ exports.getProviderBookingDetails = async (req, res, next) => {
         res.render('provider/booking-details', { appointment: app });
     } catch (error) {
         next(error);
+    }
+};
+
+exports.postFeedback = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { rating, feedback } = req.body;
+        const appt = await appointmentService.getAppointmentById(id);
+        if (!appt || appt.customerId !== req.session.user.id) {
+            return res.status(403).render('error', { message: 'Forbidden' });
+        }
+
+        const JsonStorage = require('../storage/jsonStorage');
+        const appointmentsStorage = new JsonStorage('appointments');
+        const { createNotification } = require('../services/notificationService');
+
+        const parsedRating = Math.min(5, Math.max(1, Number(rating) || 5));
+        await appointmentsStorage.update(id, {
+            rating: parsedRating,
+            feedback: (feedback || '').trim(),
+            feedbackSubmittedAt: Date.now()
+        });
+
+        // Notify partner
+        await createNotification(
+            appt.providerId,
+            `⭐ You received a ${parsedRating}-star review for booking #${id.substring(0, 8)}!`,
+            `/appointments/provider/${id}`
+        );
+
+        req.flash('success', 'Thank you! Your feedback has been submitted.');
+        res.redirect(`/appointments/my-bookings/${id}`);
+    } catch (error) {
+        req.flash('error', error.message);
+        res.redirect(`/appointments/my-bookings/${req.params.id}`);
     }
 };

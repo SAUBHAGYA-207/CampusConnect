@@ -21,6 +21,7 @@
 </div>
 
 <!-- USER BOOKINGS & EXPLORE SERVICES SECTION -->
+
 <div class="row mb-3">
     <div class="col-12">
         <h4 class="fw-bold mb-1">My Bookings</h4>
@@ -78,7 +79,6 @@
                 <div class="d-flex gap-2 flex-wrap text-muted small mb-3">
                     <span class="badge bg-white text-dark border">✓ Free instant upgrade</span>
                     <span class="badge bg-white text-dark border">✓ Support remote deliveries (photos/videos)</span>
-                    <span class="badge bg-white text-dark border">✓ Keep 90% of earnings</span>
                 </div>
             </div>
             <div class="col-lg-4 text-lg-end text-start mt-3 mt-lg-0">
@@ -177,7 +177,6 @@
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                 <div>
                     <h4 class="fw-bold m-0 text-dark">💳 Partner Payout Settlement</h4>
-                    <p class="text-muted small mb-0">Provide your UPI ID. CampusConnect automatically generates dynamic QR codes for Super Admin to transfer your payouts directly.</p>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     <span class="text-muted small">Available Payable Balance:</span>
@@ -186,94 +185,53 @@
             </div>
 
             <div class="row g-4 mb-4">
-                <!-- Card A: Register / Update Payout UPI ID -->
-                <div class="col-md-6">
-                    <div class="card p-4 border h-100 bg-light rounded-3">
+                <!-- Request Payment Settlement (Minimum ₹200 Threshold) -->
+                <div class="col-12">
+                    <div class="card p-4 border bg-light rounded-3">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="fw-bold m-0 text-dark">1. Your Payout UPI ID</h6>
-                            <% if (partnerStats.financials && partnerStats.financials.partnerUpiId) { %>
-                                <span class="badge bg-success-subtle text-success fw-bold">✓ Active UPI ID</span>
-                            <% } else { %>
-                                <span class="badge bg-warning-subtle text-warning-emphasis fw-bold">UPI ID Required</span>
-                            <% } %>
+                            <h6 class="fw-bold m-0 text-dark">Request Payout / Settlement</h6>
+                            <span class="badge bg-info-subtle text-info-emphasis border fw-bold">Min. Threshold: ₹200</span>
                         </div>
 
-                        <% if (partnerStats.financials && partnerStats.financials.partnerUpiId) { %>
-                            <div class="p-3 bg-white rounded border mb-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <div class="small text-muted fw-semibold">Current Registered UPI ID:</div>
-                                        <div class="text-primary font-monospace fw-bold fs-6"><%= partnerStats.financials.partnerUpiId %></div>
-                                    </div>
-                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1 small">
-                                        ⚡ Auto QR Enabled
-                                    </span>
-                                </div>
-                                <small class="text-muted d-block mt-2" style="font-size: 0.75rem;">
-                                    🛡️ QR codes are generated automatically by CampusConnect with exact payout amounts for admin settlement.
-                                </small>
-                            </div>
-                        <% } else { %>
-                            <div class="alert alert-info border-0 small py-2 mb-3">
-                                <strong>Enter your UPI ID:</strong> Super Admin will transfer your payouts directly to this UPI ID. No QR code upload needed.
+                        <% 
+                            const availBal = parseFloat(partnerStats.financials ? partnerStats.financials.availablePayableBalance : '0'); 
+                            const hasUpi = Boolean(partnerStats.financials && partnerStats.financials.partnerUpiId); 
+                            const meetsThreshold = availBal >= 200;
+                        %>
+
+                        <% if (!meetsThreshold && availBal > 0) { %>
+                            <div class="alert alert-warning py-2 px-3 small mb-3 border-0">
+                                <strong>⚠️ Minimum Threshold Notice:</strong><br>
+                                Partner withdrawals require a minimum balance of <strong>₹200</strong>. Your current available balance is <strong>₹<%= availBal.toFixed(2) %></strong>. Once you reach ₹200, you can request payout.
                             </div>
                         <% } %>
 
-                        <form action="/services/payout-qr" method="POST">
-                            <div class="mb-3">
-                                <label for="partnerUpiId" class="form-label text-muted small fw-semibold">Your UPI ID (VPA)</label>
-                                <input type="text" class="form-control form-control-sm font-monospace" name="partnerUpiId" placeholder="e.g. yourname@oksbi or 9876543210@paytm" value="<%= partnerStats.financials ? (partnerStats.financials.partnerUpiId || '') : '' %>" required>
-                                <div class="form-text small">Only your UPI ID is required. QR codes are generated automatically by the system.</div>
+                        <% if (!hasUpi) { %>
+                            <div class="alert alert-danger py-2 px-3 small mb-3 border-0">
+                                ⚠️ Please configure your UPI ID in your <a href="/profile#upi-card" class="alert-link fw-bold">Profile</a> before requesting a payout.
                             </div>
-                            <button type="submit" class="btn btn-sm btn-primary w-100 fw-bold shadow-sm">
-                                <%= (partnerStats.financials && partnerStats.financials.partnerUpiId) ? 'Update UPI ID' : 'Save UPI ID' %>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Card B: Request Payment Settlement -->
-                <div class="col-md-6">
-                    <div class="card p-4 border h-100 bg-light rounded-3">
-                        <h6 class="fw-bold mb-3 text-dark">2. Request Payout / Clear Balance</h6>
-                        <div class="p-3 bg-white rounded border mb-3">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span class="text-muted small">Realized Completed Earnings:</span>
-                                <span class="fw-semibold">₹<%= partnerStats.financials ? partnerStats.financials.totalEarned : partnerStats.totalEarnings %></span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-1">
-                                <span class="text-muted small">Settled Payouts Cleared:</span>
-                                <span class="text-muted small">- ₹<%= partnerStats.financials ? partnerStats.financials.totalCleared : '0.00' %></span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-1">
-                                <span class="text-muted small">Pending In-Review Requests:</span>
-                                <span class="text-muted small">- ₹<%= partnerStats.financials ? partnerStats.financials.totalPending : '0.00' %></span>
-                            </div>
-                            <hr class="my-2 opacity-25">
-                            <div class="d-flex justify-content-between">
-                                <strong class="text-success">Available for Payout:</strong>
-                                <strong class="text-success fs-5">₹<%= partnerStats.financials ? partnerStats.financials.availablePayableBalance : partnerStats.totalEarnings %></strong>
-                            </div>
-                        </div>
-
-                        <% const availBal = parseFloat(partnerStats.financials ? partnerStats.financials.availablePayableBalance : '0'); %>
-                        <% const hasUpi = partnerStats.financials && partnerStats.financials.partnerUpiId; %>
+                        <% } %>
 
                         <form action="/services/request-payout" method="POST">
                             <div class="mb-3">
-                                <label for="amount" class="form-label text-muted small fw-semibold">Withdrawal Amount (₹)</label>
-                                <input type="number" step="0.01" max="<%= availBal %>" class="form-control form-control-sm" name="amount" value="<%= availBal > 0 ? availBal : '' %>" placeholder="Enter amount" required <%= availBal <= 0 ? 'disabled' : '' %>>
+                                <label for="amount" class="form-label text-muted small fw-semibold">Withdrawal Amount (₹) <span class="text-muted">(Min ₹200)</span></label>
+                                <input type="number" 
+                                       step="0.01" 
+                                       min="200" 
+                                       max="<%= availBal %>" 
+                                       class="form-control form-control-sm" 
+                                       name="amount" 
+                                       value="<%= meetsThreshold ? availBal : '' %>" 
+                                       placeholder="Enter amount (min ₹200)" 
+                                       required 
+                                       <%= (!meetsThreshold || !hasUpi) ? 'disabled' : '' %>>
+                                <div class="form-text small" style="font-size: 0.75rem;">Minimum withdrawal threshold is ₹200.</div>
                             </div>
                             <div class="mb-3">
                                 <label for="notes" class="form-label text-muted small fw-semibold">Note for Super Admin (Optional)</label>
-                                <input type="text" class="form-control form-control-sm" name="notes" placeholder="e.g. Month-end tutoring settlement" <%= availBal <= 0 ? 'disabled' : '' %>>
+                                <input type="text" class="form-control form-control-sm" name="notes" placeholder="e.g. Campus service payout" <%= (!meetsThreshold || !hasUpi) ? 'disabled' : '' %>>
                             </div>
-                            <% if (!hasUpi) { %>
-                                <div class="alert alert-warning py-1 px-2 small mb-2" style="font-size: 0.75rem;">
-                                    Please enter and save your UPI ID on the left first.
-                                </div>
-                            <% } %>
-                            <button type="submit" class="btn btn-sm btn-success w-100 fw-bold shadow-sm" <%= (availBal <= 0 || !hasUpi) ? 'disabled' : '' %>>
+                            <button type="submit" class="btn btn-sm btn-success w-100 fw-bold shadow-sm" <%= (!meetsThreshold || !hasUpi) ? 'disabled' : '' %>>
                                 Request Settlement Payout →
                             </button>
                         </form>

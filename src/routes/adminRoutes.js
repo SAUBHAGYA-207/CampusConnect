@@ -16,6 +16,7 @@ router.get('/logout', adminController.logout);
 
 // Protected Super Admin Portal Routes
 router.get('/dashboard', requireSuperAdmin, adminController.getDashboard);
+router.post('/services/:id/verify', requireSuperAdmin, adminController.postVerifyService);
 router.post('/services/:id/remove', requireSuperAdmin, adminController.postRemoveService);
 router.post('/payouts/:id/clear', requireSuperAdmin, payoutUpload.single('paymentProof'), adminController.postClearPayout);
 

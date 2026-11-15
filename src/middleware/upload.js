@@ -53,6 +53,12 @@ const chatUpload = multer({
     fileFilter: fileFilter
 });
 
+const profileUpload = multer({
+    storage: createStorage('avatars'),
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    fileFilter: fileFilter
+});
+
 // Middleware to accept multiple service images with names 'images' or 'image'
 const serviceMultiUpload = (req, res, next) => {
     serviceUpload.fields([
@@ -117,5 +123,6 @@ upload.bookingMultiUpload = bookingMultiUpload;
 upload.payoutUpload = payoutUpload;
 upload.partnerQrUpload = partnerQrUpload;
 upload.chatUpload = chatUpload;
+upload.profileUpload = profileUpload;
 
 module.exports = upload;

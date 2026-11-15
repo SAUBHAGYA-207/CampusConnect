@@ -1,8 +1,11 @@
 const JsonStorage = require('../storage/jsonStorage');
 const appointmentsStorage = new JsonStorage('appointments');
 const servicesStorage = new JsonStorage('services');
+const usersStorage = new JsonStorage('users');
+const payoutsStorage = new JsonStorage('payouts');
+const walletService = require('./walletService');
 const { createNotification } = require('./notificationService');
-const { sendStatusEmail } = require('./emailService');
+const { sendStatusEmail, sendServiceCompletedFeedbackEmail } = require('./emailService');
 
 function normalizeAppointment(appt) {
     if (!appt) return null;
@@ -51,11 +54,34 @@ exports.createAppointment = async (customerId, serviceId, date, time, notes, pay
     }
 
     const price = Number(service.price) || 0;
-    // 90% provider earnings, 10% platform commission
+    
+    // E-Wallet coin redemption handling
+    const walletService = require('./walletService');
+    const requestedCoins = Math.max(0, parseInt(paymentData.coinsUsed, 10) || 0);
+    let coinsToDeduct = 0;
+
+    if (requestedCoins > 0) {
+        const availableUserCoins = await walletService.getUserCoins(customerId);
+        coinsToDeduct = Math.min(requestedCoins, availableUserCoins, price);
+        if (coinsToDeduct > 0) {
+            await walletService.deductCoins(
+                customerId,
+                coinsToDeduct,
+                `Redeemed ${coinsToDeduct} coins on booking for "${service.title}"`
+            );
+        }
+    }
+
+    const finalPayablePrice = Math.max(0, price - coinsToDeduct);
+
+    // 90% provider earnings, 10% platform commission calculated from service price
     const providerEarnings = parseFloat((price * 0.90).toFixed(2));
     const platformFee = parseFloat((price * 0.10).toFixed(2));
 
     let finalNotes = (notes || '').trim();
+    if (coinsToDeduct > 0) {
+        finalNotes = `[🪙 ${coinsToDeduct} Coins Redeemed - ₹${coinsToDeduct} Discount Applied]\n` + finalNotes;
+    }
     if (referenceData && referenceData.referenceMediaUrl) {
         const refTag = `\n\n<!--CC_REF_MEDIA:${JSON.stringify({
             url: referenceData.referenceMediaUrl,
@@ -69,6 +95,11 @@ exports.createAppointment = async (customerId, serviceId, date, time, notes, pay
         ? Number(paymentData.createdAt)
         : Date.now();
 
+    const isPaidByCoins = (finalPayablePrice === 0 && coinsToDeduct > 0);
+    const finalScreenshot = isPaidByCoins ? 'Paid by Coins' : (paymentData.paymentScreenshot || null);
+    const finalTxnId = isPaidByCoins ? (paymentData.transactionId || ('COINS_' + Date.now())) : (paymentData.transactionId || null);
+    const finalPaymentStatus = isPaidByCoins ? 'verified' : (paymentData.paymentStatus || (paymentData.paymentScreenshot ? 'submitted' : 'pending'));
+
     const newAppointment = await appointmentsStorage.add({
         customerId,
         providerId: service.providerId,
@@ -77,15 +108,37 @@ exports.createAppointment = async (customerId, serviceId, date, time, notes, pay
         time,
         notes: finalNotes,
         status: paymentData.status || 'pending',
-        paymentAmount: price,
+        paymentAmount: finalPayablePrice,
+        coinsUsed: coinsToDeduct,
         providerEarnings: providerEarnings,
         platformFee: platformFee,
-        paymentScreenshot: paymentData.paymentScreenshot || null,
-        transactionId: paymentData.transactionId || null,
-        paymentStatus: paymentData.paymentStatus || (paymentData.paymentScreenshot ? 'submitted' : 'pending'),
+        paymentScreenshot: finalScreenshot,
+        transactionId: finalTxnId,
+        paymentStatus: finalPaymentStatus,
         createdAt: customCreatedAt,
-        paymentVerifiedAt: (paymentData.paymentStatus === 'verified') ? customCreatedAt : null
+        paymentVerifiedAt: (finalPaymentStatus === 'verified') ? customCreatedAt : null
     });
+
+    // Award 10% of booking price in coins to both user (customer) and partner!
+    try {
+        const coinBonus = Math.max(1, Math.round(price * 0.10));
+        // Credit 10% coins to customer
+        await walletService.addCoins(
+            customerId,
+            coinBonus,
+            `Earned 10% coin bonus for booking "${service.title}"`,
+            newAppointment.id
+        );
+        // Credit 10% coins to partner
+        await walletService.addCoins(
+            service.providerId,
+            coinBonus,
+            `Earned 10% partner reward for booking on "${service.title}"`,
+            newAppointment.id
+        );
+    } catch (e) {
+        console.warn('Could not award 10% booking coins:', e.message);
+    }
 
     // Notify provider about the new booking and payment proof
     try {
@@ -164,10 +217,104 @@ exports.updateStatus = async (appointmentId, userId, role, newStatus) => {
         updates.paymentVerifiedAt = Date.now();
     }
 
+    // REFUND AUTOMATION: Triggered when a booking is cancelled or rejected
+    const isCancellation = (newStatus === 'cancelled' || newStatus === 'rejected');
+    if (isCancellation && !appt.refundProcessed) {
+        updates.refundProcessed = true;
+        const service = await servicesStorage.getById(appt.serviceId);
+        const serviceTitle = service ? service.title : `Booking #${appt.id.substring(0, 8)}`;
+        const customer = await usersStorage.getById(appt.customerId);
+
+        const coinsUsed = Number(appt.coinsUsed) || 0;
+        const paymentAmount = Number(appt.paymentAmount) || 0;
+
+        // 1. If paid by coins: auto refund the coins back to customer's wallet
+        if (coinsUsed > 0) {
+            try {
+                await walletService.addCoins(
+                    appt.customerId,
+                    coinsUsed,
+                    `Refund for ${newStatus} booking: "${serviceTitle}"`,
+                    appt.id
+                );
+                updates.coinsRefunded = true;
+                updates.coinsRefundedAmount = coinsUsed;
+            } catch (e) {
+                console.error('Error auto-refunding coins to customer:', e);
+            }
+        }
+
+        // 2. If paid by money: add payout / settlement refund request for Super Admin to clear
+        if (paymentAmount > 0) {
+            try {
+                const customerUpi = (customer && (customer.partnerUpiId || customer.upiId)) ? (customer.partnerUpiId || customer.upiId) : null;
+                const newRefundRequest = await payoutsStorage.add({
+                    partnerId: appt.customerId,
+                    partnerEmail: customer ? customer.email : 'Unknown Customer',
+                    amount: paymentAmount,
+                    status: 'pending',
+                    type: 'refund',
+                    partnerUpiId: customerUpi,
+                    notes: `Refund for ${newStatus} booking #${appt.id.substring(0, 8)} (${serviceTitle})`,
+                    appointmentId: appt.id,
+                    adminPaymentProof: null,
+                    adminTransactionId: null,
+                    clearedAt: null,
+                    createdAt: Date.now()
+                });
+                updates.moneyRefundRequested = true;
+                updates.moneyRefundAmount = paymentAmount;
+                updates.refundPayoutId = newRefundRequest.id;
+                updates.refundStatus = 'pending_admin_money';
+            } catch (e) {
+                console.error('Error creating admin refund request:', e);
+            }
+        } else if (coinsUsed > 0) {
+            updates.refundStatus = 'coins_refunded';
+        }
+
+        // 3. Deduct/revoke the 10% booking bonus that was awarded at booking time
+        try {
+            const servicePrice = Number(service ? service.price : (paymentAmount + coinsUsed)) || 0;
+            const coinBonus = Math.max(1, Math.round(servicePrice * 0.10));
+            // Revoke bonus from customer
+            await walletService.deductCoins(
+                appt.customerId,
+                coinBonus,
+                `Booking bonus reversed for ${newStatus} booking #${appt.id.substring(0, 8)}`,
+                appt.id
+            );
+            // Revoke reward from partner
+            await walletService.deductCoins(
+                appt.providerId,
+                coinBonus,
+                `Partner reward reversed for ${newStatus} booking #${appt.id.substring(0, 8)}`,
+                appt.id
+            );
+        } catch (e) {
+            console.warn('Could not revoke booking bonus coins:', e.message);
+        }
+
+        // Custom notification to customer informing them of refund details
+        let refundMsg = `Your booking for "${serviceTitle}" was ${newStatus}.`;
+        if (coinsUsed > 0 && paymentAmount > 0) {
+            refundMsg += ` ${coinsUsed} Coins have been auto-refunded to your wallet, and a money refund for ₹${paymentAmount} has been sent to Super Admin for UPI transfer.`;
+        } else if (coinsUsed > 0) {
+            refundMsg += ` ${coinsUsed} Coins have been automatically refunded to your wallet!`;
+        } else if (paymentAmount > 0) {
+            refundMsg += ` A refund request of ₹${paymentAmount} has been queued for Super Admin to process via UPI.`;
+        }
+
+        createNotification(
+            appt.customerId,
+            refundMsg,
+            `/appointments/my-bookings/${appt.id}`
+        );
+    }
+
     const updated = await appointmentsStorage.update(appointmentId, updates);
     
     // Notifications & Email
-    const usersStorage = new JsonStorage('users');
     const otherUserId = role === 'provider' ? appt.customerId : appt.providerId;
     const otherUser = await usersStorage.getById(otherUserId);
     
@@ -178,6 +325,36 @@ exports.updateStatus = async (appointmentId, userId, role, newStatus) => {
             `Appointment status updated to ${newStatus}`,
             role === 'provider' ? `/appointments/my-bookings/${appointmentId}` : `/appointments/provider/${appointmentId}`
         );
+    }
+
+    // SERVICE COMPLETED: Automatically send feedback email to customer
+    if (newStatus === 'completed') {
+        try {
+            const customer = await usersStorage.getById(appt.customerId);
+            const provider = await usersStorage.getById(appt.providerId);
+            const service = await servicesStorage.getById(appt.serviceId);
+            const serviceTitle = service ? service.title : 'Campus Service';
+            const customerName = customer ? (customer.name || customer.email.split('@')[0]) : 'Student';
+            const partnerName = provider ? (provider.name || provider.email.split('@')[0]) : 'Partner';
+
+            if (customer && customer.email) {
+                await sendServiceCompletedFeedbackEmail(
+                    customer.email,
+                    customerName,
+                    serviceTitle,
+                    partnerName,
+                    appt.id
+                );
+            }
+
+            createNotification(
+                appt.customerId,
+                `⭐ How was your service with ${partnerName}? Click to leave your review and feedback!`,
+                `/appointments/my-bookings/${appt.id}#feedback-card`
+            );
+        } catch (fbErr) {
+            console.error('Error sending service completed feedback email:', fbErr);
+        }
     }
     
     return updated;

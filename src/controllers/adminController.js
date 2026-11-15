@@ -267,6 +267,18 @@ exports.getDashboard = async (req, res, next) => {
     }
 };
 
+exports.postVerifyService = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const verified = await adminService.verifyServiceByAdmin(id);
+        req.flash('success', `Service "${verified.title}" verified & published! 10 coins have been credited to partner.`);
+        res.redirect('/admin/dashboard#services-tab');
+    } catch (error) {
+        req.flash('error', error.message || 'Failed to verify service.');
+        res.redirect('/admin/dashboard#services-tab');
+    }
+};
+
 exports.postRemoveService = async (req, res, next) => {
     try {
         const { id } = req.params;

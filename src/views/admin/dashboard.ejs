@@ -35,17 +35,14 @@
                 <span class="badge bg-white text-dark fw-bold">Completed</span>
             </div>
             <div class="fs-2 fw-bold text-white">₹<%= stats.totalGrossRevenue %></div>
-            <small class="text-white-50 mt-1 d-block" style="font-size: 0.75rem;">From <%= stats.completedAppointments %> settled transactions</small>
         </div>
     </div>
     <div class="col-lg-3 col-md-6">
         <div class="card p-3 border-0 shadow-sm" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; border-radius: 16px;">
             <div class="d-flex justify-content-between align-items-center mb-1">
                 <span class="small text-white-50 text-uppercase fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">Platform Revenue</span>
-                <span class="badge bg-white text-primary fw-bold">Admin Revenue</span>
             </div>
             <div class="fs-2 fw-bold text-white">₹<%= stats.totalPlatformCommission %></div>
-            <small class="text-white-50 mt-1 d-block" style="font-size: 0.75rem;">Net commission retained by CampusConnect</small>
         </div>
     </div>
     <div class="col-lg-3 col-md-6">
@@ -55,7 +52,6 @@
                 <span class="badge bg-white text-success fw-bold">Total Earned</span>
             </div>
             <div class="fs-2 fw-bold text-white">₹<%= stats.totalPartnerShare %></div>
-            <small class="text-white-50 mt-1 d-block" style="font-size: 0.75rem;">Total owed across all active partners</small>
         </div>
     </div>
     <div class="col-lg-3 col-md-6">
@@ -67,7 +63,6 @@
                 </span>
             </div>
             <div class="fs-2 fw-bold text-dark">₹<%= stats.totalPendingPayouts %></div>
-            <small class="text-muted mt-1 d-block" style="font-size: 0.75rem;">Settled so far: <strong>₹<%= stats.totalClearedPayouts %></strong></small>
         </div>
     </div>
 </div>
@@ -133,7 +128,6 @@
             <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
                 <div>
                     <h5 class="fw-bold mb-0">Demanded Partner Payout Clear-Outs</h5>
-                    <small class="text-muted">Partners demanding to clear out their realized balance. The system generates UPI QR codes automatically from their UPI ID.</small>
                 </div>
                 <span class="badge bg-primary px-3 py-2 fw-semibold">
                     <%= payouts.filter(p => p.status === 'pending').length %> Demands Pending
@@ -146,9 +140,10 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th class="px-3 py-3">Partner Email</th>
-                                <th class="px-3 py-3">Demanded Payout</th>
-                                <th class="px-3 py-3">Partner UPI ID</th>
+                                <th class="px-3 py-3">Recipient Email</th>
+                                <th class="px-3 py-3">Type</th>
+                                <th class="px-3 py-3">Amount</th>
+                                <th class="px-3 py-3">UPI ID</th>
                                 <th class="px-3 py-3">Request Date</th>
                                 <th class="px-3 py-3">Status</th>
                                 <th class="px-3 py-3 text-end">Action</th>
@@ -161,6 +156,13 @@
                                         <div class="fw-bold"><%= p.partnerEmail %></div>
                                         <% if (p.notes) { %>
                                             <small class="text-muted fst-italic d-block">Note: "<%= p.notes %>"</small>
+                                        <% } %>
+                                    </td>
+                                    <td class="px-3 py-3">
+                                        <% if (p.type === 'refund') { %>
+                                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle px-2 py-1 fw-bold">Customer Refund</span>
+                                        <% } else { %>
+                                            <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle px-2 py-1 fw-bold">Partner Payout</span>
                                         <% } %>
                                     </td>
                                     <td class="px-3 py-3">
@@ -186,7 +188,7 @@
                                                 </button>
                                             <% } %>
                                         <% } else { %>
-                                            <span class="badge bg-warning text-dark px-3 py-2">Pending Review</span>
+                                            <span class="badge bg-warning text-dark px-3 py-2">Pending Transfer</span>
                                         <% } %>
                                     </td>
                                     <td class="px-3 py-3 text-end">
@@ -196,8 +198,9 @@
                                                         data-id="<%= p.id %>"
                                                         data-email="<%= p.partnerEmail %>"
                                                         data-amount="<%= p.amount %>"
+                                                        data-type="<%= p.type || 'payout' %>"
                                                         data-upi="<%= p.partnerUpiId || '' %>">
-                                                    Scan QR & Pay Partner →
+                                                    <%= p.type === 'refund' ? 'Scan QR & Refund Customer →' : 'Scan QR & Pay Partner →' %>
                                                 </button>
                                             <% } else { %>
                                                 <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 align-self-center">Settled</span>
@@ -222,7 +225,6 @@
             <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
                 <div>
                     <h5 class="fw-bold mb-0">All Listed Services & Moderation</h5>
-                    <small class="text-muted">Super admin can remove any service listing. A custom feedback email will be dispatched to the partner.</small>
                 </div>
             </div>
             <% if (services.length === 0) { %>
@@ -262,17 +264,36 @@
                                     <td class="px-3 py-3"><span class="badge bg-light text-secondary"><%= s.category %></span></td>
                                     <td class="px-3 py-3 fw-bold text-success">₹<%= s.price %></td>
                                     <td class="px-3 py-3">
-                                        <span class="badge bg-<%= s.status === 'published' ? 'success' : 'secondary' %>">
-                                            <%= s.status %>
-                                        </span>
+                                        <% if (s.status === 'under_processing') { %>
+                                            <span class="badge bg-warning text-dark fw-bold">
+                                                ⏳ Under Processing
+                                            </span>
+                                        <% } else if (s.status === 'published') { %>
+                                            <span class="badge bg-success fw-semibold">
+                                                ✓ Published / Verified
+                                            </span>
+                                        <% } else { %>
+                                            <span class="badge bg-secondary">
+                                                <%= s.status || 'Active' %>
+                                            </span>
+                                        <% } %>
                                     </td>
                                     <td class="px-3 py-3 text-end">
-                                        <button class="btn btn-sm btn-outline-danger fw-medium btn-remove-service" 
-                                                data-id="<%= s.id %>"
-                                                data-title="<%= s.title %>"
-                                                data-email="<%= s.provider ? s.provider.email : '' %>">
-                                            Remove Service
-                                        </button>
+                                        <div class="d-flex justify-content-end gap-2 align-items-center">
+                                            <% if (s.status === 'under_processing') { %>
+                                                <form action="/admin/services/<%= s.id %>/verify" method="POST" class="m-0 p-0" onsubmit="return confirm('Verify and publish service? Partner will receive 10 coins.')">
+                                                    <button type="submit" class="btn btn-sm btn-success fw-bold shadow-sm">
+                                                        ✓ Verify (+10 Coins)
+                                                    </button>
+                                                </form>
+                                            <% } %>
+                                            <button class="btn btn-sm btn-outline-danger fw-medium btn-remove-service" 
+                                                    data-id="<%= s.id %>"
+                                                    data-title="<%= s.title %>"
+                                                    data-email="<%= s.provider ? s.provider.email : '' %>">
+                                                Remove Service
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             <% }) %>
@@ -288,7 +309,6 @@
         <div class="card border-0 shadow-sm overflow-hidden">
             <div class="card-header bg-white py-3 border-0">
                 <h5 class="fw-bold mb-0">Master Bookings Ledger</h5>
-                <small class="text-muted">Real-time tracker of all service requests, payments, and completion statuses.</small>
             </div>
             <% if (appointments.length === 0) { %>
                 <div class="p-5 text-center text-muted">No bookings or orders recorded yet.</div>
@@ -321,7 +341,9 @@
                                         <small class="text-muted" style="font-size: 0.7rem;">Platform Revenue: ₹<%= (Number(app.paymentAmount || 0) * 0.10).toFixed(2) %></small>
                                     </td>
                                     <td class="px-3 py-3">
-                                        <% if (app.paymentScreenshot) { %>
+                                        <% if (app.paymentScreenshot === 'Paid by Coins' || (!app.paymentAmount && app.coinsUsed > 0)) { %>
+                                            <span class="badge bg-warning text-dark border border-warning fw-bold">🪙 Paid by Coins</span>
+                                        <% } else if (app.paymentScreenshot) { %>
                                             <button type="button" class="btn btn-link p-0 text-decoration-none small text-primary text-start" onclick="openImageLightbox('<%= app.paymentScreenshot %>', 'Customer Payment Proof - Booking #<%= app.id %>')">
                                                 📷 Proof (<%= app.paymentStatus %>)
                                             </button>
@@ -617,10 +639,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = btn.getAttribute('data-email');
             const amount = btn.getAttribute('data-amount');
             const upi = btn.getAttribute('data-upi');
+            const type = btn.getAttribute('data-type') || 'payout';
+            const isRefund = (type === 'refund');
 
             currentModalUpi = upi || '';
 
             document.getElementById('clearPayoutForm').action = `/admin/payouts/${id}/clear`;
+            const titleEl = document.getElementById('clearPayoutModalTitle');
+            if (titleEl) {
+                titleEl.innerText = isRefund ? 'Settle Customer Refund' : 'Settle Partner Payout';
+            }
             document.getElementById('modalPartnerEmail').innerText = email;
             document.getElementById('modalPayoutAmount').innerText = '₹' + amount;
             document.getElementById('modalPartnerUpi').innerText = upi || 'UPI Not Configured';
@@ -639,6 +667,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('modalUpiDeepLink').href = upiUrl;
             } else {
                 missingAlert.style.display = 'block';
+                missingAlert.innerText = isRefund
+                    ? '⚠️ Customer has not set a UPI ID yet. Use the Chat button to ask them for their UPI ID.'
+                    : '⚠️ Partner has not registered a UPI ID yet. Use the Chat button to ask them for their UPI ID.';
                 dynamicContainer.style.display = 'none';
             }
 

@@ -311,21 +311,39 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item me-2">
-                        <a class="nav-link" href="/marketplace">Marketplace</a>
-                    </li>
                     <% if (user) { %>
                         <li class="nav-item me-2">
                             <a class="nav-link" href="/dashboard">Dashboard</a>
                         </li>
-                        <li class="nav-item me-3">
+                        <li class="nav-item me-2">
                             <a class="nav-link" href="/appointments/my-bookings">My Bookings</a>
                         </li>
+
+                        <li class="nav-item me-2">
+                            <a class="nav-link <%= (typeof path !== 'undefined' && path === '/profile') ? 'active' : '' %>" href="/profile">Profile</a>
+                        </li>
+
+                        <!-- Refer & Earn Link in Navbar -->
+                        <li class="nav-item me-2">
+                            <a class="nav-link fw-bold px-3 py-1 rounded-pill d-inline-flex align-items-center gap-1 shadow-xs" href="/profile#refer-card" style="background-color: #EFF6FF; border: 1.5px solid #BFDBFE; color: #1D4ED8 !important; font-size: 0.85rem;" title="Refer & Earn 50 Coins">
+                                <span>🎁</span> Refer & Earn
+                            </a>
+                        </li>
+
+                        <!-- E-Wallet Coins Pill -->
+                        <li class="nav-item me-3">
+                            <a class="nav-link d-inline-flex align-items-center gap-1 px-3 py-1 rounded-pill shadow-xs" href="/profile" style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: 1.5px solid #FDE68A; font-weight: 700; color: #92400E; text-decoration: none;" title="Your Coins">
+                                <span style="font-size: 1rem; line-height: 1;">🪙</span>
+                                <span style="font-size: 0.95rem;"><%= (user.coins !== undefined && user.coins !== null) ? user.coins : 99 %></span>
+                            </a>
+                        </li>
                         
-                        <!-- Notifications Dropdown -->
+                        <!-- Notifications Dropdown (Bell Icon) -->
                         <li class="nav-item dropdown me-4">
-                            <a class="nav-link dropdown-toggle position-relative" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown">
-                                Notifications 
+                            <a class="nav-link position-relative p-2 d-flex align-items-center" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Notifications" style="color: var(--espresso); text-decoration: none;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+                                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
+                                </svg>
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notif-count" style="display:none; font-size: 0.65rem;">0</span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-end notification-dropdown" id="notif-list">
@@ -333,39 +351,16 @@
                             </div>
                         </li>
 
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center gap-1" href="#" role="button" data-bs-toggle="dropdown">
-                                <span><%= user.email %></span>
-                                <% if (user.role === 'provider') { %>
-                                    <span class="badge bg-primary text-white ms-1 fw-bold" style="font-size: 0.7rem;">PARTNER</span>
-                                <% } %>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm" style="border-radius: 12px;">
-                                <% if (user.role === 'provider') { %>
-                                    <li><span class="dropdown-header text-uppercase fw-bold text-primary small">Partner Portal</span></li>
-                                    <li><a class="dropdown-item" href="/appointments/provider">Client Orders & Proofs</a></li>
-                                    <li><a class="dropdown-item" href="/services/my-services">My Service Listings</a></li>
-                                    <li><a class="dropdown-item" href="/services/create">+ Add New Service</a></li>
-                                    <li><a class="dropdown-item" href="/dashboard#payout-section">💳 Payouts & QR Settlement</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                <% } else { %>
-                                    <li>
-                                        <form action="/auth/convert-to-partner" method="POST" class="m-0 p-0" onsubmit="return confirm('Upgrade to Campus Partner to list services?')">
-                                            <button type="submit" class="dropdown-item text-primary fw-bold d-flex align-items-center gap-1">
-                                                <span>🚀</span> Become a Partner
-                                            </button>
-                                        </form>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                <% } %>
-                                <% if (typeof isMasterAdmin !== 'undefined' && isMasterAdmin) { %>
-                                    <li><a class="dropdown-item text-warning fw-bold bg-dark rounded-2 my-1" href="/admin/simulation">🎭 Persona & Simulation Hub</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                <% } %>
-                                <li><a class="dropdown-item text-danger" href="/auth/logout">Logout</a></li>
-                            </ul>
+                        <!-- Logout Link -->
+                        <li class="nav-item">
+                            <a class="nav-link text-danger fw-medium" href="/auth/logout">Logout</a>
                         </li>
                     <% } else { %>
+                        <li class="nav-item me-2">
+                            <a class="nav-link fw-bold px-3 py-1 rounded-pill d-inline-flex align-items-center gap-1 shadow-xs" href="/auth/register" style="background-color: #EFF6FF; border: 1.5px solid #BFDBFE; color: #1D4ED8 !important; font-size: 0.85rem;" title="Refer & Earn 50 Coins">
+                                <span>🎁</span> Refer & Earn
+                            </a>
+                        </li>
                         <li class="nav-item me-2">
                             <a class="nav-link text-primary fw-semibold" href="/auth/partner/login">💼 Partner Portal</a>
                         </li>

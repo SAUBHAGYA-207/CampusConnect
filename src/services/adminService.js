@@ -1,5 +1,5 @@
 const JsonStorage = require('../storage/jsonStorage');
-const { sendServiceRemovalEmail, sendPayoutClearedEmail } = require('./emailService');
+const { sendServiceRemovalEmail, sendPayoutClearedEmail, sendRefundClearedEmail } = require('./emailService');
 const { createNotification } = require('./notificationService');
 
 const usersStorage = new JsonStorage('users');
@@ -75,6 +75,30 @@ exports.getAllServices = async () => {
     })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 };
 
+exports.verifyServiceByAdmin = async (serviceId) => {
+    const service = await servicesStorage.getById(serviceId);
+    if (!service) throw new Error('Service not found');
+
+    const updated = await servicesStorage.update(serviceId, {
+        status: 'published'
+    });
+
+    // Release the 10 coins reward to the partner
+    const walletService = require('./walletService');
+    await walletService.approveUnderProcessingCoins(serviceId, `10 Coins for verified service listing: "${service.title}" (Verified ✓)`);
+
+    const partner = await usersStorage.getById(service.providerId);
+    if (partner) {
+        await createNotification(
+            partner.id,
+            `🎉 Your service "${service.title}" has been verified by Super Admin! 10 coins added to your wallet.`,
+            '/dashboard'
+        );
+    }
+
+    return updated;
+};
+
 exports.removeServiceByAdmin = async (serviceId, feedbackReason, adminEmail) => {
     const service = await servicesStorage.getById(serviceId);
     if (!service) throw new Error('Service not found');
@@ -84,6 +108,12 @@ exports.removeServiceByAdmin = async (serviceId, feedbackReason, adminEmail) => 
 
     // Delete the service from storage
     await servicesStorage.delete(serviceId);
+
+    // Cancel any pending under-processing coins reward
+    try {
+        const walletService = require('./walletService');
+        await walletService.rejectUnderProcessingCoins(serviceId, feedbackReason);
+    } catch (e) {}
 
     // Send email with custom feedback to the partner
     if (partnerEmail) {
@@ -196,7 +226,7 @@ exports.getPartnerFinancialSummary = async (partnerId) => {
     });
 
     const payouts = await payoutsStorage.getAll();
-    const partnerPayouts = payouts.filter(p => p.partnerId === partnerId);
+    const partnerPayouts = payouts.filter(p => p.partnerId === partnerId && p.type !== 'refund');
     const cleared = partnerPayouts.filter(p => p.status === 'cleared');
     const pending = partnerPayouts.filter(p => p.status === 'pending');
 
@@ -229,6 +259,14 @@ exports.createPayoutRequest = async (partnerId, amount, notes) => {
 
     if (isNaN(requestedAmount) || requestedAmount <= 0) {
         throw new Error('Please enter a valid payout amount');
+    }
+
+    if (requestedAmount < 200) {
+        throw new Error('Minimum withdrawal amount is ₹200. You cannot withdraw less than ₹200.');
+    }
+
+    if (parseFloat(summary.availablePayableBalance) < 200) {
+        throw new Error('Your available balance is below the minimum withdrawal threshold of ₹200.');
     }
 
     if (requestedAmount > parseFloat(summary.availablePayableBalance)) {
@@ -269,14 +307,42 @@ exports.clearPayoutByAdmin = async (payoutId, adminTransactionId, adminPaymentPr
         clearedAt: Date.now()
     });
 
-    const partner = await usersStorage.getById(payout.partnerId);
-    if (partner) {
-        await sendPayoutClearedEmail(partner.email, payout.amount, adminTransactionId, adminPaymentProof);
-        await createNotification(
-            partner.id,
-            `✓ Your payout of ₹${payout.amount} has been cleared and transferred to your UPI!`,
-            '/dashboard'
-        );
+    // If linked to an appointment refund, update appointment refund status
+    if (payout.appointmentId) {
+        try {
+            await appointmentsStorage.update(payout.appointmentId, {
+                refundStatus: 'settled',
+                refundClearedAt: Date.now(),
+                refundAdminTxnId: adminTransactionId || 'UPI-' + Date.now(),
+                refundAdminProof: adminPaymentProof || null
+            });
+        } catch (e) {
+            console.error('Error updating appointment refund status:', e);
+        }
+    }
+
+    const recipient = await usersStorage.getById(payout.partnerId);
+    if (recipient) {
+        const isRefund = payout.type === 'refund';
+        if (isRefund) {
+            try {
+                await sendRefundClearedEmail(recipient.email, payout.amount, adminTransactionId, adminPaymentProof);
+            } catch (e) {
+                console.error('Error sending refund cleared email:', e);
+            }
+            await createNotification(
+                recipient.id,
+                `✓ Your refund of ₹${payout.amount} has been cleared and transferred to your UPI!`,
+                payout.appointmentId ? `/appointments/my-bookings/${payout.appointmentId}` : '/profile'
+            );
+        } else {
+            await sendPayoutClearedEmail(recipient.email, payout.amount, adminTransactionId, adminPaymentProof);
+            await createNotification(
+                recipient.id,
+                `✓ Your payout of ₹${payout.amount} has been cleared and transferred to your UPI!`,
+                '/dashboard'
+            );
+        }
     }
 
     return updated;

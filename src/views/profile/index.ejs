@@ -1,0 +1,634 @@
+<div class="row mb-4 mt-2">
+    <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-3">
+            <div class="position-relative">
+                <% if (profileUser.profilePhoto || profileUser.avatar) { %>
+                    <img src="<%= profileUser.profilePhoto || profileUser.avatar %>" 
+                         alt="<%= profileUser.name || profileUser.email %>" 
+                         class="rounded-circle border border-2 shadow-sm" 
+                         style="width: 68px; height: 68px; object-fit: cover;">
+                <% } else { %>
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-sm fw-bold" 
+                         style="width: 68px; height: 68px; font-size: 1.7rem; background-color: var(--cognac) !important;">
+                        <%= ((profileUser.name || profileUser.email).charAt(0)).toUpperCase() %>
+                    </div>
+                <% } %>
+            </div>
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <h2 class="fw-bold mb-0 text-dark"><%= profileUser.name || (profileUser.email.split('@')[0]) %></h2>
+                    <% if (profileUser.role === 'provider') { %>
+                        <span class="badge bg-primary px-3 py-1 text-white fw-bold">CAMPUS PARTNER</span>
+                    <% } else { %>
+                        <span class="badge bg-secondary px-3 py-1 text-white fw-bold">STUDENT USER</span>
+                    <% } %>
+                </div>
+                <p class="text-muted small mb-0"><%= profileUser.email %></p>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="button" onclick="if (window.history.length > 1) { history.back(); } else { window.location.href='/dashboard'; }" class="btn btn-outline-secondary d-inline-flex align-items-center gap-1 shadow-sm px-3 py-2 fw-medium" style="border-radius: 8px;">
+                ← Back
+            </button>
+            <a href="/dashboard" class="btn btn-outline-primary shadow-sm px-3 py-2 fw-medium">
+                📊 Dashboard
+            </a>
+            <a href="/auth/logout" class="btn btn-outline-danger shadow-sm px-3 py-2 fw-medium">
+                🚪 Logout
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- TOP CARDS: WALLET BALANCE & PROFILE STATS -->
+<div class="row g-4 mb-4">
+    <!-- E-Wallet Available Coins Card -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card p-4 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: 1.5px solid #FDE68A !important; border-radius: 16px;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="small fw-bold text-uppercase" style="letter-spacing: 0.5px; color: #92400E;">E-Wallet Coins</span>
+                <span class="badge bg-warning text-dark fw-bold">1 Coin = ₹1</span>
+            </div>
+            <div class="d-flex align-items-baseline gap-2 mt-1">
+                <span class="fs-1 fw-bold text-dark">🪙 <%= coins %></span>
+                <span class="text-muted small">Available</span>
+            </div>
+            <small class="mt-2 d-block" style="color: #78350F; font-size: 0.8rem;">
+                ✓ Usable for instant discounts on any campus service order.
+            </small>
+        </div>
+    </div>
+
+    <!-- Under-Processing Coins Card -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card p-4 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%); border: 1.5px solid #BBF7D0 !important; border-radius: 16px;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="small fw-bold text-uppercase" style="letter-spacing: 0.5px; color: #166534;">Under Processing</span>
+                <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">Pending Review</span>
+            </div>
+            <div class="d-flex align-items-baseline gap-2 mt-1">
+                <span class="fs-1 fw-bold text-success">⏳ <%= pendingCoinsTotal %></span>
+                <span class="text-muted small">Coins</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Verified Payout UPI Card -->
+    <div class="col-md-12 col-lg-4">
+        <div class="card p-4 border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%); border: 1.5px solid #CBD5E1 !important; border-radius: 16px;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="small fw-bold text-uppercase text-muted" style="letter-spacing: 0.5px;">Payout UPI Status</span>
+                <% if (profileUser.partnerUpiId || profileUser.upiId) { %>
+                    <span class="badge bg-success text-white fw-bold">✓ OTP Verified</span>
+                <% } else { %>
+                    <span class="badge bg-warning text-dark fw-bold">Not Configured</span>
+                <% } %>
+            </div>
+            <div class="mt-1">
+                <% if (profileUser.partnerUpiId || profileUser.upiId) { %>
+                    <div class="font-monospace text-primary fw-bold fs-6 text-truncate">
+                        <%= profileUser.partnerUpiId || profileUser.upiId %>
+                    </div>
+                    <small class="text-success mt-2 d-block" style="font-size: 0.8rem;">
+                        ⚡ Ready for automatic payouts & earnings settlements.
+                    </small>
+                <% } else { %>
+                    <div class="text-muted fs-6">No UPI ID registered yet.</div>
+                    <small class="text-danger mt-2 d-block" style="font-size: 0.8rem;">
+                        ⚠️ Must be set with OTP verification to withdraw earnings.
+                    </small>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- LEFT COLUMN: Profile Info & UPI Management -->
+    <div class="col-lg-5">
+        <!-- 1. Edit Profile Information Form -->
+        <div class="card p-4 border shadow-sm rounded-3 mb-4 bg-white">
+            <h5 class="fw-bold mb-3 text-dark d-flex align-items-center gap-2">
+                <span>👤</span> Edit Personal Profile
+            </h5>
+            <form action="/profile/update" method="POST" enctype="multipart/form-data">
+                <!-- Profile Photo Preview & Upload -->
+                <div class="mb-3 text-center">
+                    <div class="position-relative d-inline-block mb-2">
+                        <img id="avatarPreviewImg" 
+                             src="<%= profileUser.profilePhoto || profileUser.avatar || '/images/default-avatar.png' %>" 
+                             alt="Avatar" 
+                             class="rounded-circle border shadow-sm" 
+                             style="width: 100px; height: 100px; object-fit: cover;"
+                             onerror="this.onerror=null; this.src='https://api.dicebear.com/7.x/identicon/svg?seed=<%= profileUser.email %>';">
+                    </div>
+                    <div>
+                        <label for="profilePhotoInput" class="btn btn-sm btn-outline-secondary px-3 py-1 fw-semibold">
+                            📷 Choose New Photo
+                        </label>
+                        <input type="file" 
+                               id="profilePhotoInput" 
+                               name="profilePhoto" 
+                               class="d-none" 
+                               accept="image/jpeg,image/png,image/webp,image/gif"
+                               onchange="previewAvatar(event)">
+                        <div class="form-text small" style="font-size: 0.72rem;">JPG, PNG, or WEBP up to 5MB.</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-dark fw-semibold small">Full Name</label>
+                    <input type="text" 
+                           class="form-control form-control-sm" 
+                           name="name" 
+                           value="<%= profileUser.name || '' %>" 
+                           placeholder="Enter your name">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-dark fw-semibold small">Registered Email Address</label>
+                    <input type="email" 
+                           class="form-control form-control-sm bg-light" 
+                           value="<%= profileUser.email %>" 
+                           readonly 
+                           disabled>
+                    <div class="form-text small">Email cannot be changed directly as it is bound to campus verification.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-dark fw-semibold small">Account Role</label>
+                    <input type="text" 
+                           class="form-control form-control-sm bg-light text-capitalize" 
+                           value="<%= profileUser.role === 'provider' ? 'Campus Partner (Freelancer)' : 'Student User' %>" 
+                           readonly 
+                           disabled>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold shadow-sm py-2">
+                    Save Profile Changes
+                </button>
+            </form>
+        </div>
+
+        <!-- 2. Set / Update UPI ID (Strict OTP Verification) -->
+        <div class="card p-4 border shadow-sm rounded-3 bg-white" id="upi-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold m-0 text-dark d-flex align-items-center gap-2">
+                    <span>💳</span> Set Payout UPI ID
+                </h5>
+            </div>
+
+            <% if (profileUser.partnerUpiId || profileUser.upiId) { %>
+                <div class="p-3 bg-light rounded-3 border mb-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-muted small fw-semibold">Current Active UPI ID:</span>
+                            <div class="font-monospace text-primary fw-bold fs-6 mt-1">
+                                <%= profileUser.partnerUpiId || profileUser.upiId %>
+                            </div>
+                        </div>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle">
+                            ✓ Active
+                        </span>
+                    </div>
+                </div>
+            <% } %>
+
+            <!-- STEP 1: Enter UPI ID & Request OTP -->
+            <div id="upiStep1">
+                <form id="sendUpiOtpForm" onsubmit="handleSendUpiOtp(event)">
+                    <div class="mb-3">
+                        <label for="upiIdInput" class="form-label text-dark fw-bold small">
+                            New UPI ID
+                        </label>
+                        <input type="text" 
+                               id="upiIdInput" 
+                               name="upiId" 
+                               class="form-control form-control-sm font-monospace" 
+                               placeholder="e.g. yourname@oksbi or 9876543210@paytm" 
+                               value="<%= profileUser.partnerUpiId || profileUser.upiId || '' %>" 
+                               required>
+                    </div>
+
+                    <div id="sendOtpAlert" class="alert py-2 px-3 small d-none mb-3"></div>
+
+                    <button type="submit" id="btnSendUpiOtp" class="btn btn-primary btn-sm w-100 fw-bold shadow-sm py-2">
+                        <span>📲 Send OTP to Registered Email</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- STEP 2: Enter & Verify OTP -->
+            <div id="upiStep2" class="<%= otpSent ? '' : 'd-none' %> mt-3 pt-3 border-top">
+                <div class="alert alert-info py-2 px-3 small mb-3">
+                    📬 <strong>Check Your Email:</strong> A 6-digit OTP code has been sent to <strong><%= profileUser.email %></strong>.
+                </div>
+
+                <form id="verifyUpiOtpForm" onsubmit="handleVerifyUpiOtp(event)">
+                    <div class="mb-3">
+                        <label for="otpCodeInput" class="form-label text-dark fw-bold small">
+                            Enter 6-Digit OTP Code <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" 
+                               id="otpCodeInput" 
+                               name="otp" 
+                               maxlength="6" 
+                               class="form-control form-control-sm font-monospace text-center fs-5 fw-bold" 
+                               placeholder="123456" 
+                               style="letter-spacing: 4px;"
+                               required>
+                        <div class="form-text small">Code expires in 10 minutes.</div>
+                    </div>
+
+                    <div id="verifyOtpAlert" class="alert py-2 px-3 small d-none mb-3"></div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" id="btnVerifyUpiOtp" class="btn btn-success btn-sm flex-grow-1 fw-bold shadow-sm py-2">
+                            ✓ Verify & Activate UPI ID
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cancelUpiOtpStep()">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Wallet Coins History & Under-Process Ledger -->
+    <div class="col-lg-7">
+        <!-- REFER & EARN 50 COINS HERO CARD -->
+        <div class="card p-4 border-0 shadow-sm rounded-4 mb-4 text-white overflow-hidden position-relative" 
+             style="background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 55%, #0284c7 100%);" id="refer-card">
+            <div class="row align-items-center">
+                <div class="col-md-7">
+                    <div class="d-inline-flex align-items-center gap-1 px-3 py-1 rounded-pill bg-white bg-opacity-25 text-white small fw-bold mb-2">
+                        <span>🎁</span> REFER & EARN 50 COINS
+                    </div>
+                    <h4 class="fw-bold mb-1 text-white">Invite Friends, Earn 🪙 50 Coins</h4>
+                    <p class="mb-3 text-white-50 small" style="line-height: 1.4;">
+                        Share your unique referral code or link. For every friend who signs up & verifies their email, you earn <strong>50 Coins (worth ₹50 in discounts)</strong> automatically!
+                    </p>
+                    <div class="d-flex gap-2 flex-wrap align-items-center">
+                        <div class="input-group input-group-sm" style="max-width: 250px;">
+                            <span class="input-group-text bg-white border-0 fw-bold text-dark font-monospace small">CODE:</span>
+                            <input type="text" id="referralCodeInput" class="form-control bg-white border-0 font-monospace fw-bold text-primary" value="<%= referralStats ? referralStats.referralCode : '' %>" readonly>
+                            <button class="btn btn-warning fw-bold px-2" type="button" id="btnCopyCode" onclick="copyReferralCode()">Copy</button>
+                        </div>
+                        <button class="btn btn-sm btn-light fw-bold px-3 shadow-sm" type="button" id="btnCopyLink" onclick="copyReferralLink()">
+                            🔗 Copy Link
+                        </button>
+                        <a href="https://api.whatsapp.com/send?text=<%= encodeURIComponent('Hey! Check out CampusConnect to book or offer campus services. Sign up with my referral code ' + (referralStats ? referralStats.referralCode : '') + ' to get 99 welcome coins: ' + (typeof referralLink !== 'undefined' ? referralLink : '')) %>" target="_blank" class="btn btn-sm btn-success fw-bold px-3 shadow-sm d-inline-flex align-items-center gap-1">
+                            <span>💬</span> WhatsApp
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-5 text-md-end mt-3 mt-md-0">
+                    <div class="p-3 rounded-3 bg-white bg-opacity-15 border border-white border-opacity-25 d-inline-block text-start shadow-sm">
+                        <div class="d-flex align-items-center">
+                            <div class="text-center px-3 border-end border-white border-opacity-25">
+                                <span class="d-block small text-white-50" style="font-size: 0.75rem;">Friends Invited</span>
+                                <span class="fs-4 fw-bold text-white"><%= referralStats ? referralStats.referredCount : 0 %></span>
+                            </div>
+                            <div class="text-center px-3">
+                                <span class="d-block small text-white-50" style="font-size: 0.75rem;">Coins Earned</span>
+                                <span class="fs-4 fw-bold text-warning">🪙 <%= referralStats ? referralStats.referralEarnings : 0 %></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border shadow-sm rounded-3 bg-white overflow-hidden">
+            <div class="card-header bg-white p-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                    <h5 class="fw-bold mb-0 text-dark">E-Wallet Ledger & Activity</h5>
+                </div>
+                <!-- Pills Navigation -->
+                <ul class="nav nav-pills" id="walletPills" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active btn-sm fw-bold px-3 py-1" id="pills-history-tab" data-bs-toggle="pill" data-bs-target="#pills-history" type="button" role="tab">
+                            🪙 Coins History (<%= completedTransactions.length %>)
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link btn-sm fw-bold px-3 py-1 position-relative" id="pills-underprocess-tab" data-bs-toggle="pill" data-bs-target="#pills-underprocess" type="button" role="tab">
+                            ⏳ Under Process (<%= underProcessingTransactions.length + underProcessingServices.length %>)
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="tab-content" id="walletPillsContent">
+                    <!-- TAB 1: COINS TRANSACTION HISTORY -->
+                    <div class="tab-pane fade show active" id="pills-history" role="tabpanel">
+                        <% if (completedTransactions.length === 0) { %>
+                            <div class="p-5 text-center text-muted">
+                                <div class="fs-1 mb-2">🪙</div>
+                                <h6 class="fw-bold">No coin transactions yet</h6>
+                                <p class="small text-muted mb-0">Book a service or list offerings to start earning coins!</p>
+                            </div>
+                        <% } else { %>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light small">
+                                        <tr>
+                                            <th class="px-3 py-3">Date & Time</th>
+                                            <th class="px-3 py-3"></th>
+                                            <th class="px-3 py-3 text-center">Type</th>
+                                            <th class="px-3 py-3 text-end">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="small">
+                                        <% completedTransactions.forEach(tx => { %>
+                                            <tr>
+                                                <td class="px-3 py-3 text-muted">
+                                                    <%= new Date(tx.createdAt || Date.now()).toLocaleDateString() %><br>
+                                                    <span style="font-size: 0.72rem;"><%= new Date(tx.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></span>
+                                                </td>
+                                                <td class="px-3 py-3">
+                                                    <div class="fw-semibold text-dark"><%= tx.description %></div>
+                                                    <% if (tx.referenceId) { %>
+                                                        <small class="text-muted font-monospace" style="font-size: 0.72rem;">REF: <%= tx.referenceId %></small>
+                                                    <% } %>
+                                                </td>
+                                                <td class="px-3 py-3 text-center">
+                                                    <% if (tx.type === 'credit') { %>
+                                                        <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">Credit</span>
+                                                    <% } else { %>
+                                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle fw-bold">Debit</span>
+                                                    <% } %>
+                                                </td>
+                                                <td class="px-3 py-3 text-end fw-bold fs-6 <%= tx.type === 'credit' ? 'text-success' : 'text-danger' %>">
+                                                    <%= tx.type === 'credit' ? '+' : '-' %><%= tx.amount %> Coins
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <!-- TAB 2: UNDER-PROCESS HISTORY -->
+                    <div class="tab-pane fade" id="pills-underprocess" role="tabpanel">
+                        <% if (underProcessingTransactions.length === 0 && underProcessingServices.length === 0) { %>
+                            <div class="p-5 text-center text-muted">
+                                <div class="fs-1 mb-2">⏳</div>
+                                <h6 class="fw-bold">No items under processing</h6>
+                                <p class="small text-muted mb-0">When you publish a new service listing, 10 coins will remain under processing until verified by Admin.</p>
+                            </div>
+                        <% } else { %>
+                            <div class="p-3 bg-light border-bottom small text-muted">
+                                ℹ️ Listings and actions awaiting Super Admin review are held here. Once approved, coins are unlocked into your available balance automatically.
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light small">
+                                        <tr>
+                                            <th class="px-3 py-3">Date</th>
+                                            <th class="px-3 py-3">Item / Service Listing</th>
+                                            <th class="px-3 py-3">Status</th>
+                                            <th class="px-3 py-3 text-end">Pending Reward</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="small">
+                                        <!-- Under processing coin transactions -->
+                                        <% underProcessingTransactions.forEach(t => { %>
+                                            <tr>
+                                                <td class="px-3 py-3 text-muted">
+                                                    <%= new Date(t.createdAt || Date.now()).toLocaleDateString() %>
+                                                </td>
+                                                <td class="px-3 py-3">
+                                                    <div class="fw-bold text-dark"><%= t.description %></div>
+                                                    <small class="text-muted">Awaiting Admin Verification</small>
+                                                </td>
+                                                <td class="px-3 py-3">
+                                                    <span class="badge bg-warning text-dark fw-bold">
+                                                        ⏳ Under Processing
+                                                    </span>
+                                                </td>
+                                                <td class="px-3 py-3 text-end fw-bold text-success fs-6">
+                                                    +<%= t.amount %> Coins
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+
+                                        <!-- Under processing partner services -->
+                                        <% underProcessingServices.forEach(s => { %>
+                                            <% if (!underProcessingTransactions.some(t => String(t.referenceId) === String(s.id))) { %>
+                                                <tr>
+                                                    <td class="px-3 py-3 text-muted">
+                                                        <%= new Date(s.createdAt || Date.now()).toLocaleDateString() %>
+                                                    </td>
+                                                    <td class="px-3 py-3">
+                                                        <div class="fw-bold text-dark">Service Listing: "<%= s.title %>"</div>
+                                                        <small class="text-muted">Category: <%= s.category %> | Price: ₹<%= s.price %></small>
+                                                    </td>
+                                                    <td class="px-3 py-3">
+                                                        <span class="badge bg-warning text-dark fw-bold">
+                                                            ⏳ Under Processing
+                                                        </span>
+                                                    </td>
+                                                    <td class="px-3 py-3 text-end fw-bold text-success fs-6">
+                                                        +10 Coins
+                                                    </td>
+                                                </tr>
+                                            <% } %>
+                                        <% }) %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coin Reward Guidelines Card -->
+        <div class="card p-4 border shadow-sm rounded-3 bg-white mt-4">
+            <h6 class="fw-bold text-dark mb-3">💡 How to Earn & Use CampusConnect Coins</h6>
+            <div class="row g-3 small text-muted">
+                <div class="col-md-6">
+                    <div class="p-3 rounded-3 bg-light h-100 border">
+                        <strong class="d-block text-dark mb-1">🎁 99 Coins Welcome Bonus</strong>
+                        <span>Every new account receives 99 free coins immediately upon registration.</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded-3 bg-light h-100 border">
+                        <strong class="d-block text-dark mb-1">⚡ 10% Booking Reward</strong>
+                        <span>Both clients and partners earn 10% of every service booking value in coins.</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded-3 bg-light h-100 border">
+                        <strong class="d-block text-dark mb-1">📋 10 Coins per Service Listing</strong>
+                        <span>Partners earn 10 coins for every listing approved and verified by Super Admin.</span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 rounded-3 bg-light h-100 border">
+                        <strong class="d-block text-dark mb-1">🛒 1 Coin = ₹1 Order Discount</strong>
+                        <span>Coins can be applied during checkout on any order for direct fee reductions.</span>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="p-3 rounded-3 h-100 border" style="background-color: #EFF6FF; border-color: #BFDBFE !important;">
+                        <strong class="d-block text-primary mb-1">🤝 50 Coins Refer & Earn</strong>
+                        <span class="text-dark">Invite friends with your referral code or link. When they register and verify their email, you earn <strong>+50 Coins</strong> directly into your E-Wallet!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Avatar photo preview before upload
+    function previewAvatar(event) {
+        const file = event.target.files && event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('avatarPreviewImg');
+                if (img) img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Step 1: Send OTP for UPI ID
+    async function handleSendUpiOtp(event) {
+        event.preventDefault();
+        const upiInput = document.getElementById('upiIdInput');
+        const alertBox = document.getElementById('sendOtpAlert');
+        const btn = document.getElementById('btnSendUpiOtp');
+
+        const upiId = upiInput.value.trim();
+        if (!upiId || !upiId.includes('@')) {
+            alertBox.className = 'alert alert-danger py-2 px-3 small mb-3';
+            alertBox.innerText = 'Please enter a valid UPI ID format (e.g. yourname@okhdfcbank)';
+            alertBox.classList.remove('d-none');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Sending OTP...';
+        alertBox.classList.add('d-none');
+
+        try {
+            const res = await fetch('/profile/upi/send-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ upiId })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                // Switch to Step 2
+                document.getElementById('upiStep2').classList.remove('d-none');
+                document.getElementById('otpCodeInput').focus();
+                alertBox.className = 'alert alert-success py-2 px-3 small mb-3';
+                alertBox.innerText = data.message || 'OTP dispatched to your registered email address!';
+                alertBox.classList.remove('d-none');
+            } else {
+                alertBox.className = 'alert alert-danger py-2 px-3 small mb-3';
+                alertBox.innerText = data.error || 'Failed to send OTP code.';
+                alertBox.classList.remove('d-none');
+            }
+        } catch (err) {
+            alertBox.className = 'alert alert-danger py-2 px-3 small mb-3';
+            alertBox.innerText = 'Network error while requesting OTP.';
+            alertBox.classList.remove('d-none');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<span>📲 Resend OTP Code</span>';
+        }
+    }
+
+    // Step 2: Verify OTP
+    async function handleVerifyUpiOtp(event) {
+        event.preventDefault();
+        const otpInput = document.getElementById('otpCodeInput');
+        const alertBox = document.getElementById('verifyOtpAlert');
+        const btn = document.getElementById('btnVerifyUpiOtp');
+
+        const otp = otpInput.value.trim();
+        if (!otp || otp.length < 6) {
+            alertBox.className = 'alert alert-danger py-2 px-3 small mb-3';
+            alertBox.innerText = 'Please enter the complete 6-digit OTP code.';
+            alertBox.classList.remove('d-none');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Verifying...';
+        alertBox.classList.add('d-none');
+
+        try {
+            const res = await fetch('/profile/upi/verify-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ otp })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                alertBox.className = 'alert alert-success py-2 px-3 small mb-3';
+                alertBox.innerText = data.message || 'UPI ID verified successfully!';
+                alertBox.classList.remove('d-none');
+                setTimeout(() => {
+                    window.location.href = '/profile#upi-card';
+                    window.location.reload();
+                }, 1000);
+            } else {
+                alertBox.className = 'alert alert-danger py-2 px-3 small mb-3';
+                alertBox.innerText = data.error || 'Invalid or expired OTP code.';
+                alertBox.classList.remove('d-none');
+                btn.disabled = false;
+                btn.innerHTML = '✓ Verify & Activate UPI ID';
+            }
+        } catch (err) {
+            alertBox.className = 'alert alert-danger py-2 px-3 small mb-3';
+            alertBox.innerText = 'Network error verifying OTP code.';
+            alertBox.classList.remove('d-none');
+            btn.disabled = false;
+            btn.innerHTML = '✓ Verify & Activate UPI ID';
+        }
+    }
+
+    function cancelUpiOtpStep() {
+        document.getElementById('upiStep2').classList.add('d-none');
+        const alertBox = document.getElementById('sendOtpAlert');
+        if (alertBox) alertBox.classList.add('d-none');
+    }
+
+    function copyReferralCode() {
+        const input = document.getElementById('referralCodeInput');
+        if (!input) return;
+        navigator.clipboard.writeText(input.value);
+        const btn = document.getElementById('btnCopyCode');
+        const old = btn.innerText;
+        btn.innerText = '✓ Copied!';
+        setTimeout(() => btn.innerText = old, 2000);
+    }
+
+    function copyReferralLink() {
+        const link = "<%= typeof referralLink !== 'undefined' ? referralLink : '' %>";
+        if (!link) return;
+        navigator.clipboard.writeText(link);
+        const btn = document.getElementById('btnCopyLink');
+        const old = btn.innerText;
+        btn.innerText = '✓ Link Copied!';
+        setTimeout(() => btn.innerText = old, 2000);
+    }
+</script>

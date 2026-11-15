@@ -27,7 +27,11 @@
                                         <%= app.status.charAt(0).toUpperCase() + app.status.slice(1) %>
                                     </span>
                                     <span class="badge bg-<%= app.paymentStatus === 'verified' ? 'success' : app.paymentStatus === 'rejected' ? 'danger' : 'light text-dark border' %> px-2 py-1 small">
-                                        <%= app.paymentStatus === 'verified' ? 'Paid ✓' : app.paymentStatus === 'rejected' ? 'Payment Flagged' : 'Proof Submitted' %>
+                                        <% if (app.paymentScreenshot === 'Paid by Coins' || (!app.paymentAmount && app.coinsUsed > 0)) { %>
+                                            🪙 Paid by Coins
+                                        <% } else { %>
+                                            <%= app.paymentStatus === 'verified' ? 'Paid ✓' : app.paymentStatus === 'rejected' ? 'Payment Flagged' : 'Proof Submitted' %>
+                                        <% } %>
                                     </span>
                                 </div>
                                 <h5 class="card-title fw-bold mb-1"><%= app.service ? app.service.title : 'Unknown Service' %></h5>

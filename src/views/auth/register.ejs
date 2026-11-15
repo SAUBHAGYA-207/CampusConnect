@@ -19,9 +19,21 @@
                     <label for="email" class="form-label text-muted fw-semibold small">Email address</label>
                     <input type="email" class="form-control form-control-lg" id="email" name="email" placeholder="name@domain.com" required>
                 </div>
-                <div class="mb-4">
+                <div class="mb-3">
                     <label for="password" class="form-label text-muted fw-semibold small">Password</label>
                     <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="••••••••" required>
+                </div>
+
+                <div class="mb-4">
+                    <label for="referralCode" class="form-label text-muted fw-semibold small d-flex justify-content-between align-items-center mb-1">
+                        <span>Referral Code <span class="badge bg-light text-secondary border fw-normal" style="font-size: 0.72rem;">Non-mandatory / Optional</span></span>
+                        <span class="text-success fw-bold" style="font-size: 0.78rem;">🎁 +50 Coins</span>
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted">🤝</span>
+                        <input type="text" class="form-control text-uppercase font-monospace" id="referralCode" name="referralCode" value="<%= typeof refCode !== 'undefined' ? refCode : '' %>" placeholder="e.g. AMAN50 (Leave blank if none)">
+                    </div>
+                    <div class="form-text text-muted" style="font-size: 0.72rem;">Have a friend's referral code? Enter it here (Non-mandatory). You both enjoy rewards!</div>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm fw-bold">Sign Up</button>

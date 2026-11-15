@@ -1,0 +1,263 @@
+[
+  {
+    "userId": "test_user_wallet_1794718001109",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1794718003514,
+    "id": "17947180036735h874"
+  },
+  {
+    "userId": "test_partner_wallet_1794718001109",
+    "type": "credit",
+    "amount": 10,
+    "description": "10 Coins for verified service listing: \"Python Coding Help\" (Verified ✓)",
+    "status": "completed",
+    "referenceId": "1794718003826gcxcir",
+    "createdAt": 1794718004143,
+    "id": "1794718004424dela5d",
+    "approvedAt": 1794718006241
+  },
+  {
+    "userId": "test_partner_wallet_1794718001109",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1794718005052,
+    "id": "1794718005203gv3zqg"
+  },
+  {
+    "userId": "test_user_wallet_1794718001109",
+    "type": "debit",
+    "amount": 50,
+    "description": "Redeemed 50 coins on booking for \"Python Coding Help\"",
+    "status": "completed",
+    "referenceId": null,
+    "createdAt": 1794718008355,
+    "id": "1794718008497adzkf"
+  },
+  {
+    "userId": "test_user_wallet_1794718001109",
+    "type": "credit",
+    "amount": 50,
+    "description": "Earned 10% coin bonus for booking \"Python Coding Help\"",
+    "status": "completed",
+    "referenceId": "1794718008662stprdp",
+    "createdAt": 1794718009524,
+    "id": "1794718009663ujooivj"
+  },
+  {
+    "userId": "test_partner_wallet_1794718001109",
+    "type": "credit",
+    "amount": 50,
+    "description": "Earned 10% partner reward for booking on \"Python Coding Help\"",
+    "status": "completed",
+    "referenceId": "1794718008662stprdp",
+    "createdAt": 1794718010311,
+    "id": "17947180104559ivjir"
+  },
+  {
+    "userId": "1793526977123ncsied",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1794718081596,
+    "id": "1794718081758rr1dro"
+  },
+  {
+    "userId": "17947180760093d0n35",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1794718084942,
+    "id": "1794718085092l6eshq"
+  },
+  {
+    "userId": "17947180875247pn6qe",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1794718090953,
+    "id": "17947180910808zw97"
+  },
+  {
+    "userId": "1794718092137p153al",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1794718093875,
+    "id": "1794718094035i7jxu"
+  },
+  {
+    "userId": "17947181122713uba1",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1794718113198,
+    "id": "1794718113360hxpqc8"
+  },
+  {
+    "userId": "1794718115808ucn75g",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1794718116843,
+    "id": "17947181170027niwnp"
+  },
+  {
+    "userId": "1794718125956nfkbqo",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1794718127002,
+    "id": "1794718127133f1iv9"
+  },
+  {
+    "userId": "1793528406036ijcbv9",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1794718334194,
+    "id": "1794718334471qy9cfs"
+  },
+  {
+    "userId": "1792172577767u3urq",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1794719225155,
+    "id": "1794719225302pgvlyf"
+  },
+  {
+    "userId": "1792172636474uhg3v",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1794719527153,
+    "id": "1794719527295vus25j"
+  },
+  {
+    "userId": "1794720967947srplud",
+    "type": "credit",
+    "amount": 10,
+    "description": "10 Coins for service listing: \"C++ & DSA Guidance & Interview Prep\" (Under Processing)",
+    "status": "under_processing",
+    "referenceId": "1794720968267xzjipa",
+    "createdAt": 1794720968564,
+    "id": "1794720968696p7y3yq"
+  },
+  {
+    "userId": "1794720968699f6vq5c",
+    "type": "credit",
+    "amount": 10,
+    "description": "10 Coins for service listing: \"Fest Posters, UI/UX Mockups & Resume Polish\" (Under Processing)",
+    "status": "under_processing",
+    "referenceId": "17947209689710d3ice",
+    "createdAt": 1794720969487,
+    "id": "17947209696221trm08"
+  },
+  {
+    "userId": "1794720969626sc72i9",
+    "type": "credit",
+    "amount": 10,
+    "description": "10 Coins for service listing: \"Laptop Cleaning, Thermal Paste & Minor Fixes\" (Under Processing)",
+    "status": "under_processing",
+    "referenceId": "1794720970070zftjkq",
+    "createdAt": 1794720971961,
+    "id": "1794720972513gtosx"
+  },
+  {
+    "userId": "1793528406036ijcbv9",
+    "type": "debit",
+    "amount": 50,
+    "description": "Redeemed 50 coins on booking for \"Lab Report writing\"",
+    "status": "completed",
+    "referenceId": null,
+    "createdAt": 1794721372442,
+    "id": "1794721372595akuyh"
+  },
+  {
+    "userId": "1793528406036ijcbv9",
+    "type": "credit",
+    "amount": 5,
+    "description": "Earned 10% coin bonus for booking \"Lab Report writing\"",
+    "status": "completed",
+    "referenceId": "1794721372816q1djgn",
+    "createdAt": 1794721373435,
+    "id": "1794721373591z2zbfo"
+  },
+  {
+    "userId": "1793822246216ni4a7",
+    "type": "credit",
+    "amount": 5,
+    "description": "Earned 10% partner reward for booking on \"Lab Report writing\"",
+    "status": "completed",
+    "referenceId": "1794721372816q1djgn",
+    "createdAt": 1794721374300,
+    "id": "1794721374451ve0o2"
+  },
+  {
+    "userId": "1793528406036ijcbv9",
+    "type": "debit",
+    "amount": 50,
+    "description": "Redeemed 50 coins on booking for \"Lab Report writing\"",
+    "status": "completed",
+    "referenceId": null,
+    "createdAt": 1794722161266,
+    "id": "179472216152156owq"
+  },
+  {
+    "userId": "1793528406036ijcbv9",
+    "type": "credit",
+    "amount": 5,
+    "description": "Earned 10% coin bonus for booking \"Lab Report writing\"",
+    "status": "completed",
+    "referenceId": "17947221616789tid2h",
+    "createdAt": 1794722162265,
+    "id": "1794722162406gxjysw"
+  },
+  {
+    "userId": "1793822246216ni4a7",
+    "type": "credit",
+    "amount": 5,
+    "description": "Earned 10% partner reward for booking on \"Lab Report writing\"",
+    "status": "completed",
+    "referenceId": "17947221616789tid2h",
+    "createdAt": 1794722163119,
+    "id": "1794722163254143rkm"
+  },
+  {
+    "userId": "179472097503449l57b",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1794723471407,
+    "id": "1794723471653yrwrjx"
+  }
+]

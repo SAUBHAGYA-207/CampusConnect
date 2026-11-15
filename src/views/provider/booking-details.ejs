@@ -64,7 +64,18 @@
                         </div>
                     <% } %>
 
-                    <% if (appointment.paymentScreenshot) { %>
+                    <% if (appointment.paymentScreenshot === 'Paid by Coins' || (!appointment.paymentAmount && appointment.coinsUsed > 0)) { %>
+                        <div class="mt-3">
+                            <span class="text-muted small d-block mb-1">Customer Payment Proof:</span>
+                            <div class="p-2 px-3 rounded-3 d-inline-flex align-items-center gap-2 border" style="background: linear-gradient(135deg, #FEF3C7 0%, #FFFBEB 100%); border-color: #FDE68A !important;">
+                                <span class="fs-4">🪙</span>
+                                <div>
+                                    <strong class="d-block text-dark small">Paid by Coins</strong>
+                                    <small class="text-muted" style="font-size: 0.75rem;"><%= appointment.coinsUsed %> Coins Redeemed • Instant Verified</small>
+                                </div>
+                            </div>
+                        </div>
+                    <% } else if (appointment.paymentScreenshot) { %>
                         <div class="mt-2">
                             <span class="text-muted small d-block mb-1">Uploaded Payment Screenshot:</span>
                             <div class="position-relative d-inline-block rounded border overflow-hidden shadow-sm" style="cursor: pointer; background: #fff;" onclick="openImageLightbox('<%= appointment.paymentScreenshot %>', 'Customer Payment Proof - Booking #<%= appointment.id %>')">
@@ -84,7 +95,7 @@
                         </div>
 
                         <!-- Provider Verification Actions -->
-                        <% if (appointment.paymentStatus !== 'verified') { %>
+                        <% if (appointment.paymentStatus !== 'verified' && appointment.paymentScreenshot !== 'Paid by Coins') { %>
                             <div class="d-flex gap-2 mt-3">
                                 <form action="/appointments/<%= appointment.id %>/payment-status" method="POST" class="flex-grow-1">
                                     <input type="hidden" name="paymentStatus" value="verified">
@@ -102,6 +113,36 @@
                         <p class="text-muted small mb-0">No payment screenshot attached for this booking.</p>
                     <% } %>
                 </div>
+
+                <% if (appointment.status === 'cancelled' || appointment.status === 'rejected') { %>
+                    <!-- Customer Refund Overview -->
+                    <div class="p-3 rounded-3 mb-3 border shadow-sm" style="background: linear-gradient(135deg, #FEF2F2 0%, #FFF5F5 100%); border-color: #FECACA !important;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="d-flex align-items-center gap-2 fw-bold text-danger">
+                                <span>🔄</span> Customer Refund Status
+                            </span>
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 small">
+                                <%= appointment.status === 'rejected' ? 'Rejected' : 'Cancelled' %>
+                            </span>
+                        </div>
+                        <% if (appointment.coinsUsed && appointment.coinsUsed > 0) { %>
+                            <div class="d-flex justify-content-between align-items-center p-2 rounded bg-white border border-danger-subtle mb-2 small">
+                                <span class="text-dark fw-semibold">🪙 Customer Coins:</span>
+                                <span class="badge bg-success text-white fw-bold"><%= appointment.coinsUsed %> Coins Auto-refunded</span>
+                            </div>
+                        <% } %>
+                        <% if (appointment.paymentAmount && appointment.paymentAmount > 0) { %>
+                            <div class="d-flex justify-content-between align-items-center p-2 rounded bg-white border border-danger-subtle small">
+                                <span class="text-dark fw-semibold">💳 Customer Money:</span>
+                                <% if (appointment.refundStatus === 'settled') { %>
+                                    <span class="badge bg-success text-white fw-bold">₹<%= appointment.paymentAmount %> Settled by Admin ✓</span>
+                                <% } else { %>
+                                    <span class="badge bg-warning text-dark border border-warning fw-bold">₹<%= appointment.paymentAmount %> Queued to Super Admin ⏳</span>
+                                <% } %>
+                            </div>
+                        <% } %>
+                    </div>
+                <% } %>
                 
                 <h6 class="text-muted text-uppercase fw-bold mb-3 mt-4" style="font-size: 0.8rem; letter-spacing: 0.5px;">Schedule & Notes</h6>
                 <div class="d-flex justify-content-between align-items-center mb-2">
@@ -144,6 +185,30 @@
                         <small class="text-muted d-block mt-2" style="font-size: 0.75rem;">
                             💬 You can communicate with the customer and share draft versions via the live chat on the right.
                         </small>
+                    </div>
+                <% } %>
+
+                <% if (appointment.status === 'completed') { %>
+                    <div class="card p-3 border shadow-sm rounded-3 mb-3 bg-white" style="border: 1.5px solid #BBF7D0 !important;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="fw-bold text-success d-flex align-items-center gap-1">
+                                <span>⭐</span> Customer Review & Feedback
+                            </span>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Completed ✓</span>
+                        </div>
+                        <% if (appointment.feedback || appointment.rating) { %>
+                            <div class="p-3 rounded-3 bg-light border">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <span class="fs-5 text-warning">
+                                        <%= '★'.repeat(appointment.rating || 5) %><%= '☆'.repeat(5 - (appointment.rating || 5)) %>
+                                    </span>
+                                    <span class="badge bg-white text-dark border small fw-bold"><%= appointment.rating || 5 %>/5 Stars</span>
+                                </div>
+                                <p class="mb-0 text-muted small fst-italic">"<%= appointment.feedback || 'Great service!' %>"</p>
+                            </div>
+                        <% } else { %>
+                            <small class="text-muted fst-italic">Feedback email dispatched to customer. Waiting for customer review.</small>
+                        <% } %>
                     </div>
                 <% } %>
 

@@ -1,1 +1,120 @@
-[]
+[
+  {
+    "title": "Python Coding Help",
+    "description": "Assisting in assignment and debugging",
+    "price": 500,
+    "category": "Tech",
+    "image": null,
+    "providerId": "test_partner_wallet_1794718001109",
+    "status": "published",
+    "createdAt": 1794718003825,
+    "id": "1794718003826gcxcir"
+  },
+  {
+    "title": "C++ & DSA Guidance & Interview Prep",
+    "description": "One-on-one session on Data Structures and Algorithms in C++. Problem solving on LeetCode/Codeforces, tree/graph algorithms, and placement interview strategies.",
+    "price": 350,
+    "category": "Tech & Coding",
+    "image": "/images/banners/banner-tech.jpg",
+    "providerId": "1794720967947srplud",
+    "status": "under_processing",
+    "createdAt": 1792504800000,
+    "id": "1794720968267xzjipa"
+  },
+  {
+    "title": "Fest Posters, UI/UX Mockups & Resume Polish",
+    "description": "Custom aesthetic poster designs for campus clubs, societies, and department events. Also offering LaTeX and Figma resume styling for internship season.",
+    "price": 250,
+    "category": "Design & Media",
+    "image": "/images/banners/banner-arts.jpg",
+    "providerId": "1794720968699f6vq5c",
+    "status": "under_processing",
+    "createdAt": 1792512000000,
+    "id": "17947209689710d3ice"
+  },
+  {
+    "title": "Laptop Cleaning, Thermal Paste & Minor Fixes",
+    "description": "Internal laptop dust cleaning, high-performance thermal paste replacement (Arctic MX-4), thermal throttling fix, and minor screw/hinge repairs in hostel.",
+    "price": 200,
+    "category": "Repairs & Tech",
+    "image": "/images/banners/banner-partner.jpg",
+    "providerId": "1794720969626sc72i9",
+    "status": "under_processing",
+    "createdAt": 1792515600000,
+    "id": "1794720970070zftjkq"
+  },
+  {
+    "description": "",
+    "image": null,
+    "providerId": "test_partner_wallet_1794721878401",
+    "status": "under_processing",
+    "createdAt": 1794721888225,
+    "id": "1794721888512l0ugqk"
+  },
+  {
+    "title": "Quick Help Session",
+    "description": "Help for 15 mins",
+    "price": 50,
+    "category": "Teach",
+    "image": null,
+    "providerId": "test_partner_wallet_1794721946910",
+    "status": "under_processing",
+    "createdAt": 1794721955414,
+    "id": "1794721955415lk708c"
+  },
+  {
+    "title": "Quick Help Session",
+    "description": "Help for 15 mins",
+    "price": 50,
+    "category": "Teach",
+    "image": null,
+    "providerId": "test_partner_wallet_1794722923924",
+    "status": "under_processing",
+    "createdAt": 1794722932767,
+    "id": "1794722932767n03m5i"
+  },
+  {
+    "title": "Quick Help Session",
+    "description": "Help for 15 mins",
+    "price": 50,
+    "category": "Teach",
+    "image": null,
+    "providerId": "test_partner_wallet_1794723000032",
+    "status": "under_processing",
+    "createdAt": 1794723008888,
+    "id": "1794723008888lf2v1f"
+  },
+  {
+    "title": "Quick Help Session",
+    "description": "Help for 15 mins",
+    "price": 50,
+    "category": "Teach",
+    "image": null,
+    "providerId": "test_partner_wallet_1794723493448",
+    "status": "under_processing",
+    "createdAt": 1794723501848,
+    "id": "1794723501848xlxbf"
+  },
+  {
+    "title": "Quick Help Session",
+    "description": "Help for 15 mins",
+    "price": 50,
+    "category": "Teach",
+    "image": null,
+    "providerId": "test_partner_wallet_1794723938350",
+    "status": "under_processing",
+    "createdAt": 1794723947767,
+    "id": "1794723947767h6bd9"
+  },
+  {
+    "title": "Quick Help Session",
+    "description": "Help for 15 mins",
+    "price": 50,
+    "category": "Teach",
+    "image": null,
+    "providerId": "test_partner_wallet_1794724663365",
+    "status": "under_processing",
+    "createdAt": 1794724672979,
+    "id": "1794724672979sl3lnn"
+  }
+]
