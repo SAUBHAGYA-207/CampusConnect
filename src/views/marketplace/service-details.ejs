@@ -400,14 +400,35 @@
                                     🔒 <strong>Escrow Protected:</strong> You are paying to CampusConnect Admin. Admin safely holds funds until service delivery, then settles payment directly to the partner upon verified completion.
                                 </div>
 
-                                <div class="mt-2 d-md-none">
-                                    <a id="mobileUpiAppBtn" href="#" class="btn btn-sm btn-outline-primary px-3">
-                                        📱 Open Directly in UPI App
-                                    </a>
+                                <!-- Direct UPI Mobile Payment & App Choosers -->
+                                <div class="mt-3 p-3 bg-light rounded-3 border text-center">
+                                    <div class="fw-bold small text-dark mb-2">
+                                        📱 Instant Pay via UPI App
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <a href="#" role="button" id="btnAnyUpiApp" class="btn btn-primary fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2 text-decoration-none">
+                                            <span>⚡ Open in Any UPI App</span>
+                                            <small class="fw-normal opacity-75">(GPay / PhonePe / Paytm / BHIM)</small>
+                                        </a>
+                                        <div class="d-flex gap-2 justify-content-center flex-wrap pt-1">
+                                            <a href="#" role="button" id="btnGPayApp" class="btn btn-sm btn-outline-dark fw-semibold d-inline-flex align-items-center gap-1 px-3 py-1 flex-grow-1 text-decoration-none">
+                                                <span>🟢 Google Pay</span>
+                                            </a>
+                                            <a href="#" role="button" id="btnPhonePeApp" class="btn btn-sm btn-outline-dark fw-semibold d-inline-flex align-items-center gap-1 px-3 py-1 flex-grow-1 text-decoration-none" style="color: #5f259f !important; border-color: #5f259f !important;">
+                                                <span>🟣 PhonePe</span>
+                                            </a>
+                                            <a href="#" role="button" id="btnPaytmApp" class="btn btn-sm btn-outline-dark fw-semibold d-inline-flex align-items-center gap-1 px-3 py-1 flex-grow-1 text-decoration-none" style="color: #00b9f5 !important; border-color: #00b9f5 !important;">
+                                                <span>🔵 Paytm</span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div id="upiLaunchStatus" class="small text-muted mt-2 d-none">
+                                        🚀 Triggering UPI App... If it doesn't open automatically, scan the QR code above or use Copy UPI.
+                                    </div>
                                 </div>
                                 
                                 <p class="text-muted small mt-2 mb-0" style="font-size: 0.78rem;">
-                                    Scan using <strong>GPay, PhonePe, Paytm, or BHIM</strong>
+                                    Or scan the QR code above with <strong>Google Pay, PhonePe, Paytm, or BHIM</strong>
                                 </p>
                             </div>
 
@@ -424,6 +445,20 @@
                                        required 
                                        onchange="previewScreenshot(event)">
                                 <div class="form-text small">Upload the transaction success screenshot from your UPI app.</div>
+                            </div>
+
+                            <!-- Optional UPI UTR / Transaction ID -->
+                            <div class="mb-3">
+                                <label for="transactionId" class="form-label text-dark fw-bold small">
+                                    UPI UTR / Transaction ID <span class="text-muted fw-normal">(Optional, 12 digits)</span>
+                                </label>
+                                <input type="text" 
+                                       class="form-control font-monospace" 
+                                       id="transactionId" 
+                                       name="transactionId" 
+                                       placeholder="e.g. 432109876543 (from UPI app success receipt)" 
+                                       maxlength="30">
+                                <div class="form-text small">Entering your 12-digit UPI UTR helps super admin verify and accept your booking instantly.</div>
                             </div>
 
                             <div id="screenshotPreviewContainer" class="d-none text-center mb-3 p-2 bg-white rounded border">
@@ -797,14 +832,34 @@
                             finalAmount = Math.max(0, finalAmount - maxCoins);
                         }
 
-                        // Generate Dynamic QR Code URL now (on demand, never pre-generated!)
-                        const notePayload = 'CampusConnect ' + randomRef + ' ' + serviceTitle;
-                        const upiPayload = 'upi://pay?pa=' + encodeURIComponent(activeUpiId) + 
-                                           '&pn=' + encodeURIComponent(activePayeeName) + 
-                                           '&am=' + encodeURIComponent(finalAmount.toFixed(2)) + 
-                                           '&cu=INR' + 
-                                           '&tn=' + encodeURIComponent(notePayload);
+                        // Sanitize & format parameters strictly compliant with NPCI UPI specification:
+                        // 1. pa: trimmed Payee UPI ID
+                        const cleanPa = String(activeUpiId || 'anand1024anand@okicici').trim();
+                        // 2. pn: Payee Name (alphanumeric and spaces only, max 25 chars)
+                        const cleanPn = String(activePayeeName || 'CampusConnect')
+                            .replace(/[^a-zA-Z0-9 ]/g, ' ')
+                            .replace(/\s+/g, ' ')
+                            .trim()
+                            .substring(0, 25) || 'CampusConnect';
+                        // 3. am: 2 decimal places
+                        const cleanAm = finalAmount.toFixed(2);
+                        // 4. tn: Transaction Note (alphanumeric and spaces only, max 30 chars - NO & or special chars)
+                        const cleanDigits = String(randomRef).replace(/[^a-zA-Z0-9]/g, '');
+                        const cleanTn = ('CC ' + cleanDigits + ' Order').trim().substring(0, 30);
+                        // 5. tr: Transaction Reference (alphanumeric, max 35 chars)
+                        const cleanTr = ('CC' + cleanDigits).substring(0, 35);
 
+                        // Strict NPCI-compliant query string
+                        const upiQuery = 'pa=' + encodeURIComponent(cleanPa) +
+                                         '&pn=' + encodeURIComponent(cleanPn) +
+                                         '&am=' + encodeURIComponent(cleanAm) +
+                                         '&cu=INR' +
+                                         '&tn=' + encodeURIComponent(cleanTn) +
+                                         '&tr=' + encodeURIComponent(cleanTr);
+
+                        const upiPayload = 'upi://pay?' + upiQuery;
+
+                        // Dynamic QR Code generation with sanitized URL
                         const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&margin=8&data=' + encodeURIComponent(upiPayload);
                         const qrImgElem = document.getElementById('dynamicPaymentQrImg');
                         if (qrImgElem) {
@@ -813,14 +868,56 @@
 
                         const qrAmountDisplay = document.getElementById('qrAmountDisplay');
                         if (qrAmountDisplay) {
-                            qrAmountDisplay.innerText = '₹' + finalAmount.toFixed(2);
+                            qrAmountDisplay.innerText = '₹' + cleanAm;
                         }
 
-                        // Mobile UPI app deep link
-                        const mobileLink = document.getElementById('mobileUpiAppBtn');
-                        if (mobileLink) {
-                            mobileLink.href = upiPayload;
+                        // Device detection for UPI deep link & intent schemes
+                        const isAndroid = /Android/i.test(navigator.userAgent);
+                        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+                        const isMobile = isAndroid || isIOS;
+
+                        // Android intents, iOS URL schemes, and generic fallbacks
+                        const genericUri = isAndroid 
+                            ? ('intent://pay?' + upiQuery + '#Intent;scheme=upi;end') 
+                            : upiPayload;
+                        const gpayUri = isAndroid 
+                            ? ('intent://pay?' + upiQuery + '#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end') 
+                            : (isIOS ? ('tez://upi/pay?' + upiQuery) : upiPayload);
+                        const phonePeUri = isAndroid 
+                            ? ('intent://pay?' + upiQuery + '#Intent;scheme=upi;package=com.phonepe.app;end') 
+                            : (isIOS ? ('phonepe://pay?' + upiQuery) : upiPayload);
+                        const paytmUri = isAndroid 
+                            ? ('intent://pay?' + upiQuery + '#Intent;scheme=upi;package=net.one97.paytm;end') 
+                            : (isIOS ? ('paytmmp://pay?' + upiQuery) : upiPayload);
+
+                        // Configure launcher links & status feedback
+                        const statusNotice = document.getElementById('upiLaunchStatus');
+
+                        function bindUpiLauncher(elemId, targetUri, appName) {
+                            const btn = document.getElementById(elemId);
+                            if (!btn) return;
+                            btn.href = targetUri;
+                            btn.onclick = function(e) {
+                                if (statusNotice) {
+                                    statusNotice.classList.remove('d-none');
+                                    if (isMobile) {
+                                        statusNotice.innerHTML = '🚀 Opening ' + appName + '... Please complete payment and upload the screenshot below.';
+                                    } else {
+                                        statusNotice.innerHTML = '💻 <strong>Desktop Browser:</strong> If your UPI app didn\'t open automatically, please scan the QR code with ' + appName + ' on your mobile phone, or use <strong>Copy UPI</strong>.';
+                                    }
+                                }
+                                if (!isMobile) {
+                                    setTimeout(() => {
+                                        try { window.location.href = upiPayload; } catch (err) {}
+                                    }, 400);
+                                }
+                            };
                         }
+
+                        bindUpiLauncher('btnAnyUpiApp', genericUri, 'Any UPI App');
+                        bindUpiLauncher('btnGPayApp', gpayUri, 'Google Pay');
+                        bindUpiLauncher('btnPhonePeApp', phonePeUri, 'PhonePe');
+                        bindUpiLauncher('btnPaytmApp', paytmUri, 'Paytm');
 
                         // Start 5-minute countdown timer
                         startQrCountdown(5 * 60);
@@ -839,11 +936,12 @@
             });
         }
 
-        // 5. Copy UPI ID button
+        // 5. Robust Copy UPI ID button (with fallback for HTTP / non-secure contexts)
         const btnCopyUpi = document.getElementById('btnCopyUpi');
         if (btnCopyUpi) {
             btnCopyUpi.addEventListener('click', function() {
-                navigator.clipboard.writeText(activeUpiId).then(() => {
+                const textToCopy = String(activeUpiId || '').trim();
+                const copySuccess = () => {
                     const originalText = btnCopyUpi.innerText;
                     btnCopyUpi.innerText = 'Copied!';
                     btnCopyUpi.classList.add('text-success');
@@ -851,7 +949,29 @@
                         btnCopyUpi.innerText = originalText;
                         btnCopyUpi.classList.remove('text-success');
                     }, 2000);
-                });
+                };
+
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(textToCopy).then(copySuccess).catch(() => fallbackCopy(textToCopy));
+                } else {
+                    fallbackCopy(textToCopy);
+                }
+
+                function fallbackCopy(str) {
+                    try {
+                        const tempInput = document.createElement('input');
+                        tempInput.style.position = 'fixed';
+                        tempInput.style.opacity = '0';
+                        tempInput.value = str;
+                        document.body.appendChild(tempInput);
+                        tempInput.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(tempInput);
+                        copySuccess();
+                    } catch (e) {
+                        prompt('Copy UPI ID:', str);
+                    }
+                }
             });
         }
 
