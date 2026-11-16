@@ -101,9 +101,11 @@ exports.getPlatformStats = async () => {
         totalCoinsBurned += getAppointmentCoinsUsed(a, service);
     });
 
-    // 5. Profit: Confirmed minus Coin Burn as explicitly defined: Profit(confirmed - coin burn)
-    const profitConfirmedMinusBurn = confirmedRevenue - totalCoinsBurned;
-    const profitAllConfirmedMinusBurn = (confirmedRevenue + completedRevenue) - totalCoinsBurned;
+    // 5. Profit: 10% of complete order minus coin burn
+    // Platform earns 10% commission on complete orders. Coin burn represents the promotional discounts funded by the platform.
+    const profitCompletedMinusBurn = completedPlatformCommission - totalCoinsBurned;
+    const profitCompletedMinusRealizedBurn = completedPlatformCommission - completedCoinsBurned;
+    const profitAllConfirmedMinusBurn = (confirmedPlatformFee + completedPlatformCommission) - totalCoinsBurned;
 
     // Payout stats
     const clearedPayouts = allPayouts.filter(p => p.status === 'cleared');
@@ -142,11 +144,16 @@ exports.getPlatformStats = async () => {
         confirmedCoinsBurned: confirmedCoinsUsed,
         pendingCoinsBurned: pendingCoinsUsed,
 
-        // Profit (confirmed - coin burn)
-        profitConfirmedMinusBurn: profitConfirmedMinusBurn.toFixed(2),
+        // Profit (10% of complete order - coin burn)
+        profit: profitCompletedMinusBurn.toFixed(2),
+        profitCompletedMinusBurn: profitCompletedMinusBurn.toFixed(2),
+        profitCompletedMinusRealizedBurn: profitCompletedMinusRealizedBurn.toFixed(2),
+        profitConfirmedMinusBurn: profitCompletedMinusBurn.toFixed(2),
         profitAllConfirmedMinusBurn: profitAllConfirmedMinusBurn.toFixed(2),
-        isProfitConfirmedPositive: profitConfirmedMinusBurn >= 0,
-        isProfitable: profitConfirmedMinusBurn >= 0,
+        isProfitPositive: profitCompletedMinusBurn >= 0,
+        isProfitConfirmedPositive: profitCompletedMinusBurn >= 0,
+        isProfitable: profitCompletedMinusBurn >= 0,
+        completedPlatformCommission: completedPlatformCommission.toFixed(2),
 
         // Backward compatibility & detailed breakdown
         totalGrossRevenue: completedRevenue.toFixed(2),

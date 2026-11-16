@@ -76,7 +76,7 @@
         </div>
     </div>
 
-    <!-- 5. Profit (Confirmed - Coin Burn) -->
+    <!-- 5. Profit (10% of Complete Order - Coin Burn) -->
     <div class="col-xl-2 col-lg-4 col-md-6">
         <div class="card p-3 border-0 shadow-sm h-100" style="background: <%= stats.isProfitConfirmedPositive ? 'linear-gradient(135deg, #059669 0%, #047857 100%)' : 'linear-gradient(135deg, #b45309 0%, #78350f 100%)' %>; color: #ffffff; border-radius: 16px;">
             <div class="d-flex justify-content-between align-items-center mb-1">
@@ -86,7 +86,7 @@
                 </span>
             </div>
             <div class="fs-3 fw-bold text-white mt-1">₹<%= stats.profitConfirmedMinusBurn %></div>
-            <small class="text-white-50" style="font-size: 0.7rem;">Confirmed (₹<%= stats.confirmedRevenue %>) − Burn (₹<%= stats.totalCoinsBurnedValue %>)</small>
+            <small class="text-white-50" style="font-size: 0.7rem;">10% Complete (₹<%= stats.totalPlatformCommission %>) − Burn (₹<%= stats.totalCoinsBurnedValue %>)</small>
         </div>
     </div>
 
