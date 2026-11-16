@@ -249,6 +249,10 @@ exports.postRequestPayout = async (req, res, next) => {
         req.flash('success', `Payout request for ₹${amount} submitted! Super Admin will scan your QR and transfer funds.`);
         res.redirect('/dashboard#payout-section');
     } catch (error) {
+        if (error.message && error.message.includes('UPI ID')) {
+            req.flash('error', 'You must set and verify your UPI ID in your Profile before requesting a payout.');
+            return res.redirect('/profile#upi-card');
+        }
         req.flash('error', error.message || 'Payout request failed.');
         res.redirect('/dashboard#payout-section');
     }

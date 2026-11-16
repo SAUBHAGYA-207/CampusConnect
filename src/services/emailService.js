@@ -600,3 +600,34 @@ exports.sendRefundClearedEmail = async (email, amount, utr, proofUrl) => {
 
     await sendMailUniversal({ to: email, subject, text, html });
 };
+
+exports.sendPayoutRejectedEmail = async (email, amount, reason) => {
+    const subject = `Payout Request Update: ₹${amount} - CampusConnect`;
+    const text = `Your payout request of ₹${amount} was rejected by Super Admin.\nReason: ${reason || 'Details could not be verified'}\nFunds have been restored to your available balance.`;
+    const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 24px; border: 1px solid #fecaca; border-radius: 12px; background: #fef2f2;">
+            <div style="background: #dc2626; color: white; padding: 12px 18px; border-radius: 8px; font-weight: bold; font-size: 16px;">
+                ✗ Payout Request Rejected
+            </div>
+            <h3 style="color: #991b1b; margin-top: 20px;">Payout Request Declined</h3>
+            <p style="color: #7f1d1d; font-size: 15px;">
+                Your payout request of <strong>₹${amount}</strong> was rejected by Super Admin.
+            </p>
+            <div style="background: #ffffff; border: 1px solid #fee2e2; padding: 16px; margin: 16px 0; border-radius: 8px;">
+                <div style="margin-bottom: 8px;">
+                    <span style="color: #64748b;">Amount:</span>
+                    <strong style="color: #991b1b; font-size: 16px;"> ₹${amount}</strong>
+                </div>
+                <div>
+                    <span style="color: #64748b;">Reason for Rejection:</span>
+                    <p style="color: #dc2626; font-weight: bold; margin: 4px 0 0 0;">${reason || 'Details could not be verified'}</p>
+                </div>
+            </div>
+            <p style="color: #7f1d1d; font-size: 13px;">
+                The requested funds have been returned to your available balance. Please ensure your UPI ID is configured and verified before requesting again.
+            </p>
+        </div>
+    `;
+
+    await sendMailUniversal({ to: email, subject, text, html });
+};

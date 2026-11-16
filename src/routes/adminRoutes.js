@@ -23,6 +23,7 @@ router.get('/dashboard', requireSuperAdmin, adminController.getDashboard);
 router.post('/services/:id/verify', requireSuperAdmin, adminController.postVerifyService);
 router.post('/services/:id/remove', requireSuperAdmin, adminController.postRemoveService);
 router.post('/payouts/:id/clear', requireSuperAdmin, payoutUpload.single('paymentProof'), adminController.postClearPayout);
+router.post('/payouts/:id/reject', requireSuperAdmin, adminController.postRejectPayout);
 
 // Super Admin Direct Chat
 router.get('/chat', requireSuperAdmin, adminController.getChat);

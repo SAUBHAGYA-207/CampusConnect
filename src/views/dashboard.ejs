@@ -195,20 +195,18 @@
 
                         <% 
                             const availBal = parseFloat(partnerStats.financials ? partnerStats.financials.availablePayableBalance : '0'); 
-                            const hasUpi = Boolean(partnerStats.financials && partnerStats.financials.partnerUpiId); 
+                            const hasUpi = Boolean(partnerStats.financials && partnerStats.financials.partnerUpiId && partnerStats.financials.partnerUpiId.trim()); 
                             const meetsThreshold = availBal >= 200;
                         %>
 
-                        <% if (!meetsThreshold && availBal > 0) { %>
+                        <% if (!hasUpi) { %>
+                            <div class="alert alert-danger py-2 px-3 small mb-3 border-0">
+                                <strong>⚠️ UPI ID Required:</strong> You cannot request a payout until you set your UPI ID. Please configure and verify your UPI ID in your <a href="/profile#upi-card" class="alert-link fw-bold">Profile</a>.
+                            </div>
+                        <% } else if (!meetsThreshold && availBal > 0) { %>
                             <div class="alert alert-warning py-2 px-3 small mb-3 border-0">
                                 <strong>⚠️ Minimum Threshold Notice:</strong><br>
                                 Partner withdrawals require a minimum balance of <strong>₹200</strong>. Your current available balance is <strong>₹<%= availBal.toFixed(2) %></strong>. Once you reach ₹200, you can request payout.
-                            </div>
-                        <% } %>
-
-                        <% if (!hasUpi) { %>
-                            <div class="alert alert-danger py-2 px-3 small mb-3 border-0">
-                                ⚠️ Please configure your UPI ID in your <a href="/profile#upi-card" class="alert-link fw-bold">Profile</a> before requesting a payout.
                             </div>
                         <% } %>
 
@@ -221,8 +219,8 @@
                                        max="<%= availBal %>" 
                                        class="form-control form-control-sm" 
                                        name="amount" 
-                                       value="<%= meetsThreshold ? availBal : '' %>" 
-                                       placeholder="Enter amount (min ₹200)" 
+                                       value="<%= (meetsThreshold && hasUpi) ? availBal : '' %>" 
+                                       placeholder="<%= hasUpi ? 'Enter amount (min ₹200)' : 'Set UPI ID first in Profile' %>" 
                                        required 
                                        <%= (!meetsThreshold || !hasUpi) ? 'disabled' : '' %>>
                                 <div class="form-text small" style="font-size: 0.75rem;">Minimum withdrawal threshold is ₹200.</div>
@@ -232,7 +230,7 @@
                                 <input type="text" class="form-control form-control-sm" name="notes" placeholder="e.g. Campus service payout" <%= (!meetsThreshold || !hasUpi) ? 'disabled' : '' %>>
                             </div>
                             <button type="submit" class="btn btn-sm btn-success w-100 fw-bold shadow-sm" <%= (!meetsThreshold || !hasUpi) ? 'disabled' : '' %>>
-                                Request Settlement Payout →
+                                <%= hasUpi ? 'Request Settlement Payout →' : 'Set UPI ID in Profile to Request Payout' %>
                             </button>
                         </form>
                     </div>
@@ -263,6 +261,8 @@
                                         <td class="px-3">
                                             <% if (p.status === 'cleared') { %>
                                                 <span class="badge bg-success">Cleared ✓</span>
+                                            <% } else if (p.status === 'rejected') { %>
+                                                <span class="badge bg-danger">Rejected ✗</span>
                                             <% } else { %>
                                                 <span class="badge bg-warning text-dark">Under Review</span>
                                             <% } %>
@@ -277,6 +277,11 @@
                                                         📷 View Admin Receipt
                                                     </button>
                                                 <% } %>
+                                            <% } else if (p.status === 'rejected') { %>
+                                                <div class="text-danger small fw-semibold">
+                                                    Reason: <%= p.rejectionReason || 'Declined by Super Admin' %>
+                                                </div>
+                                                <div class="text-muted" style="font-size: 0.72rem;">(Funds restored to available balance)</div>
                                             <% } else { %>
                                                 <span class="text-muted">Awaiting Admin processing</span>
                                             <% } %>

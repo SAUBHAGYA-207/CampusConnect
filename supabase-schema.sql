@@ -95,8 +95,12 @@ CREATE TABLE IF NOT EXISTS "payouts" (
     "adminPaymentProof" TEXT,
     "adminTransactionId" TEXT,
     "clearedAt" BIGINT,
+    "rejectionReason" TEXT,
+    "rejectedAt" BIGINT,
     "createdAt" BIGINT
 );
+ALTER TABLE "payouts" ADD COLUMN IF NOT EXISTS "rejectionReason" TEXT;
+ALTER TABLE "payouts" ADD COLUMN IF NOT EXISTS "rejectedAt" BIGINT;
 
 -- 5. MESSAGES TABLE (Booking Chat)
 CREATE TABLE IF NOT EXISTS "messages" (

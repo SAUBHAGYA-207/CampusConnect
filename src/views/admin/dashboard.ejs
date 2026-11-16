@@ -223,6 +223,11 @@
                                                     📷 View Admin Receipt
                                                 </button>
                                             <% } %>
+                                        <% } else if (p.status === 'rejected') { %>
+                                            <span class="badge bg-danger px-3 py-2">Rejected ✗</span>
+                                            <% if (p.rejectionReason) { %>
+                                                <div class="small text-danger mt-1 fst-italic">"<%= p.rejectionReason %>"</div>
+                                            <% } %>
                                         <% } else { %>
                                             <span class="badge bg-warning text-dark px-3 py-2">Pending Transfer</span>
                                         <% } %>
@@ -238,6 +243,15 @@
                                                         data-upi="<%= p.partnerUpiId || '' %>">
                                                     <%= p.type === 'refund' ? 'Scan QR & Refund Customer →' : 'Scan QR & Pay Partner →' %>
                                                 </button>
+                                                <button class="btn btn-sm btn-outline-danger fw-bold px-2 shadow-sm btn-reject-payout"
+                                                        data-id="<%= p.id %>"
+                                                        data-email="<%= p.partnerEmail %>"
+                                                        data-amount="<%= p.amount %>"
+                                                        data-type="<%= p.type || 'payout' %>">
+                                                    Reject ✗
+                                                </button>
+                                            <% } else if (p.status === 'rejected') { %>
+                                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 align-self-center">Rejected</span>
                                             <% } else { %>
                                                 <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 align-self-center">Settled</span>
                                             <% } %>
@@ -568,6 +582,39 @@
     </div>
 </div>
 
+<!-- MODAL: Reject Payout Request -->
+<div class="modal fade" id="rejectPayoutModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+            <div class="modal-header bg-danger text-white border-0 py-3">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fs-5 fw-bold">Reject Payout Request</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="rejectPayoutForm" method="POST">
+                <div class="modal-body p-4">
+                    <p class="text-dark">
+                        Are you sure you want to reject this payout request of <strong class="text-danger fs-5" id="rejectModalAmount">₹0</strong> for <strong id="rejectModalEmail"></strong>?
+                    </p>
+                    <div class="alert alert-warning small py-2 px-3 border-0 rounded-3">
+                        ⚠️ <strong>Balance Restoration:</strong> Rejecting will mark the request as rejected and immediately restore the requested amount to the partner's available balance.
+                    </div>
+                    <div class="mb-3">
+                        <label for="rejectReason" class="form-label small fw-bold text-dark">Reason for Rejection <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="rejectReason" name="reason" rows="3" placeholder="e.g. Invalid UPI ID, account name mismatch, or unverified details." required></textarea>
+                        <div class="form-text small">This reason will be sent to the partner via email and in-app notification.</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-3 pt-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger fw-bold px-4 shadow-sm">✗ Confirm Rejection</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- MODAL 2: Remove Service with Custom Feedback Email -->
 <div class="modal fade" id="removeServiceModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -720,6 +767,22 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             new bootstrap.Modal(document.getElementById('clearPayoutModal')).show();
+        });
+    });
+
+    // Reject payout modal trigger
+    document.querySelectorAll('.btn-reject-payout').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-id');
+            const email = btn.getAttribute('data-email');
+            const amount = btn.getAttribute('data-amount');
+
+            document.getElementById('rejectPayoutForm').action = `/admin/payouts/${id}/reject`;
+            document.getElementById('rejectModalEmail').innerText = email;
+            document.getElementById('rejectModalAmount').innerText = '₹' + amount;
+            document.getElementById('rejectReason').value = '';
+
+            new bootstrap.Modal(document.getElementById('rejectPayoutModal')).show();
         });
     });
 

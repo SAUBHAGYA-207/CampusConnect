@@ -315,6 +315,19 @@ exports.postClearPayout = async (req, res, next) => {
     }
 };
 
+exports.postRejectPayout = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { reason } = req.body;
+        await adminService.rejectPayoutByAdmin(id, reason);
+        req.flash('success', 'Payout request has been rejected and funds restored to partner balance.');
+        res.redirect('/admin/dashboard#payouts-tab');
+    } catch (error) {
+        req.flash('error', error.message || 'Failed to reject payout request');
+        res.redirect('/admin/dashboard#payouts-tab');
+    }
+};
+
 exports.getChat = async (req, res, next) => {
     try {
         const targetUserId = req.query.userId || null;

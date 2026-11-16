@@ -2,6 +2,7 @@ const request = require('supertest');
 const app = require('../app');
 const JsonStorage = require('../src/storage/jsonStorage');
 const bcrypt = require('bcryptjs');
+const adminService = require('../src/services/adminService');
 
 describe('Super Admin Portal, Revenue, Moderation & Payout Settlements', () => {
     jest.setTimeout(30000);
@@ -236,6 +237,56 @@ describe('Super Admin Portal, Revenue, Moderation & Payout Settlements', () => {
 
         // Cleanup test payout
         await payoutsStorage.delete(pendingPayout.id).catch(() => {});
+    });
+
+    it('should allow Super Admin to reject a payout request with a reason and restore partner available balance', async () => {
+        // Partner requests payout of ₹500
+        const payoutReqRes = await partnerAgent
+            .post('/services/request-payout')
+            .send({ amount: '500', notes: 'Withdrawal to be rejected' });
+
+        expect(payoutReqRes.statusCode).toEqual(302);
+
+        const allPayouts = await payoutsStorage.getAll();
+        const pendingPayout = allPayouts.find(p => p.partnerId === partnerId && p.status === 'pending');
+        expect(pendingPayout).toBeDefined();
+        expect(pendingPayout.amount).toEqual(500);
+
+        // Super Admin rejects the payout
+        const rejectRes = await adminAgent
+            .post(`/admin/payouts/${pendingPayout.id}/reject`)
+            .send({ reason: 'Incorrect bank details. Please verify your UPI ID in your profile.' });
+
+        expect(rejectRes.statusCode).toEqual(302);
+
+        // Verify status is rejected and reason recorded
+        const rejected = await payoutsStorage.getById(pendingPayout.id);
+        expect(rejected.status).toEqual('rejected');
+        expect(rejected.rejectionReason).toEqual('Incorrect bank details. Please verify your UPI ID in your profile.');
+        expect(rejected.rejectedAt).toBeDefined();
+
+        // Financial summary should restore the amount back into available balance
+        const summary = await adminService.getPartnerFinancialSummary(partnerId);
+        expect(Number(summary.totalPending)).toEqual(0);
+
+        // Cleanup test payout
+        await payoutsStorage.delete(pendingPayout.id).catch(() => {});
+    });
+
+    it('should prevent partner from requesting payout without a configured UPI ID', async () => {
+        // Temporarily remove partner's UPI ID
+        await usersStorage.update(partnerId, { partnerUpiId: null, upiId: null });
+
+        const res = await partnerAgent
+            .post('/services/request-payout')
+            .send({ amount: '500', notes: 'Should fail without UPI' });
+
+        // Should redirect back to profile with error flash
+        expect(res.statusCode).toEqual(302);
+        expect(res.headers.location).toContain('/profile#upi-card');
+
+        // Restore UPI ID for remaining tests
+        await usersStorage.update(partnerId, { partnerUpiId: 'partner@okicici', upiId: 'partner@okicici' });
     });
 
     it('should handle direct admin-to-user messaging with shared history across all admins and admin name attribution', async () => {

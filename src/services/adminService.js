@@ -1,5 +1,5 @@
 const JsonStorage = require('../storage/jsonStorage');
-const { sendServiceRemovalEmail, sendPayoutClearedEmail, sendRefundClearedEmail } = require('./emailService');
+const { sendServiceRemovalEmail, sendPayoutClearedEmail, sendRefundClearedEmail, sendPayoutRejectedEmail } = require('./emailService');
 const { createNotification } = require('./notificationService');
 
 const usersStorage = new JsonStorage('users');
@@ -346,13 +346,14 @@ exports.getPartnerFinancialSummary = async (partnerId) => {
     const availablePayableBalance = Math.max(0, totalEarned - totalCleared - totalPending);
 
     const user = await usersStorage.getById(partnerId);
+    const partnerUpi = (user && (user.partnerUpiId || user.upiId)) ? String(user.partnerUpiId || user.upiId).trim() : null;
 
     return {
         totalEarned: totalEarned.toFixed(2),
         totalCleared: totalCleared.toFixed(2),
         totalPending: totalPending.toFixed(2),
         availablePayableBalance: availablePayableBalance.toFixed(2),
-        partnerUpiId: user ? user.partnerUpiId : null,
+        partnerUpiId: partnerUpi || null,
         partnerQrImage: user ? user.partnerQrImage : null
     };
 };
@@ -376,16 +377,17 @@ exports.createPayoutRequest = async (partnerId, amount, notes) => {
         throw new Error('Minimum withdrawal amount is ₹200. You cannot withdraw less than ₹200.');
     }
 
+    const partnerUpi = summary.partnerUpiId ? String(summary.partnerUpiId).trim() : null;
+    if (!partnerUpi) {
+        throw new Error('Please enter your UPI ID before requesting a payout');
+    }
+
     if (parseFloat(summary.availablePayableBalance) < 200) {
         throw new Error('Your available balance is below the minimum withdrawal threshold of ₹200.');
     }
 
     if (requestedAmount > parseFloat(summary.availablePayableBalance)) {
         throw new Error(`Requested amount ₹${requestedAmount} exceeds available balance of ₹${summary.availablePayableBalance}`);
-    }
-
-    if (!summary.partnerUpiId) {
-        throw new Error('Please enter your UPI ID before requesting a payout');
     }
 
     const partner = await usersStorage.getById(partnerId);
@@ -395,7 +397,7 @@ exports.createPayoutRequest = async (partnerId, amount, notes) => {
         partnerEmail: partner ? partner.email : 'Unknown',
         amount: requestedAmount,
         status: 'pending',
-        partnerUpiId: summary.partnerUpiId,
+        partnerUpiId: partnerUpi,
         partnerQrImage: summary.partnerQrImage,
         notes: notes || '',
         adminPaymentProof: null,
@@ -452,6 +454,60 @@ exports.clearPayoutByAdmin = async (payoutId, adminTransactionId, adminPaymentPr
                 recipient.id,
                 `✓ Your payout of ₹${payout.amount} has been cleared and transferred to your UPI!`,
                 '/dashboard'
+            );
+        }
+    }
+
+    return updated;
+};
+
+exports.rejectPayoutByAdmin = async (payoutId, rejectionReason) => {
+    const payout = await payoutsStorage.getById(payoutId);
+    if (!payout) throw new Error('Payout request not found');
+
+    if (payout.status !== 'pending') {
+        throw new Error(`Payout request has already been processed with status: ${payout.status}`);
+    }
+
+    const reason = (rejectionReason && rejectionReason.trim()) ? rejectionReason.trim() : 'Declined by Super Admin';
+
+    const updated = await payoutsStorage.update(payoutId, {
+        status: 'rejected',
+        rejectionReason: reason,
+        rejectedAt: Date.now()
+    });
+
+    if (payout.appointmentId && payout.type === 'refund') {
+        try {
+            await appointmentsStorage.update(payout.appointmentId, {
+                refundStatus: 'rejected',
+                refundRejectedAt: Date.now(),
+                refundRejectionReason: reason
+            });
+        } catch (e) {
+            console.error('Error updating appointment refund status on rejection:', e);
+        }
+    }
+
+    const recipient = await usersStorage.getById(payout.partnerId);
+    if (recipient) {
+        const isRefund = payout.type === 'refund';
+        if (isRefund) {
+            await createNotification(
+                recipient.id,
+                `✗ Your refund request of ₹${payout.amount} was rejected by Admin. Reason: ${reason}`,
+                payout.appointmentId ? `/appointments/my-bookings/${payout.appointmentId}` : '/profile'
+            );
+        } else {
+            try {
+                await sendPayoutRejectedEmail(recipient.email, payout.amount, reason);
+            } catch (e) {
+                console.error('Error sending payout rejected email:', e);
+            }
+            await createNotification(
+                recipient.id,
+                `✗ Your payout request of ₹${payout.amount} was rejected by Admin. Reason: ${reason}. Funds have been restored to your available balance.`,
+                '/dashboard#payout-section'
             );
         }
     }
