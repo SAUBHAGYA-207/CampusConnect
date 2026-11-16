@@ -29,9 +29,11 @@ async function runCleanup() {
         if (s.providerId && s.providerId.startsWith('test_')) return true;
         if (s.title === 'Quick Help Session') return true;
         if (s.title === 'Guitar Lessons Pro') return true;
+        if (s.title === 'Python Coding Help') return true;
+        if (s.title === 'Coin Refund Test Service') return true;
         const provider = userMap.get(s.providerId);
         if (!provider) return true;
-        if (provider.email && (provider.email.startsWith('testpartner_') || provider.email.startsWith('test_'))) return true;
+        if (provider.email && (provider.email.startsWith('testpartner_') || provider.email.startsWith('test_') || provider.email === 'test@test.com')) return true;
         return false;
     });
 
@@ -39,19 +41,49 @@ async function runCleanup() {
     const testServiceIds = new Set(testServices.map(s => s.id));
 
     // 2. Identify Test Appointments
+    const explicitTestApptIds = new Set(['17947221616789tid2h']); // Appointment created with notes: "test"
     const testAppointments = allAppointments.filter(a => {
+        if (explicitTestApptIds.has(a.id)) return true;
         if (a.customerId && a.customerId.startsWith('test_')) return true;
         if (a.providerId && a.providerId.startsWith('test_')) return true;
         if (testServiceIds.has(a.serviceId)) return true;
+        if (a.notes && a.notes.includes('100% coins booking')) return true;
         return false;
     });
 
     console.log(`Found ${testAppointments.length} test appointment(s) to remove.`);
     const testApptIds = new Set(testAppointments.map(a => a.id));
 
-    // 3. Identify Test Notifications
+    // 3. Identify Test Users
+    const testUsers = allUsers.filter(u => {
+        if (!u.id) return false;
+        if (u.id.startsWith('test_')) return true;
+        if (u.email === 'test@test.com') return true;
+        if (u.email && (
+            u.email.startsWith('testpartner_') || 
+            u.email.startsWith('test_') || 
+            u.email.startsWith('whitelisted_admin_') || 
+            u.email.startsWith('second_admin_') ||
+            u.email.includes('@campusconnect.local')
+        )) return true;
+        return false;
+    });
+    console.log(`Found ${testUsers.length} test user(s) to remove.`);
+    const testUserIds = new Set(testUsers.map(u => u.id));
+    const validUserIds = new Set(allUsers.filter(u => !testUserIds.has(u.id)).map(u => u.id));
+
+    // 4. Identify Test Notifications
     const testNotifications = allNotifications.filter(n => {
-        if (n.userId && n.userId.startsWith('test_')) return true;
+        if (!n.userId) return true;
+        if (!validUserIds.has(n.userId)) return true;
+        if (testUserIds.has(n.userId)) return true;
+        if (n.message && (
+            n.message.includes('Guitar Lessons Pro') || 
+            n.message.includes('Python Coding Help') ||
+            n.message.includes('Quick Help Session') ||
+            n.message.includes('Physics Coaching') ||
+            n.message.includes('Math Tutoring')
+        )) return true;
         if (n.link) {
             for (const sId of testServiceIds) {
                 if (n.link.includes(sId)) return true;
@@ -64,27 +96,19 @@ async function runCleanup() {
     });
     console.log(`Found ${testNotifications.length} test notification(s) to remove.`);
 
-    // 4. Test Wallet Transactions
+    // 5. Test Wallet Transactions
+    const explicitTestTxnIds = new Set([
+        '179472216152156owq', // Debit 50 for test booking 17947221616789tid2h
+        '1794722162406gxjysw', // Bonus 5 for test booking 17947221616789tid2h
+        '1794722163254143rkm'  // Partner reward 5 for test booking 17947221616789tid2h
+    ]);
     const testWalletTxns = allWalletTxns.filter(t => {
-        if (t.userId && t.userId.startsWith('test_')) return true;
+        if (explicitTestTxnIds.has(t.id)) return true;
+        if (t.userId && (testUserIds.has(t.userId) || !validUserIds.has(t.userId))) return true;
         if (t.referenceId && (testServiceIds.has(t.referenceId) || testApptIds.has(t.referenceId))) return true;
         return false;
     });
     console.log(`Found ${testWalletTxns.length} test wallet transaction(s) to remove.`);
-
-    // 5. Test Users
-    const testUsers = allUsers.filter(u => {
-        if (!u.id) return false;
-        if (u.id.startsWith('test_')) return true;
-        if (u.email && (
-            u.email.startsWith('testpartner_') || 
-            u.email.startsWith('test_') || 
-            u.email.startsWith('whitelisted_admin_') || 
-            u.email.startsWith('second_admin_')
-        )) return true;
-        return false;
-    });
-    console.log(`Found ${testUsers.length} test user(s) to remove.`);
 
     // BATCH PURGE FROM SUPABASE
     if (isSupabaseConfigured()) {
@@ -130,6 +154,10 @@ async function runCleanup() {
                 if (error) console.error('Supabase users delete error:', error.message);
                 else console.log(`✓ Deleted ${userIds.length} users from Supabase`);
             }
+
+            // Sync adjusted user coins in Supabase for refunded test booking 17947221616789tid2h
+            await client.from('users').update({ coins: 54 }).eq('id', '1793528406036ijcbv9');
+            await client.from('users').update({ coins: 104 }).eq('id', '1793822246216ni4a7');
         }
     }
 
@@ -161,6 +189,11 @@ async function runCleanup() {
     // 5. users.json
     const testUserIdSet = new Set(testUsers.map(u => u.id));
     const cleanUsers = allUsers.filter(u => !testUserIdSet.has(u.id));
+    // Restore coins for test booking 17947221616789tid2h
+    cleanUsers.forEach(u => {
+        if (u.id === '1793528406036ijcbv9') u.coins = 54;
+        if (u.id === '1793822246216ni4a7') u.coins = 104;
+    });
     fs.writeFileSync(path.join(dataDir, 'users.json'), JSON.stringify(cleanUsers, null, 2), 'utf8');
     console.log(`✓ Saved ${cleanUsers.length} clean users to data/users.json`);
 

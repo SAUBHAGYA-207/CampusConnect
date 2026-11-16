@@ -10,66 +10,6 @@
     "id": "1794718081758rr1dro"
   },
   {
-    "userId": "17947180760093d0n35",
-    "type": "credit",
-    "amount": 99,
-    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
-    "status": "completed",
-    "referenceId": "welcome_bonus",
-    "createdAt": 1794718084942,
-    "id": "1794718085092l6eshq"
-  },
-  {
-    "userId": "17947180875247pn6qe",
-    "type": "credit",
-    "amount": 99,
-    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
-    "status": "completed",
-    "referenceId": "welcome_bonus",
-    "createdAt": 1794718090953,
-    "id": "17947180910808zw97"
-  },
-  {
-    "userId": "1794718092137p153al",
-    "type": "credit",
-    "amount": 99,
-    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
-    "status": "completed",
-    "referenceId": "welcome_bonus",
-    "createdAt": 1794718093875,
-    "id": "1794718094035i7jxu"
-  },
-  {
-    "userId": "17947181122713uba1",
-    "type": "credit",
-    "amount": 99,
-    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
-    "status": "completed",
-    "referenceId": "welcome_bonus",
-    "createdAt": 1794718113198,
-    "id": "1794718113360hxpqc8"
-  },
-  {
-    "userId": "1794718115808ucn75g",
-    "type": "credit",
-    "amount": 99,
-    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
-    "status": "completed",
-    "referenceId": "welcome_bonus",
-    "createdAt": 1794718116843,
-    "id": "17947181170027niwnp"
-  },
-  {
-    "userId": "1794718125956nfkbqo",
-    "type": "credit",
-    "amount": 99,
-    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
-    "status": "completed",
-    "referenceId": "welcome_bonus",
-    "createdAt": 1794718127002,
-    "id": "1794718127133f1iv9"
-  },
-  {
     "userId": "1793528406036ijcbv9",
     "type": "credit",
     "amount": 99,
@@ -160,36 +100,6 @@
     "id": "1794721374451ve0o2"
   },
   {
-    "userId": "1793528406036ijcbv9",
-    "type": "debit",
-    "amount": 50,
-    "description": "Redeemed 50 coins on booking for \"Lab Report writing\"",
-    "status": "completed",
-    "referenceId": null,
-    "createdAt": 1794722161266,
-    "id": "179472216152156owq"
-  },
-  {
-    "userId": "1793528406036ijcbv9",
-    "type": "credit",
-    "amount": 5,
-    "description": "Earned 10% coin bonus for booking \"Lab Report writing\"",
-    "status": "completed",
-    "referenceId": "17947221616789tid2h",
-    "createdAt": 1794722162265,
-    "id": "1794722162406gxjysw"
-  },
-  {
-    "userId": "1793822246216ni4a7",
-    "type": "credit",
-    "amount": 5,
-    "description": "Earned 10% partner reward for booking on \"Lab Report writing\"",
-    "status": "completed",
-    "referenceId": "17947221616789tid2h",
-    "createdAt": 1794722163119,
-    "id": "1794722163254143rkm"
-  },
-  {
     "userId": "179472097503449l57b",
     "type": "credit",
     "amount": 99,
@@ -198,35 +108,5 @@
     "referenceId": "welcome_bonus",
     "createdAt": 1794723471407,
     "id": "1794723471653yrwrjx"
-  },
-  {
-    "userId": "17947608086067h8mb8",
-    "type": "credit",
-    "amount": 99,
-    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
-    "status": "completed",
-    "referenceId": "welcome_bonus",
-    "createdAt": 1794760815954,
-    "id": "17947608160856lv5ke"
-  },
-  {
-    "userId": "17947608179860hawm5",
-    "type": "credit",
-    "amount": 99,
-    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
-    "status": "completed",
-    "referenceId": "welcome_bonus",
-    "createdAt": 1794760819880,
-    "id": "1794760820022xmudvh"
-  },
-  {
-    "userId": "1794760820917xv23z",
-    "type": "credit",
-    "amount": 99,
-    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
-    "status": "completed",
-    "referenceId": "welcome_bonus",
-    "createdAt": 1794760822543,
-    "id": "17947608229693yeu0h"
   }
 ]
