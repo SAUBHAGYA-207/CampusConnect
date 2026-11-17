@@ -1,115 +1,92 @@
 [
   {
-    "id": "1794720970070zftjkq",
-    "title": "Laptop Cleaning, Thermal Paste & Minor Fixes",
-    "description": "Internal laptop dust cleaning, high-performance thermal paste replacement (Arctic MX-4), thermal throttling fix, and minor screw/hinge repairs in hostel.",
-    "price": 200,
-    "category": "Repairs & Tech",
+    "id": "srv_bday_decor",
+    "title": "Birthday Decoration Setup",
+    "description": "Small-scale birthday room, hostel or college celebration decoration with themed balloon arches, fairy lights, and banners.",
+    "price": 349,
+    "category": "Campus Errands",
     "image": "/images/banners/banner-partner.jpg",
-    "providerId": "1794720969626sc72i9",
-    "createdAt": 1792515600000,
-    "status": "under_processing"
+    "providerId": "partner_rohanv22",
+    "createdAt": 1793032467548
   },
   {
-    "id": "1793823227057nqtjmc",
-    "title": "Video Editing course",
-    "description": "✨ What you'll learn:\r\n•Professional video editing techniques\r\n•Cinematic transitions and effects\r\n•Color grading and sound design\r\n•Instagram Reels & YouTube editing\r\n•Hands-on practical projects\n\n<!--CC_DELIVERY:{\"requiresUpload\":false,\"deliveryMode\":\"online\",\"uploadPrompt\":\"\"}-->",
-    "price": 250,
-    "category": "Arts",
-    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/1793823226147-412690646.png",
-    "providerId": "1793822246216ni4a7",
-    "createdAt": 1793823227057
-  },
-  {
-    "id": "1793822736353f9avth",
-    "title": "Gym Training",
-    "description": "I follow a structured gym training routine focused on building muscle, increasing strength, and improving overall fitness through a combination of compound movements, isolation exercises, and progressive overload.",
-    "price": 200,
-    "category": "Fitness & Sports",
-    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/1793822735299-642578816.png",
-    "providerId": "1793822246216ni4a7",
-    "createdAt": 1793822736353
-  },
-  {
-    "id": "179397275562406zzbxj",
-    "title": "Motivational Friend",
-    "description": "Jinka koi nhi hota unka mai hota hu\n\n<!--CC_DELIVERY:{\"requiresUpload\":false,\"deliveryMode\":\"in_person\",\"uploadPrompt\":\"\"}-->",
-    "price": 10,
-    "category": "Others",
-    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/1793972754821-147840587.jpg",
-    "providerId": "1793972495947qjh7dc",
-    "createdAt": 1793972755624
-  },
-  {
-    "id": "1794720968267xzjipa",
+    "id": "srv_dsa_prep",
     "title": "C++ & DSA Guidance & Interview Prep",
     "description": "One-on-one session on Data Structures and Algorithms in C++. Problem solving on LeetCode/Codeforces, tree/graph algorithms, and placement interview strategies.",
-    "price": 350,
+    "price": 349,
     "category": "Tech & Coding",
     "image": "/images/banners/banner-tech.jpg",
-    "providerId": "1794720967947srplud",
-    "createdAt": 1792504800000,
-    "status": "under_processing"
+    "providerId": "partner_rohanv22",
+    "createdAt": 1793118867548
   },
   {
-    "id": "1793973531598mwe7c",
-    "title": "Pani ki bottle bharne wala",
-    "description": "Apke room se pani ki bottle leke bharke rakhunga. 7 day booking minimum. Subhe 5 baje ek baar aunga fir 12 baje fir raat ko 10 baje. Service available Only in Kalam A block",
-    "price": 100,
-    "category": "Others",
-    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/1793973531141-875796794.jpg",
-    "providerId": "1793972495947qjh7dc",
-    "createdAt": 1793973531598
+    "id": "srv_laptop_clean_pro",
+    "title": "Laptop Deep Clean & Thermal Repasting",
+    "description": "Full heatsink dust cleanout, Arctic MX-4 thermal paste application, fan lubrication, and thermal testing.",
+    "price": 299,
+    "category": "Repairs & Tech",
+    "image": "/images/banners/banner-partner.jpg",
+    "providerId": "partner_kartikm94",
+    "createdAt": 1793205267548
   },
   {
-    "id": "17947209689710d3ice",
-    "title": "Fest Posters, UI/UX Mockups & Resume Polish",
+    "id": "srv_fullstack_mentor",
+    "title": "Full-Stack Web Dev Mentorship & Code Review",
+    "description": "Code review, Node.js/React architecture guidance, and project debugging session.",
+    "price": 299,
+    "category": "Tech & Coding",
+    "image": "/images/banners/banner-tech.jpg",
+    "providerId": "partner_rohanv22",
+    "createdAt": 1793291667548
+  },
+  {
+    "id": "srv_gym_pro",
+    "title": "Gym Training & Hypertrophy Routine",
+    "description": "Personalized form correction, powerlifting techniques, and meal macros for hostel students.",
+    "price": 299,
+    "category": "Fitness & Sports",
+    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/1793822735299-642578816.png",
+    "providerId": "partner_a97159552",
+    "createdAt": 1793378067548
+  },
+  {
+    "id": "srv_posters_ui",
+    "title": "Fest Posters & UI/UX Mockups",
     "description": "Custom aesthetic poster designs for campus clubs, societies, and department events. Also offering LaTeX and Figma resume styling for internship season.",
-    "price": 250,
+    "price": 249,
     "category": "Design & Media",
     "image": "/images/banners/banner-arts.jpg",
-    "providerId": "1794720968699f6vq5c",
-    "createdAt": 1792512000000,
-    "status": "under_processing"
+    "providerId": "partner_priyas88",
+    "createdAt": 1793205267548
   },
   {
-    "id": "1794029863669cd4pz",
-    "title": "Lab Report writing",
-    "description": "I will write your lab report of various experiments performed in your branch.\r\n-max 3 reports per week\n\n<!--CC_DELIVERY:{\"requiresUpload\":true,\"deliveryMode\":\"flexible\",\"uploadPrompt\":\"Upload the experimental lab manual\"}-->",
-    "price": 50,
-    "category": "Teach",
-    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/1794029862483-952370817.png",
-    "providerId": "1793822246216ni4a7",
-    "createdAt": 1794029863669
+    "id": "srv_canvas_portrait",
+    "title": "Face On Canvas",
+    "description": "Handmade portrait sketches and acrylic painting on mini canvas boards from photo reference.",
+    "price": 109,
+    "category": "Arts",
+    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/1793383885141-891238491.jpg",
+    "providerId": "partner_ad0102artist",
+    "createdAt": 1793032467548
   },
   {
-    "id": "1794728269282wf8cpi",
+    "id": "srv_keychains",
     "title": "Custom Keychains",
-    "description": "Personalized handmade keychains using acrylic, clay, beads, resin or charms.\n\n<!--CC_DELIVERY:{\"requiresUpload\":false,\"deliveryMode\":\"in_person\",\"uploadPrompt\":\"\"}-->",
+    "description": "Personalized handmade resin and letter charm keychains. Ideal for gifts, cycles, and hostel keys.",
     "price": 79,
     "category": "Arts",
     "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/1794728268550-409321734.png",
-    "providerId": "1794720967947srplud",
-    "createdAt": 1794728269282
+    "providerId": "partner_rohanv22",
+    "createdAt": 1793378067548
   },
   {
-    "id": "1794728374814cfc98w",
-    "title": "Birthday Decoration Setup",
-    "description": "Small-scale birthday room, hostel or college celebration decoration.",
-    "price": 349,
+    "id": "srv_quick_consult",
+    "title": "Campus Errand & Quick Academic Consultation",
+    "description": "Quick proofreading, project submission check, or urgent hostel errand delivery.",
+    "price": 26,
     "category": "Campus Errands",
-    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/1794728374209-250161401.png",
-    "providerId": "1794720967947srplud",
-    "createdAt": 1794728374814
-  },
-  {
-    "id": "1793383886363lfddbw",
-    "title": "Face On Canvas",
-    "description": "Hand-painted original artwork and custom portraits on canvas. Perfect for gifting, room decor, or collecting!\r\n\r\nMedium: Acrylic / Oil on Canvas\r\n\r\nCustomization: Portraits or custom scenes can be made based on reference photos.\r\n\r\nDelivery / Handover: Direct handover on campus or local delivery available. Feel free to reach out with your specific ideas!",
-    "price": 109,
-    "category": "Arts",
-    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/1793383884868-893575625.jpg",
-    "providerId": "17933831289453wfaui",
-    "createdAt": 1793383886363
+    "image": "/images/banners/banner-partner.jpg",
+    "providerId": "partner_kartikm94",
+    "createdAt": 1793637267548
   }
 ]

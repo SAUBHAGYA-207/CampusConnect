@@ -1,1026 +1,290 @@
 [
   {
-    "id": "1794729548488309l4u",
-    "userId": "1794720967947srplud",
-    "message": "🪙 +8 Coins added to your wallet! Earned 10% partner reward for booking on \"Custom Keychains\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794729548488
-  },
-  {
-    "id": "179217289345631753",
-    "userId": "1792172636474uhg3v",
-    "message": "New booking request with payment proof received for \"DSA TUTORING\" (₹99)",
-    "link": "/appointments/provider/1792172893165fqae8",
-    "read": false,
-    "createdAt": 1792172893456
-  },
-  {
-    "id": "1792172943405lyelb",
-    "userId": "17921726224618omuya",
-    "message": "Appointment status updated to accepted",
-    "link": "/appointments/my-bookings/1792172893165fqae8",
-    "read": false,
-    "createdAt": 1792172943405
-  },
-  {
-    "id": "17921730244185zbni",
-    "userId": "17921726224618omuya",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/1792172893165fqae8",
-    "read": false,
-    "createdAt": 1792173024418
-  },
-  {
-    "id": "1792173100557dh26i9",
-    "userId": "1792172636474uhg3v",
-    "message": "✓ Your payout of ₹80 has been cleared and transferred to your UPI!",
-    "link": "/dashboard",
-    "read": false,
-    "createdAt": 1792173100557
-  },
-  {
-    "id": "1792173337160b9ziz",
-    "userId": "1792172636474uhg3v",
-    "message": "New support message from Admin (aniketkumar8314@gmail.com)",
-    "link": "/support/chat",
-    "read": false,
-    "createdAt": 1792173337160
-  },
-  {
-    "id": "1792173319314buuxge",
-    "userId": "17921726224618omuya",
-    "message": "New support message from Admin (aniketkumar8314@gmail.com)",
-    "link": "/support/chat",
+    "id": "notif_appt_live_1794710000000_fcf4_prov",
+    "userId": "partner_rohanv22",
+    "message": "New booking request for \"Birthday Decoration Setup\" (₹349)",
+    "link": "/appointments/provider/appt_live_1794710000000_fcf4",
     "read": true,
-    "createdAt": 1792173319314
+    "createdAt": 1794891240000
   },
   {
-    "id": "1792174622679nxkxuh",
-    "userId": "1792174392350xiem4q",
-    "message": "New support message from Admin (aniketkumar8314@gmail.com)",
-    "link": "/support/chat",
-    "read": false,
-    "createdAt": 1792174622679
-  },
-  {
-    "id": "17921746408755m5bh7",
-    "userId": "1792174392350xiem4q",
-    "message": "New support message from Admin (aniketkumar8314@gmail.com)",
-    "link": "/support/chat",
-    "read": false,
-    "createdAt": 1792174640875
-  },
-  {
-    "id": "1792174656958yivspn",
-    "userId": "1792174392350xiem4q",
-    "message": "New support message from Admin (aniketkumar8314@gmail.com)",
-    "link": "/support/chat",
-    "read": false,
-    "createdAt": 1792174656958
-  },
-  {
-    "id": "179217472458724bq7s",
-    "userId": "1792174392350xiem4q",
-    "message": "New support message from Admin (aniketkumar8314@gmail.com)",
-    "link": "/support/chat",
-    "read": false,
-    "createdAt": 1792174724587
-  },
-  {
-    "id": "1792174949256hn31h6",
-    "userId": "1792172636474uhg3v",
-    "message": "New booking request with payment proof received for \"DSA TUTORING\" (₹99)",
-    "link": "/appointments/provider/1792174949009tg99a5",
-    "read": false,
-    "createdAt": 1792174949256
-  },
-  {
-    "id": "1792174984520bj964s",
-    "userId": "1792172636474uhg3v",
-    "message": "New message regarding your appointment for 2055-10-27",
-    "link": "/appointments/provider",
-    "read": false,
-    "createdAt": 1792174984520
-  },
-  {
-    "id": "1792220802611sw3c69",
-    "userId": "1792172636474uhg3v",
-    "message": "✓ Your payout of ₹9.1 has been cleared and transferred to your UPI!",
-    "link": "/dashboard",
-    "read": false,
-    "createdAt": 1792220802611
-  },
-  {
-    "id": "17922211473229m3nps",
-    "userId": "1792174392350xiem4q",
-    "message": "New support message from Admin (sjijaiswal4@gmail.com)",
-    "link": "/support/chat",
-    "read": false,
-    "createdAt": 1792221147322
-  },
-  {
-    "id": "1792221153215p10wvi",
-    "userId": "1792174392350xiem4q",
-    "message": "New support message from Admin (sjijaiswal4@gmail.com)",
-    "link": "/support/chat",
-    "read": false,
-    "createdAt": 1792221153215
-  },
-  {
-    "id": "1793112013796bqc989",
-    "userId": "17921726224618omuya",
-    "message": "New support message from Admin (anand1024anand@gmail.com)",
-    "link": "/support/chat",
+    "id": "notif_appt_live_1794710000000_fcf4_cust_pay",
+    "userId": "cust_sneha12",
+    "message": "Your payment of ₹349 has been verified successfully.",
+    "link": "/appointments/my-bookings/appt_live_1794710000000_fcf4",
     "read": true,
-    "createdAt": 1793112013796
+    "createdAt": 1794893040000
   },
   {
-    "id": "1793382556811u54yk",
-    "userId": "1792172636474uhg3v",
-    "message": "New booking request with payment proof received for \"DSA TUTORING\" (₹99)",
-    "link": "/appointments/provider/1793382556202r6otg",
-    "read": false,
-    "createdAt": 1793382556811
-  },
-  {
-    "id": "1793384186747o1yj0b",
-    "userId": "17933831289453wfaui",
-    "message": "New booking request with payment proof received for \"Face On Canvas\" (₹109)",
-    "link": "/appointments/provider/1793384186488etnuqt",
+    "id": "notif_appt_live_1794710000000_fcf4_prov_rev",
+    "userId": "partner_rohanv22",
+    "message": "⭐ You received a 5-star review for booking #appt_liv!",
+    "link": "/appointments/provider/appt_live_1794710000000_fcf4",
     "read": true,
-    "createdAt": 1793384186747
+    "createdAt": 1794896640000
   },
   {
-    "id": "1793384276382pjxukk",
-    "userId": "17921726224618omuya",
+    "id": "notif_appt_live_1794710000001_r8ok_prov",
+    "userId": "partner_rohanv22",
+    "message": "New booking request for \"C++ & DSA Guidance & Interview Prep\" (₹349)",
+    "link": "/appointments/provider/appt_live_1794710000001_r8ok",
+    "read": true,
+    "createdAt": 1794923580000
+  },
+  {
+    "id": "notif_appt_live_1794710000001_r8ok_cust_pay",
+    "userId": "cust_amangupta02",
+    "message": "Your payment of ₹349 has been verified successfully.",
+    "link": "/appointments/my-bookings/appt_live_1794710000001_r8ok",
+    "read": true,
+    "createdAt": 1794925380000
+  },
+  {
+    "id": "notif_appt_live_1794710000001_r8ok_prov_rev",
+    "userId": "partner_rohanv22",
+    "message": "⭐ You received a 5-star review for booking #appt_liv!",
+    "link": "/appointments/provider/appt_live_1794710000001_r8ok",
+    "read": true,
+    "createdAt": 1794928980000
+  },
+  {
+    "id": "notif_appt_live_1794710000002_eshr_prov",
+    "userId": "partner_kartikm94",
+    "message": "New booking request for \"Laptop Deep Clean & Thermal Repasting\" (₹299)",
+    "link": "/appointments/provider/appt_live_1794710000002_eshr",
+    "read": true,
+    "createdAt": 1794906420000
+  },
+  {
+    "id": "notif_appt_live_1794710000002_eshr_cust_pay",
+    "userId": "cust_aniruddhbhattacharya9023",
+    "message": "Your payment of ₹299 has been verified successfully.",
+    "link": "/appointments/my-bookings/appt_live_1794710000002_eshr",
+    "read": true,
+    "createdAt": 1794908220000
+  },
+  {
+    "id": "notif_appt_live_1794710000002_eshr_prov_rev",
+    "userId": "partner_kartikm94",
+    "message": "⭐ You received a 5-star review for booking #appt_liv!",
+    "link": "/appointments/provider/appt_live_1794710000002_eshr",
+    "read": true,
+    "createdAt": 1794911820000
+  },
+  {
+    "id": "notif_appt_live_1794710000003_w7v5_prov",
+    "userId": "partner_rohanv22",
+    "message": "New booking request for \"Full-Stack Web Dev Mentorship & Code Review\" (₹299)",
+    "link": "/appointments/provider/appt_live_1794710000003_w7v5",
+    "read": true,
+    "createdAt": 1794800760000
+  },
+  {
+    "id": "notif_appt_live_1794710000003_w7v5_cust_pay",
+    "userId": "cust_riteshk97",
+    "message": "Your payment of ₹299 has been verified successfully.",
+    "link": "/appointments/my-bookings/appt_live_1794710000003_w7v5",
+    "read": true,
+    "createdAt": 1794802560000
+  },
+  {
+    "id": "notif_appt_live_1794710000003_w7v5_prov_rev",
+    "userId": "partner_rohanv22",
+    "message": "⭐ You received a 5-star review for booking #appt_liv!",
+    "link": "/appointments/provider/appt_live_1794710000003_w7v5",
+    "read": true,
+    "createdAt": 1794806160000
+  },
+  {
+    "id": "notif_appt_live_1794710000004_0l21_prov",
+    "userId": "partner_a97159552",
+    "message": "New booking request for \"Gym Training & Hypertrophy Routine\" (₹299)",
+    "link": "/appointments/provider/appt_live_1794710000004_0l21",
+    "read": true,
+    "createdAt": 1794840240000
+  },
+  {
+    "id": "notif_appt_live_1794710000004_0l21_cust_pay",
+    "userId": "cust_raghavastro287",
+    "message": "Your payment of ₹299 has been verified successfully.",
+    "link": "/appointments/my-bookings/appt_live_1794710000004_0l21",
+    "read": true,
+    "createdAt": 1794842040000
+  },
+  {
+    "id": "notif_appt_live_1794710000004_0l21_prov_rev",
+    "userId": "partner_a97159552",
+    "message": "⭐ You received a 5-star review for booking #appt_liv!",
+    "link": "/appointments/provider/appt_live_1794710000004_0l21",
+    "read": true,
+    "createdAt": 1794845640000
+  },
+  {
+    "id": "notif_appt_live_1794710000005_ruxh_prov",
+    "userId": "partner_priyas88",
+    "message": "New booking request for \"Fest Posters & UI/UX Mockups\" (₹249)",
+    "link": "/appointments/provider/appt_live_1794710000005_ruxh",
+    "read": true,
+    "createdAt": 1793859120000
+  },
+  {
+    "id": "notif_appt_live_1794710000005_ruxh_cust_pay",
+    "userId": "cust_diyanair09",
+    "message": "Your payment of ₹249 has been verified successfully.",
+    "link": "/appointments/my-bookings/appt_live_1794710000005_ruxh",
+    "read": true,
+    "createdAt": 1793860920000
+  },
+  {
+    "id": "notif_appt_live_1794710000005_ruxh_prov_rev",
+    "userId": "partner_priyas88",
+    "message": "⭐ You received a 5-star review for booking #appt_liv!",
+    "link": "/appointments/provider/appt_live_1794710000005_ruxh",
+    "read": true,
+    "createdAt": 1793864520000
+  },
+  {
+    "id": "notif_appt_live_1794710000006_vbux_prov",
+    "userId": "partner_ad0102artist",
+    "message": "New booking request for \"Face On Canvas\" (₹109)",
+    "link": "/appointments/provider/appt_live_1794710000006_vbux",
+    "read": true,
+    "createdAt": 1794862560000
+  },
+  {
+    "id": "notif_appt_live_1794710000006_vbux_cust_pay",
+    "userId": "cust_poojadeshmukh12",
     "message": "Your payment of ₹109 has been verified successfully.",
-    "link": "/appointments/my-bookings/1793384186488etnuqt",
-    "read": false,
-    "createdAt": 1793384276382
-  },
-  {
-    "id": "1793384304931kiil6o",
-    "userId": "17921726224618omuya",
-    "message": "Appointment status updated to accepted",
-    "link": "/appointments/my-bookings/1793384186488etnuqt",
-    "read": false,
-    "createdAt": 1793384304931
-  },
-  {
-    "id": "1793384327779lrhq",
-    "userId": "17921726224618omuya",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/1793384186488etnuqt",
+    "link": "/appointments/my-bookings/appt_live_1794710000006_vbux",
     "read": true,
-    "createdAt": 1793384327779
+    "createdAt": 1794864360000
   },
   {
-    "id": "1793528496082h6pf7",
-    "userId": "17933831289453wfaui",
-    "message": "New booking request with payment proof received for \"Face On Canvas\" (₹109)",
-    "link": "/appointments/provider/1793528495932o2tx5r",
-    "read": false,
-    "createdAt": 1793528496082
+    "id": "notif_appt_live_1794710000006_vbux_prov_rev",
+    "userId": "partner_ad0102artist",
+    "message": "⭐ You received a 5-star review for booking #appt_liv!",
+    "link": "/appointments/provider/appt_live_1794710000006_vbux",
+    "read": true,
+    "createdAt": 1794867960000
   },
   {
-    "id": "1793528570207uq3m7",
-    "userId": "17933831289453wfaui",
-    "message": "New message regarding your appointment for 2026-11-19",
-    "link": "/appointments/provider",
-    "read": false,
-    "createdAt": 1793528570207
-  },
-  {
-    "id": "17935286060381tmwu",
-    "userId": "17933831289453wfaui",
-    "message": "New message regarding your appointment for 2026-11-19",
-    "link": "/appointments/provider",
-    "read": false,
-    "createdAt": 1793528606038
-  },
-  {
-    "id": "17935286132412ate9m",
-    "userId": "17933831289453wfaui",
-    "message": "New message regarding your appointment for 2026-11-19",
-    "link": "/appointments/provider",
-    "read": false,
-    "createdAt": 1793528613241
-  },
-  {
-    "id": "1793530716173onz0gh",
-    "userId": "17921726224618omuya",
-    "message": "New message regarding your appointment for 2026-10-23",
-    "link": "/appointments/my-bookings/1792172893165fqae8",
-    "read": false,
-    "createdAt": 1793530716173
-  },
-  {
-    "id": "1793550342619mx08ep",
-    "userId": "1792172636474uhg3v",
-    "message": "Admin Notice: Your service \"Maggi making\" was removed. Reason: TEST",
-    "link": "/dashboard",
-    "read": false,
-    "createdAt": 1793550342619
-  },
-  {
-    "id": "1793551576560scb0am",
-    "userId": "17933831289453wfaui",
-    "message": "New support message from Admin (anand1024anand@gmail.com)",
-    "link": "/support/chat",
-    "read": false,
-    "createdAt": 1793551576560
-  },
-  {
-    "id": "1793551595401qnipda",
-    "userId": "17933831289453wfaui",
-    "message": "New support message from Admin (anand1024anand@gmail.com)",
-    "link": "/support/chat",
-    "read": false,
-    "createdAt": 1793551595401
-  },
-  {
-    "id": "1793598720587pt00at",
-    "userId": "17933831289453wfaui",
-    "message": "New booking request with payment proof received for \"Face On Canvas\" (₹109)",
-    "link": "/appointments/provider/1793598719977jpy29s",
-    "read": false,
-    "createdAt": 1793598720587
-  },
-  {
-    "id": "1793598756458q9g9om",
-    "userId": "17935982928595hl2sg",
-    "message": "New message regarding your appointment for 2026-11-03",
-    "link": "/appointments/my-bookings/1793598719977jpy29s",
-    "read": false,
-    "createdAt": 1793598756458
-  },
-  {
-    "id": "1793598797836289tz",
-    "userId": "17935982928595hl2sg",
-    "message": "New message regarding your appointment for 2026-11-03",
-    "link": "/appointments/my-bookings/1793598719977jpy29s",
-    "read": false,
-    "createdAt": 1793598797836
-  },
-  {
-    "id": "1793604753558kmne9i",
-    "userId": "17933831289453wfaui",
-    "message": "New booking request with payment proof received for \"Face On Canvas\" (₹109)",
-    "link": "/appointments/provider/1793604753314mmpovf",
-    "read": false,
-    "createdAt": 1793604753558
-  },
-  {
-    "id": "17936047705552usayf",
-    "userId": "1792172636474uhg3v",
-    "message": "New message regarding your appointment for 2026-11-19",
-    "link": "/appointments/my-bookings/1793604753314mmpovf",
-    "read": false,
-    "createdAt": 1793604770555
-  },
-  {
-    "id": "1793897109009dg40xb",
-    "userId": "1793891966396ys9w4f",
-    "message": "Admin Notice: Your service \"Artist band\" was removed. Reason: please try to list affordable services",
-    "link": "/dashboard",
-    "read": false,
-    "createdAt": 1793897109009
-  },
-  {
-    "id": "179397941612974wwgg",
-    "userId": "1793972495947qjh7dc",
-    "message": "Admin Notice: Your service \"Bathroom Scout\" was removed. Reason: voilated partner guidelines",
-    "link": "/dashboard",
-    "read": false,
-    "createdAt": 1793979416129
-  },
-  {
-    "id": "17939794423714xg02g",
-    "userId": "1793972495947qjh7dc",
-    "message": "Admin Notice: Your service \"Spicy Body Massage\" was removed. Reason: voilated guidelines",
-    "link": "/dashboard",
-    "read": false,
-    "createdAt": 1793979442371
-  },
-  {
-    "id": "1794028546196pdybkn",
-    "userId": "1793973117003k8o8d",
-    "message": "New support message from Admin (sjijaiswal4@gmail.com)",
-    "link": "/support/chat",
-    "read": false,
-    "createdAt": 1794028546196
-  },
-  {
-    "id": "1794729548590fht8fp",
-    "userId": "1794720967947srplud",
-    "message": "New booking request for \"Custom Keychains\" (₹79)",
-    "link": "/appointments/provider/17947295475607yojoe",
-    "read": false,
-    "createdAt": 1794729548590
-  },
-  {
-    "id": "1794730413729a164v",
-    "userId": "17947302214069im77q",
-    "message": "🪙 +11 Coins added to your wallet! Earned 10% coin bonus for booking \"Face On Canvas\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794730413729
-  },
-  {
-    "id": "1794730414074gki7el",
-    "userId": "17933831289453wfaui",
-    "message": "🪙 +11 Coins added to your wallet! Earned 10% partner reward for booking on \"Face On Canvas\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794730414074
-  },
-  {
-    "id": "1794761549566akden",
-    "userId": "1792174392350xiem4q",
-    "message": "Appointment status updated to accepted",
-    "link": "/appointments/my-bookings/1792174949009tg99a5",
-    "read": false,
-    "createdAt": 1794761549566
-  },
-  {
-    "id": "1794730414159d59p39",
-    "userId": "17933831289453wfaui",
+    "id": "notif_appt_live_1794710000007_uxbt_prov",
+    "userId": "partner_ad0102artist",
     "message": "New booking request for \"Face On Canvas\" (₹109)",
-    "link": "/appointments/provider/1794730413029djwy7r",
-    "read": false,
-    "createdAt": 1794730414159
+    "link": "/appointments/provider/appt_live_1794710000007_uxbt",
+    "read": true,
+    "createdAt": 1794745020000
   },
   {
-    "id": "1794761551558w2v1m",
-    "userId": "17921726224618omuya",
-    "message": "Appointment status updated to accepted",
-    "link": "/appointments/my-bookings/1793382556202r6otg",
-    "read": false,
-    "createdAt": 1794761551558
+    "id": "notif_appt_live_1794710000007_uxbt_cust_pay",
+    "userId": "cust_aniketiitian24",
+    "message": "Your payment of ₹109 has been verified successfully.",
+    "link": "/appointments/my-bookings/appt_live_1794710000007_uxbt",
+    "read": true,
+    "createdAt": 1794746820000
   },
   {
-    "id": "17947309675804htf1",
-    "userId": "17947307612444kkmme",
-    "message": "🪙 +8 Coins added to your wallet! Earned 10% coin bonus for booking \"Custom Keychains\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794730967580
+    "id": "notif_appt_live_1794710000007_uxbt_prov_rev",
+    "userId": "partner_ad0102artist",
+    "message": "⭐ You received a 5-star review for booking #appt_liv!",
+    "link": "/appointments/provider/appt_live_1794710000007_uxbt",
+    "read": true,
+    "createdAt": 1794750420000
   },
   {
-    "id": "1794761553561m8ma2o",
-    "userId": "1792174392350xiem4q",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/1792174949009tg99a5",
-    "read": false,
-    "createdAt": 1794761553561
-  },
-  {
-    "id": "1794761554077vc6hxo",
-    "userId": "1792174392350xiem4q",
-    "message": "⭐ How was your service with SAUBHAGYA JI JAISWAL? Click to leave your review and feedback!",
-    "link": "/appointments/my-bookings/1792174949009tg99a5#feedback-card",
-    "read": false,
-    "createdAt": 1794761554077
-  },
-  {
-    "id": "1794730968016574w7",
-    "userId": "1794720967947srplud",
-    "message": "🪙 +8 Coins added to your wallet! Earned 10% partner reward for booking on \"Custom Keychains\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794730968016
-  },
-  {
-    "id": "17947279636145x967h",
-    "userId": "1792172636474uhg3v",
-    "message": "Admin Notice: Your service \"DSA TUTORING\" was removed. Reason: DGF",
-    "link": "/dashboard",
-    "read": false,
-    "createdAt": 1794727963614
-  },
-  {
-    "id": "1794730968096g0t9t",
-    "userId": "1794720967947srplud",
-    "message": "New booking request for \"Custom Keychains\" (₹79)",
-    "link": "/appointments/provider/1794730966979oet1xn",
-    "read": false,
-    "createdAt": 1794730968096
-  },
-  {
-    "id": "1794761556871is75gc",
-    "userId": "17921726224618omuya",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/1793382556202r6otg",
-    "read": false,
-    "createdAt": 1794761556871
-  },
-  {
-    "id": "1794761557361i3e55",
-    "userId": "17921726224618omuya",
-    "message": "⭐ How was your service with SAUBHAGYA JI JAISWAL? Click to leave your review and feedback!",
-    "link": "/appointments/my-bookings/1793382556202r6otg#feedback-card",
-    "read": false,
-    "createdAt": 1794761557361
-  },
-  {
-    "id": "1794762364996igggf",
-    "userId": "17933831289453wfaui",
-    "message": "✓ Your payout of ₹98.1 has been cleared and transferred to your UPI!",
-    "link": "/dashboard",
-    "read": false,
-    "createdAt": 1794762364996
-  },
-  {
-    "id": "1794727982555nvdwv",
-    "userId": "1792172636474uhg3v",
-    "message": "Admin Notice: Your service \"CAD Modelling\" was removed. Reason: CV",
-    "link": "/dashboard",
-    "read": false,
-    "createdAt": 1794727982555
-  },
-  {
-    "id": "17947310761055rwnwp",
-    "userId": "17947307612444kkmme",
-    "message": "🪙 +20 Coins added to your wallet! Earned 10% coin bonus for booking \"Gym Training\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794731076105
-  },
-  {
-    "id": "1794764434927tp2rsi",
-    "userId": "1794763992404c2yg8",
-    "message": "🪙 -99 Coins redeemed. Redeemed 99 coins on booking for \"Face On Canvas\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794764434927
-  },
-  {
-    "id": "1794731076412qdc159",
-    "userId": "1793822246216ni4a7",
-    "message": "🪙 +20 Coins added to your wallet! Earned 10% partner reward for booking on \"Gym Training\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794731076412
-  },
-  {
-    "id": "1794764435458zfkwh",
-    "userId": "1794763992404c2yg8",
-    "message": "🪙 +11 Coins added to your wallet! Earned 10% coin bonus for booking \"Face On Canvas\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794764435458
-  },
-  {
-    "id": "1794728426313jxi0ae",
-    "userId": "1794720967947srplud",
-    "message": "🎉 Service Verified! +10 coins have been unlocked and credited to your wallet!",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794728426313
-  },
-  {
-    "id": "1794728486829khvfhh",
-    "userId": "1794720968699f6vq5c",
-    "message": "🎉 Your service \"Fest Posters, UI/UX Mockups & Resume Polish\" has been verified by Super Admin! 10 coins added to your wallet.",
-    "link": "/dashboard",
-    "read": false,
-    "createdAt": 1794728486829
-  },
-  {
-    "id": "1794731076506sulf6o",
-    "userId": "1793822246216ni4a7",
-    "message": "New booking request for \"Gym Training\" (₹200)",
-    "link": "/appointments/provider/1794731075502lbaqfd",
-    "read": false,
-    "createdAt": 1794731076506
-  },
-  {
-    "id": "1794764435790cszg9m",
-    "userId": "17933831289453wfaui",
-    "message": "🪙 +11 Coins added to your wallet! Earned 10% partner reward for booking on \"Face On Canvas\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794764435790
-  },
-  {
-    "id": "1794728426541d0z6or",
-    "userId": "1794720967947srplud",
-    "message": "🎉 Your service \"Birthday Decoration Setup\" has been verified by Super Admin! 10 coins added to your wallet.",
-    "link": "/dashboard",
-    "read": false,
-    "createdAt": 1794728426541
-  },
-  {
-    "id": "1794728431860p4tge",
-    "userId": "1794720967947srplud",
-    "message": "🎉 Service Verified! +10 coins have been unlocked and credited to your wallet!",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794728431859
-  },
-  {
-    "id": "1794728496804p8007f",
-    "userId": "1794720967947srplud",
-    "message": "🎉 Service Verified! +10 coins have been unlocked and credited to your wallet!",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794728496804
-  },
-  {
-    "id": "1794733867198yl4qqu",
-    "userId": "17947293145401f0yhm",
-    "message": "Appointment status updated to accepted",
-    "link": "/appointments/my-bookings/17947295475607yojoe",
-    "read": false,
-    "createdAt": 1794733867198
-  },
-  {
-    "id": "17947644358903shmy",
-    "userId": "17933831289453wfaui",
+    "id": "notif_appt_live_1794710000008_aca4_prov",
+    "userId": "partner_ad0102artist",
     "message": "New booking request for \"Face On Canvas\" (₹109)",
-    "link": "/appointments/provider/1794764435023rwwcong",
-    "read": false,
-    "createdAt": 1794764435890
+    "link": "/appointments/provider/appt_live_1794710000008_aca4",
+    "read": true,
+    "createdAt": 1794661920000
   },
   {
-    "id": "1794728432071q6nc3y",
-    "userId": "1794720967947srplud",
-    "message": "🎉 Your service \"Custom Keychains\" has been verified by Super Admin! 10 coins added to your wallet.",
-    "link": "/dashboard",
-    "read": false,
-    "createdAt": 1794728432071
+    "id": "notif_appt_live_1794710000008_aca4_cust_pay",
+    "userId": "cust_harshavardhanreddy7831",
+    "message": "Your payment of ₹109 has been verified successfully.",
+    "link": "/appointments/my-bookings/appt_live_1794710000008_aca4",
+    "read": true,
+    "createdAt": 1794663720000
   },
   {
-    "id": "179473386990086x6kg",
-    "userId": "17947307612444kkmme",
-    "message": "Appointment status updated to accepted",
-    "link": "/appointments/my-bookings/1794730966979oet1xn",
-    "read": false,
-    "createdAt": 1794733869900
+    "id": "notif_appt_live_1794710000008_aca4_prov_rev",
+    "userId": "partner_ad0102artist",
+    "message": "⭐ You received a 4-star review for booking #appt_liv!",
+    "link": "/appointments/provider/appt_live_1794710000008_aca4",
+    "read": true,
+    "createdAt": 1794667320000
   },
   {
-    "id": "179472848123804jwlr",
-    "userId": "1794720969626sc72i9",
-    "message": "🎉 Service Verified! +10 coins have been unlocked and credited to your wallet!",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794728481238
+    "id": "notif_appt_live_1794710000009_2glp_prov",
+    "userId": "partner_rohanv22",
+    "message": "New booking request for \"Custom Keychains\" (₹79)",
+    "link": "/appointments/provider/appt_live_1794710000009_2glp",
+    "read": true,
+    "createdAt": 1794843300000
   },
   {
-    "id": "1794728496991xbpdso",
-    "userId": "1794720967947srplud",
-    "message": "🎉 Your service \"C++ & DSA Guidance & Interview Prep\" has been verified by Super Admin! 10 coins added to your wallet.",
-    "link": "/dashboard",
-    "read": false,
-    "createdAt": 1794728496991
+    "id": "notif_appt_live_1794710000009_2glp_cust_pay",
+    "userId": "cust_riyakapoor99",
+    "message": "Your payment of ₹79 has been verified successfully.",
+    "link": "/appointments/my-bookings/appt_live_1794710000009_2glp",
+    "read": true,
+    "createdAt": 1794845100000
   },
   {
-    "id": "1794733917508gr6g0f",
-    "userId": "17947307612444kkmme",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/1794730966979oet1xn",
-    "read": false,
-    "createdAt": 1794733917508
+    "id": "notif_appt_live_1794710000009_2glp_prov_rev",
+    "userId": "partner_rohanv22",
+    "message": "⭐ You received a 5-star review for booking #appt_liv!",
+    "link": "/appointments/provider/appt_live_1794710000009_2glp",
+    "read": true,
+    "createdAt": 1794848700000
   },
   {
-    "id": "179472848139905hx9w",
-    "userId": "1794720969626sc72i9",
-    "message": "🎉 Your service \"Laptop Cleaning, Thermal Paste & Minor Fixes\" has been verified by Super Admin! 10 coins added to your wallet.",
-    "link": "/dashboard",
-    "read": false,
-    "createdAt": 1794728481399
+    "id": "notif_appt_live_1794710000010_rive_prov",
+    "userId": "partner_rohanv22",
+    "message": "New booking request for \"Custom Keychains\" (₹79)",
+    "link": "/appointments/provider/appt_live_1794710000010_rive",
+    "read": true,
+    "createdAt": 1792811160000
   },
   {
-    "id": "179472848664987sm8",
-    "userId": "1794720968699f6vq5c",
-    "message": "🎉 Service Verified! +10 coins have been unlocked and credited to your wallet!",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794728486649
+    "id": "notif_appt_live_1794710000010_rive_cust_pay",
+    "userId": "cust_varundinoking27",
+    "message": "Your payment of ₹79 has been verified successfully.",
+    "link": "/appointments/my-bookings/appt_live_1794710000010_rive",
+    "read": true,
+    "createdAt": 1792812960000
   },
   {
-    "id": "1794733918632h6hg46",
-    "userId": "17947307612444kkmme",
-    "message": "⭐ How was your service with Rohan Verma? Click to leave your review and feedback!",
-    "link": "/appointments/my-bookings/1794730966979oet1xn#feedback-card",
-    "read": false,
-    "createdAt": 1794733918632
+    "id": "notif_appt_live_1794710000010_rive_prov_rev",
+    "userId": "partner_rohanv22",
+    "message": "⭐ You received a 5-star review for booking #appt_liv!",
+    "link": "/appointments/provider/appt_live_1794710000010_rive",
+    "read": true,
+    "createdAt": 1792816560000
   },
   {
-    "id": "17947289826922eewu",
-    "userId": "1794728689612oj8w59",
-    "message": "🪙 +1 Coins added to your wallet! Earned 10% coin bonus for booking \"Motivational Friend\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794728982692
+    "id": "notif_appt_live_1794710000011_0bsa_prov",
+    "userId": "partner_kartikm94",
+    "message": "New booking request for \"Campus Errand & Quick Academic Consultation\" (₹26)",
+    "link": "/appointments/provider/appt_live_1794710000011_0bsa",
+    "read": true,
+    "createdAt": 1794188880000
   },
   {
-    "id": "1794733929336liovlk",
-    "userId": "17947293145401f0yhm",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/17947295475607yojoe",
-    "read": false,
-    "createdAt": 1794733929336
+    "id": "notif_appt_live_1794710000011_0bsa_cust_pay",
+    "userId": "cust_meeraiyer05",
+    "message": "Your payment of ₹26 has been verified successfully.",
+    "link": "/appointments/my-bookings/appt_live_1794710000011_0bsa",
+    "read": true,
+    "createdAt": 1794190680000
   },
   {
-    "id": "1794733933527x0mvh",
-    "userId": "1794720972515g7gh1",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/1794720975727b5npk",
-    "read": false,
-    "createdAt": 1794733933527
-  },
-  {
-    "id": "1794728983022sl54pl",
-    "userId": "1793972495947qjh7dc",
-    "message": "🪙 +1 Coins added to your wallet! Earned 10% partner reward for booking on \"Motivational Friend\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794728983022
-  },
-  {
-    "id": "179473393007219h5ic",
-    "userId": "17947293145401f0yhm",
-    "message": "⭐ How was your service with Rohan Verma? Click to leave your review and feedback!",
-    "link": "/appointments/my-bookings/17947295475607yojoe#feedback-card",
-    "read": false,
-    "createdAt": 1794733930072
-  },
-  {
-    "id": "1794728983102k8zaoj",
-    "userId": "1793972495947qjh7dc",
-    "message": "New booking request for \"Motivational Friend\" (₹10)",
-    "link": "/appointments/provider/17947289819308devhq",
-    "read": false,
-    "createdAt": 1794728983102
-  },
-  {
-    "id": "1794733934091pws0h",
-    "userId": "1794720972515g7gh1",
-    "message": "⭐ How was your service with Rohan Verma? Click to leave your review and feedback!",
-    "link": "/appointments/my-bookings/1794720975727b5npk#feedback-card",
-    "read": false,
-    "createdAt": 1794733934091
-  },
-  {
-    "id": "1794729547432z8mrph",
-    "userId": "17947293145401f0yhm",
-    "message": "🪙 -79 Coins redeemed. Redeemed 79 coins on booking for \"Custom Keychains\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794729547432
-  },
-  {
-    "id": "1794721372597qzq3b",
-    "userId": "1793528406036ijcbv9",
-    "message": "🪙 -50 Coins redeemed. Redeemed 50 coins on booking for \"Lab Report writing\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794721372597
-  },
-  {
-    "id": "1794721373593o4zxa9",
-    "userId": "1793528406036ijcbv9",
-    "message": "🪙 +5 Coins added to your wallet! Earned 10% coin bonus for booking \"Lab Report writing\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794721373593
-  },
-  {
-    "id": "17947213744531t7osr",
-    "userId": "1793822246216ni4a7",
-    "message": "🪙 +5 Coins added to your wallet! Earned 10% partner reward for booking on \"Lab Report writing\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794721374453
-  },
-  {
-    "id": "1794721374618uq62t",
-    "userId": "1793822246216ni4a7",
-    "message": "New booking request with reference deliverables attached for \"Lab Report writing\" (₹50)",
-    "link": "/appointments/provider/1794721372816q1djgn",
-    "read": false,
-    "createdAt": 1794721374618
-  },
-  {
-    "id": "1794722161524fz40us",
-    "userId": "1793528406036ijcbv9",
-    "message": "🪙 -50 Coins redeemed. Redeemed 50 coins on booking for \"Lab Report writing\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794722161524
-  },
-  {
-    "id": "17947221624144kvip",
-    "userId": "1793528406036ijcbv9",
-    "message": "🪙 +5 Coins added to your wallet! Earned 10% coin bonus for booking \"Lab Report writing\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794722162414
-  },
-  {
-    "id": "1794722163259bvdns",
-    "userId": "1793822246216ni4a7",
-    "message": "🪙 +5 Coins added to your wallet! Earned 10% partner reward for booking on \"Lab Report writing\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794722163259
-  },
-  {
-    "id": "1794729548096gy97dn",
-    "userId": "17947293145401f0yhm",
-    "message": "🪙 +8 Coins added to your wallet! Earned 10% coin bonus for booking \"Custom Keychains\"",
-    "link": "/profile",
-    "read": false,
-    "createdAt": 1794729548096
-  },
-  {
-    "userId": "17935982928595hl2sg",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/1793598719977jpy29s",
-    "read": false,
-    "createdAt": 1794919922548,
-    "id": "17949199225486jwd1i"
-  },
-  {
-    "userId": "17935982928595hl2sg",
-    "message": "⭐ How was your service with ad0102artist? Click to leave your review and feedback!",
-    "link": "/appointments/my-bookings/1793598719977jpy29s#feedback-card",
-    "read": false,
-    "createdAt": 1794919922876,
-    "id": "1794919922876xe3b7"
-  },
-  {
-    "userId": "17933831289453wfaui",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/provider/1793598719977jpy29s",
-    "read": false,
-    "createdAt": 1794919923027,
-    "id": "1794919923027fedp3t"
-  },
-  {
-    "userId": "1792172636474uhg3v",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/1793604753314mmpovf",
-    "read": false,
-    "createdAt": 1794919924310,
-    "id": "1794919924310villr9"
-  },
-  {
-    "userId": "1792172636474uhg3v",
-    "message": "⭐ How was your service with ad0102artist? Click to leave your review and feedback!",
-    "link": "/appointments/my-bookings/1793604753314mmpovf#feedback-card",
-    "read": false,
-    "createdAt": 1794919924444,
-    "id": "1794919924444dblxio"
-  },
-  {
-    "userId": "17933831289453wfaui",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/provider/1793604753314mmpovf",
-    "read": false,
-    "createdAt": 1794919924586,
-    "id": "1794919924586t522xv"
-  },
-  {
-    "userId": "17921726224618omuya",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/1793382556202r6otg",
-    "read": false,
-    "createdAt": 1794919925170,
-    "id": "1794919925170wqwn4h"
-  },
-  {
-    "userId": "17921726224618omuya",
-    "message": "⭐ How was your service with SAUBHAGYA JI JAISWAL? Click to leave your review and feedback!",
-    "link": "/appointments/my-bookings/1793382556202r6otg#feedback-card",
-    "read": false,
-    "createdAt": 1794919925316,
-    "id": "1794919925316dtmnc7"
-  },
-  {
-    "userId": "1792172636474uhg3v",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/provider/1793382556202r6otg",
-    "read": false,
-    "createdAt": 1794919925467,
-    "id": "1794919925467o4ejq"
-  },
-  {
-    "userId": "1794720972515g7gh1",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/1794720975727b5npk",
-    "read": false,
-    "createdAt": 1794919926047,
-    "id": "1794919926047mxbinm"
-  },
-  {
-    "userId": "1794720972515g7gh1",
-    "message": "⭐ How was your service with Rohan Verma? Click to leave your review and feedback!",
-    "link": "/appointments/my-bookings/1794720975727b5npk#feedback-card",
-    "read": false,
-    "createdAt": 1794919926629,
-    "id": "1794919926629ws1ql"
-  },
-  {
-    "userId": "1794720967947srplud",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/provider/1794720975727b5npk",
-    "read": false,
-    "createdAt": 1794919926774,
-    "id": "1794919926774rqv9qj"
-  },
-  {
-    "userId": "1794763992404c2yg8",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/1794764435023rwwcong",
-    "read": false,
-    "createdAt": 1794919927510,
-    "id": "1794919927510v55kh8"
-  },
-  {
-    "userId": "1794763992404c2yg8",
-    "message": "⭐ How was your service with ad0102artist? Click to leave your review and feedback!",
-    "link": "/appointments/my-bookings/1794764435023rwwcong#feedback-card",
-    "read": false,
-    "createdAt": 1794919927687,
-    "id": "1794919927687f96tb6"
-  },
-  {
-    "userId": "17933831289453wfaui",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/provider/1794764435023rwwcong",
-    "read": false,
-    "createdAt": 1794919927823,
-    "id": "1794919927823zv8yvd"
-  },
-  {
-    "userId": "1792174392350xiem4q",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/1792174949009tg99a5",
-    "read": false,
-    "createdAt": 1794919928562,
-    "id": "1794919928562ep3yuyv"
-  },
-  {
-    "userId": "1792174392350xiem4q",
-    "message": "⭐ How was your service with SAUBHAGYA JI JAISWAL? Click to leave your review and feedback!",
-    "link": "/appointments/my-bookings/1792174949009tg99a5#feedback-card",
-    "read": false,
-    "createdAt": 1794919928705,
-    "id": "1794919928705rzfshk"
-  },
-  {
-    "userId": "1792172636474uhg3v",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/provider/1792174949009tg99a5",
-    "read": false,
-    "createdAt": 1794919928856,
-    "id": "1794919928856d1zavk"
-  },
-  {
-    "userId": "179472097503449l57b",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/1794720978132kk546",
-    "read": false,
-    "createdAt": 1794919929439,
-    "id": "1794919929439v1us4"
-  },
-  {
-    "userId": "179472097503449l57b",
-    "message": "⭐ How was your service with Kartik Mehta? Click to leave your review and feedback!",
-    "link": "/appointments/my-bookings/1794720978132kk546#feedback-card",
-    "read": false,
-    "createdAt": 1794919929562,
-    "id": "1794919929562fgckgk"
-  },
-  {
-    "userId": "1794720969626sc72i9",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/provider/1794720978132kk546",
-    "read": false,
-    "createdAt": 1794919929709,
-    "id": "1794919929709ubps2"
-  },
-  {
-    "userId": "1793528406036ijcbv9",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/1793528495932o2tx5r",
-    "read": false,
-    "createdAt": 1794919930287,
-    "id": "1794919930287kr42er"
-  },
-  {
-    "userId": "1793528406036ijcbv9",
-    "message": "⭐ How was your service with ad0102artist? Click to leave your review and feedback!",
-    "link": "/appointments/my-bookings/1793528495932o2tx5r#feedback-card",
-    "read": false,
-    "createdAt": 1794919930421,
-    "id": "1794919930421ahvtrk"
-  },
-  {
-    "userId": "17933831289453wfaui",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/provider/1793528495932o2tx5r",
-    "read": false,
-    "createdAt": 1794919930563,
-    "id": "17949199305637yp1be"
-  },
-  {
-    "userId": "1793528406036ijcbv9",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/1794721372816q1djgn",
-    "read": false,
-    "createdAt": 1794919931151,
-    "id": "1794919931151m1ja1q"
-  },
-  {
-    "userId": "1793528406036ijcbv9",
-    "message": "⭐ How was your service with a97159552? Click to leave your review and feedback!",
-    "link": "/appointments/my-bookings/1794721372816q1djgn#feedback-card",
-    "read": false,
-    "createdAt": 1794919931289,
-    "id": "1794919931289pu3jlq"
-  },
-  {
-    "userId": "1793822246216ni4a7",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/provider/1794721372816q1djgn",
-    "read": false,
-    "createdAt": 1794919931506,
-    "id": "1794919931506ae2hk4"
-  },
-  {
-    "userId": "1794728689612oj8w59",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/17947289819308devhq",
-    "read": false,
-    "createdAt": 1794919932287,
-    "id": "1794919932287vqdud"
-  },
-  {
-    "userId": "1794728689612oj8w59",
-    "message": "⭐ How was your service with moxepam289? Click to leave your review and feedback!",
-    "link": "/appointments/my-bookings/17947289819308devhq#feedback-card",
-    "read": false,
-    "createdAt": 1794919932433,
-    "id": "1794919932433qax70l"
-  },
-  {
-    "userId": "1793972495947qjh7dc",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/provider/17947289819308devhq",
-    "read": false,
-    "createdAt": 1794919932565,
-    "id": "1794919932565za2lpo"
-  },
-  {
-    "userId": "17947302214069im77q",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/1794730413029djwy7r",
-    "read": false,
-    "createdAt": 1794919933186,
-    "id": "1794919933186fsfgfe"
-  },
-  {
-    "userId": "17947302214069im77q",
-    "message": "⭐ How was your service with ad0102artist? Click to leave your review and feedback!",
-    "link": "/appointments/my-bookings/1794730413029djwy7r#feedback-card",
-    "read": false,
-    "createdAt": 1794919933326,
-    "id": "1794919933326g8iegl"
-  },
-  {
-    "userId": "17933831289453wfaui",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/provider/1794730413029djwy7r",
-    "read": false,
-    "createdAt": 1794919933452,
-    "id": "1794919933452n8nmji"
-  },
-  {
-    "userId": "17947307612444kkmme",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/my-bookings/1794731075502lbaqfd",
-    "read": false,
-    "createdAt": 1794919934064,
-    "id": "1794919934064zwah8f"
-  },
-  {
-    "userId": "17947307612444kkmme",
-    "message": "⭐ How was your service with a97159552? Click to leave your review and feedback!",
-    "link": "/appointments/my-bookings/1794731075502lbaqfd#feedback-card",
-    "read": false,
-    "createdAt": 1794919934201,
-    "id": "1794919934201bknwkd"
-  },
-  {
-    "userId": "1793822246216ni4a7",
-    "message": "Appointment status updated to completed",
-    "link": "/appointments/provider/1794731075502lbaqfd",
-    "read": false,
-    "createdAt": 1794919934338,
-    "id": "1794919934338cp41m"
+    "id": "notif_appt_live_1794710000011_0bsa_prov_rev",
+    "userId": "partner_kartikm94",
+    "message": "⭐ You received a 4-star review for booking #appt_liv!",
+    "link": "/appointments/provider/appt_live_1794710000011_0bsa",
+    "read": true,
+    "createdAt": 1794194280000
   }
 ]
