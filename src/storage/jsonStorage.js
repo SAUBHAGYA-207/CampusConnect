@@ -88,10 +88,10 @@ class JsonStorage {
                         console.error(`[Supabase Storage Error] getAll on ${this.tableName}:`, error.message);
                         throw error;
                     }
-                    // Merge local JSON extra columns (e.g. coins, upiOtp) with Supabase data
+                    // Merge local JSON extra columns (e.g. coins, upiOtp) with Supabase data, ensuring Supabase live data takes priority
                     const localData = await this._read().catch(() => []);
                     const localMap = new Map(localData.map(i => [i.id, i]));
-                    const merged = (data || []).map(item => ({ ...item, ...(localMap.get(item.id) || {}) }));
+                    const merged = (data || []).map(item => ({ ...(localMap.get(item.id) || {}), ...item }));
 
                     // Also include any local records that aren't yet in Supabase
                     const supabaseIds = new Set((data || []).map(item => item.id));
@@ -138,7 +138,7 @@ class JsonStorage {
                     }
                     const localData = await this._read().catch(() => []);
                     const localItem = localData.find(i => i.id === id) || {};
-                    return data ? { ...data, ...localItem } : (localItem.id ? localItem : null);
+                    return data ? { ...localItem, ...data } : (localItem.id ? localItem : null);
                 } catch (err) {
                     if (err.message && (err.message.includes('Could not find the table') || err.message.includes('relation') || err.code === '42P01')) {
                         const items = await this.getAll();

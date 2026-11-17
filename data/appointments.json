@@ -7,15 +7,15 @@
     "date": "2026-11-03",
     "time": "03:30",
     "notes": "[Mode: Online (Meet/Zoom)]\r\nI want to make a portrait of mine",
-    "status": "pending",
+    "status": "completed",
     "paymentAmount": 109,
     "providerEarnings": 98.1,
     "platformFee": 10.9,
     "paymentScreenshot": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/payments/1793598715479-943404435.jpg",
     "transactionId": null,
-    "paymentStatus": "submitted",
+    "paymentStatus": "verified",
     "createdAt": 1793598719976,
-    "paymentVerifiedAt": null
+    "paymentVerifiedAt": 1794919922349
   },
   {
     "id": "1793604753314mmpovf",
@@ -25,15 +25,15 @@
     "date": "2026-11-19",
     "time": "13:02",
     "notes": "[Mode: Campus / In-Person]\r\nShe",
-    "status": "pending",
+    "status": "completed",
     "paymentAmount": 109,
     "providerEarnings": 98.1,
     "platformFee": 10.9,
     "paymentScreenshot": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/payments/1793604750128-450466109.jpg",
     "transactionId": null,
-    "paymentStatus": "submitted",
+    "paymentStatus": "verified",
     "createdAt": 1793604753314,
-    "paymentVerifiedAt": null
+    "paymentVerifiedAt": 1794919924146
   },
   {
     "id": "1793382556202r6otg",
@@ -43,15 +43,15 @@
     "date": "2026-11-07",
     "time": "23:01",
     "notes": "[Mode: Flexible]\r\nwant to crack acenture",
-    "status": "pending",
+    "status": "completed",
     "paymentAmount": 99,
     "providerEarnings": 89.1,
     "platformFee": 9.9,
     "paymentScreenshot": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/payments/1793382553909-123062295.jpg",
     "transactionId": null,
-    "paymentStatus": "submitted",
+    "paymentStatus": "verified",
     "createdAt": 1793382556202,
-    "paymentVerifiedAt": null
+    "paymentVerifiedAt": 1794919925033
   },
   {
     "id": "1794720975727b5npk",
@@ -61,7 +61,7 @@
     "date": "2026-10-21",
     "time": "16:00",
     "notes": "Bhai dynamic programming aur graphs me bohot doubt hai, placement round ke liye practice karni hai.",
-    "status": "accepted",
+    "status": "completed",
     "paymentAmount": 350,
     "providerEarnings": 315,
     "platformFee": 35,
@@ -79,15 +79,16 @@
     "date": "2026-11-17",
     "time": "17:05",
     "notes": "[🪙 99 Coins Redeemed - ₹99 Discount Applied]\n[Mode: Online (No Meeting Needed)]\r\ni want good quality",
-    "status": "pending",
+    "status": "completed",
     "paymentAmount": 10,
     "providerEarnings": 98.1,
     "platformFee": 10.9,
     "paymentScreenshot": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/payments/1794764433738-493315711.jpg",
     "transactionId": null,
-    "paymentStatus": "submitted",
+    "paymentStatus": "verified",
     "createdAt": 1794764435023,
-    "paymentVerifiedAt": null
+    "paymentVerifiedAt": 1794919927229,
+    "coinsUsed": 99
   },
   {
     "id": "1793384186488etnuqt",
@@ -115,15 +116,15 @@
     "date": "2055-10-27",
     "time": "00:00",
     "notes": "[Mode: Flexible]\r\nI want Striver like content, if not that then i want my payment to get  refund .",
-    "status": "pending",
+    "status": "completed",
     "paymentAmount": 99,
     "providerEarnings": 89.1,
     "platformFee": 9.9,
     "paymentScreenshot": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/payments/1792174945978-831061977.jpg",
     "transactionId": null,
-    "paymentStatus": "submitted",
+    "paymentStatus": "verified",
     "createdAt": 1792174949009,
-    "paymentVerifiedAt": null
+    "paymentVerifiedAt": 1794919928427
   },
   {
     "id": "1794720976834cylmw4r",
@@ -151,7 +152,7 @@
     "date": "2026-10-23",
     "time": "17:00",
     "notes": "Gaming me laptop bohot heat ho raha hai aur fan ka aawaz aa raha hai.",
-    "status": "accepted",
+    "status": "completed",
     "paymentAmount": 200,
     "providerEarnings": 180,
     "platformFee": 20,
@@ -187,15 +188,15 @@
     "date": "2026-11-19",
     "time": "18:53",
     "notes": "[Mode: Online (Meet/Zoom)]\r\ni want a stencil sketch on a photo",
-    "status": "pending",
+    "status": "completed",
     "paymentAmount": 109,
     "providerEarnings": 98.1,
     "platformFee": 10.9,
     "paymentScreenshot": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/payments/1793528489662-137910553.png",
     "transactionId": null,
-    "paymentStatus": "submitted",
+    "paymentStatus": "verified",
     "createdAt": 1793528495932,
-    "paymentVerifiedAt": null
+    "paymentVerifiedAt": 1794919930137
   },
   {
     "id": "1794721372816q1djgn",
@@ -205,15 +206,15 @@
     "date": "2026-11-16",
     "time": "13:11",
     "notes": "[🪙 50 Coins Redeemed - ₹50 Discount Applied]\n[Mode: Online (No Meeting Needed)]\r\nwrite in a4 sheet\n\n<!--CC_REF_MEDIA:{\"url\":\"https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/requirements/1794721370217-399548181.pdf\",\"type\":\"document\",\"name\":\"WhatsApp Image 2026-11-14 at 6.21.pdf\"}-->",
-    "status": "pending",
+    "status": "completed",
     "paymentAmount": 0,
     "providerEarnings": 45,
     "platformFee": 5,
     "paymentScreenshot": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/payments/1794721369065-325769734.png",
     "transactionId": null,
-    "paymentStatus": "submitted",
+    "paymentStatus": "verified",
     "createdAt": 1794721372816,
-    "paymentVerifiedAt": null,
+    "paymentVerifiedAt": 1794919930992,
     "coinsUsed": 50
   },
   {
@@ -224,15 +225,15 @@
     "date": "2026-11-15",
     "time": "01:00",
     "notes": "[Mode: Campus / In-Person]\r\nAvoid girls attention,",
-    "status": "pending",
+    "status": "completed",
     "paymentAmount": 10,
     "providerEarnings": 9,
     "platformFee": 1,
     "paymentScreenshot": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/payments/1794728981049-243445457.jpeg",
     "transactionId": null,
-    "paymentStatus": "submitted",
+    "paymentStatus": "verified",
     "createdAt": 1794728981930,
-    "paymentVerifiedAt": null
+    "paymentVerifiedAt": 1794919932057
   },
   {
     "id": "1794730413029djwy7r",
@@ -242,15 +243,15 @@
     "date": "2026-11-15",
     "time": "13:41",
     "notes": "[Mode: Campus / In-Person]\r\nPhoto",
-    "status": "pending",
+    "status": "completed",
     "paymentAmount": 109,
     "providerEarnings": 98.1,
     "platformFee": 10.9,
     "paymentScreenshot": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/payments/1794730412313-832751532.png",
     "transactionId": null,
-    "paymentStatus": "submitted",
+    "paymentStatus": "verified",
     "createdAt": 1794730413029,
-    "paymentVerifiedAt": null
+    "paymentVerifiedAt": 1794919933061
   },
   {
     "id": "1794731075502lbaqfd",
@@ -260,15 +261,15 @@
     "date": "2026-11-15",
     "time": "19:30",
     "notes": "[Mode: Campus / In-Person]\r\nAman bhai",
-    "status": "pending",
+    "status": "completed",
     "paymentAmount": 200,
     "providerEarnings": 180,
     "platformFee": 20,
     "paymentScreenshot": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/payments/1794731074949-453214890.jpg",
     "transactionId": null,
-    "paymentStatus": "submitted",
+    "paymentStatus": "verified",
     "createdAt": 1794731075502,
-    "paymentVerifiedAt": null
+    "paymentVerifiedAt": 1794919933927
   },
   {
     "id": "1794730966979oet1xn",

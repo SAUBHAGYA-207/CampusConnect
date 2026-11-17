@@ -734,5 +734,293 @@
     "link": "/profile",
     "read": false,
     "createdAt": 1794729548096
+  },
+  {
+    "userId": "17935982928595hl2sg",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/my-bookings/1793598719977jpy29s",
+    "read": false,
+    "createdAt": 1794919922548,
+    "id": "17949199225486jwd1i"
+  },
+  {
+    "userId": "17935982928595hl2sg",
+    "message": "⭐ How was your service with ad0102artist? Click to leave your review and feedback!",
+    "link": "/appointments/my-bookings/1793598719977jpy29s#feedback-card",
+    "read": false,
+    "createdAt": 1794919922876,
+    "id": "1794919922876xe3b7"
+  },
+  {
+    "userId": "17933831289453wfaui",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/provider/1793598719977jpy29s",
+    "read": false,
+    "createdAt": 1794919923027,
+    "id": "1794919923027fedp3t"
+  },
+  {
+    "userId": "1792172636474uhg3v",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/my-bookings/1793604753314mmpovf",
+    "read": false,
+    "createdAt": 1794919924310,
+    "id": "1794919924310villr9"
+  },
+  {
+    "userId": "1792172636474uhg3v",
+    "message": "⭐ How was your service with ad0102artist? Click to leave your review and feedback!",
+    "link": "/appointments/my-bookings/1793604753314mmpovf#feedback-card",
+    "read": false,
+    "createdAt": 1794919924444,
+    "id": "1794919924444dblxio"
+  },
+  {
+    "userId": "17933831289453wfaui",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/provider/1793604753314mmpovf",
+    "read": false,
+    "createdAt": 1794919924586,
+    "id": "1794919924586t522xv"
+  },
+  {
+    "userId": "17921726224618omuya",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/my-bookings/1793382556202r6otg",
+    "read": false,
+    "createdAt": 1794919925170,
+    "id": "1794919925170wqwn4h"
+  },
+  {
+    "userId": "17921726224618omuya",
+    "message": "⭐ How was your service with SAUBHAGYA JI JAISWAL? Click to leave your review and feedback!",
+    "link": "/appointments/my-bookings/1793382556202r6otg#feedback-card",
+    "read": false,
+    "createdAt": 1794919925316,
+    "id": "1794919925316dtmnc7"
+  },
+  {
+    "userId": "1792172636474uhg3v",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/provider/1793382556202r6otg",
+    "read": false,
+    "createdAt": 1794919925467,
+    "id": "1794919925467o4ejq"
+  },
+  {
+    "userId": "1794720972515g7gh1",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/my-bookings/1794720975727b5npk",
+    "read": false,
+    "createdAt": 1794919926047,
+    "id": "1794919926047mxbinm"
+  },
+  {
+    "userId": "1794720972515g7gh1",
+    "message": "⭐ How was your service with Rohan Verma? Click to leave your review and feedback!",
+    "link": "/appointments/my-bookings/1794720975727b5npk#feedback-card",
+    "read": false,
+    "createdAt": 1794919926629,
+    "id": "1794919926629ws1ql"
+  },
+  {
+    "userId": "1794720967947srplud",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/provider/1794720975727b5npk",
+    "read": false,
+    "createdAt": 1794919926774,
+    "id": "1794919926774rqv9qj"
+  },
+  {
+    "userId": "1794763992404c2yg8",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/my-bookings/1794764435023rwwcong",
+    "read": false,
+    "createdAt": 1794919927510,
+    "id": "1794919927510v55kh8"
+  },
+  {
+    "userId": "1794763992404c2yg8",
+    "message": "⭐ How was your service with ad0102artist? Click to leave your review and feedback!",
+    "link": "/appointments/my-bookings/1794764435023rwwcong#feedback-card",
+    "read": false,
+    "createdAt": 1794919927687,
+    "id": "1794919927687f96tb6"
+  },
+  {
+    "userId": "17933831289453wfaui",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/provider/1794764435023rwwcong",
+    "read": false,
+    "createdAt": 1794919927823,
+    "id": "1794919927823zv8yvd"
+  },
+  {
+    "userId": "1792174392350xiem4q",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/my-bookings/1792174949009tg99a5",
+    "read": false,
+    "createdAt": 1794919928562,
+    "id": "1794919928562ep3yuyv"
+  },
+  {
+    "userId": "1792174392350xiem4q",
+    "message": "⭐ How was your service with SAUBHAGYA JI JAISWAL? Click to leave your review and feedback!",
+    "link": "/appointments/my-bookings/1792174949009tg99a5#feedback-card",
+    "read": false,
+    "createdAt": 1794919928705,
+    "id": "1794919928705rzfshk"
+  },
+  {
+    "userId": "1792172636474uhg3v",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/provider/1792174949009tg99a5",
+    "read": false,
+    "createdAt": 1794919928856,
+    "id": "1794919928856d1zavk"
+  },
+  {
+    "userId": "179472097503449l57b",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/my-bookings/1794720978132kk546",
+    "read": false,
+    "createdAt": 1794919929439,
+    "id": "1794919929439v1us4"
+  },
+  {
+    "userId": "179472097503449l57b",
+    "message": "⭐ How was your service with Kartik Mehta? Click to leave your review and feedback!",
+    "link": "/appointments/my-bookings/1794720978132kk546#feedback-card",
+    "read": false,
+    "createdAt": 1794919929562,
+    "id": "1794919929562fgckgk"
+  },
+  {
+    "userId": "1794720969626sc72i9",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/provider/1794720978132kk546",
+    "read": false,
+    "createdAt": 1794919929709,
+    "id": "1794919929709ubps2"
+  },
+  {
+    "userId": "1793528406036ijcbv9",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/my-bookings/1793528495932o2tx5r",
+    "read": false,
+    "createdAt": 1794919930287,
+    "id": "1794919930287kr42er"
+  },
+  {
+    "userId": "1793528406036ijcbv9",
+    "message": "⭐ How was your service with ad0102artist? Click to leave your review and feedback!",
+    "link": "/appointments/my-bookings/1793528495932o2tx5r#feedback-card",
+    "read": false,
+    "createdAt": 1794919930421,
+    "id": "1794919930421ahvtrk"
+  },
+  {
+    "userId": "17933831289453wfaui",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/provider/1793528495932o2tx5r",
+    "read": false,
+    "createdAt": 1794919930563,
+    "id": "17949199305637yp1be"
+  },
+  {
+    "userId": "1793528406036ijcbv9",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/my-bookings/1794721372816q1djgn",
+    "read": false,
+    "createdAt": 1794919931151,
+    "id": "1794919931151m1ja1q"
+  },
+  {
+    "userId": "1793528406036ijcbv9",
+    "message": "⭐ How was your service with a97159552? Click to leave your review and feedback!",
+    "link": "/appointments/my-bookings/1794721372816q1djgn#feedback-card",
+    "read": false,
+    "createdAt": 1794919931289,
+    "id": "1794919931289pu3jlq"
+  },
+  {
+    "userId": "1793822246216ni4a7",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/provider/1794721372816q1djgn",
+    "read": false,
+    "createdAt": 1794919931506,
+    "id": "1794919931506ae2hk4"
+  },
+  {
+    "userId": "1794728689612oj8w59",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/my-bookings/17947289819308devhq",
+    "read": false,
+    "createdAt": 1794919932287,
+    "id": "1794919932287vqdud"
+  },
+  {
+    "userId": "1794728689612oj8w59",
+    "message": "⭐ How was your service with moxepam289? Click to leave your review and feedback!",
+    "link": "/appointments/my-bookings/17947289819308devhq#feedback-card",
+    "read": false,
+    "createdAt": 1794919932433,
+    "id": "1794919932433qax70l"
+  },
+  {
+    "userId": "1793972495947qjh7dc",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/provider/17947289819308devhq",
+    "read": false,
+    "createdAt": 1794919932565,
+    "id": "1794919932565za2lpo"
+  },
+  {
+    "userId": "17947302214069im77q",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/my-bookings/1794730413029djwy7r",
+    "read": false,
+    "createdAt": 1794919933186,
+    "id": "1794919933186fsfgfe"
+  },
+  {
+    "userId": "17947302214069im77q",
+    "message": "⭐ How was your service with ad0102artist? Click to leave your review and feedback!",
+    "link": "/appointments/my-bookings/1794730413029djwy7r#feedback-card",
+    "read": false,
+    "createdAt": 1794919933326,
+    "id": "1794919933326g8iegl"
+  },
+  {
+    "userId": "17933831289453wfaui",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/provider/1794730413029djwy7r",
+    "read": false,
+    "createdAt": 1794919933452,
+    "id": "1794919933452n8nmji"
+  },
+  {
+    "userId": "17947307612444kkmme",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/my-bookings/1794731075502lbaqfd",
+    "read": false,
+    "createdAt": 1794919934064,
+    "id": "1794919934064zwah8f"
+  },
+  {
+    "userId": "17947307612444kkmme",
+    "message": "⭐ How was your service with a97159552? Click to leave your review and feedback!",
+    "link": "/appointments/my-bookings/1794731075502lbaqfd#feedback-card",
+    "read": false,
+    "createdAt": 1794919934201,
+    "id": "1794919934201bknwkd"
+  },
+  {
+    "userId": "1793822246216ni4a7",
+    "message": "Appointment status updated to completed",
+    "link": "/appointments/provider/1794731075502lbaqfd",
+    "read": false,
+    "createdAt": 1794919934338,
+    "id": "1794919934338cp41m"
   }
 ]
