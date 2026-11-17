@@ -267,27 +267,28 @@ async function main() {
         }
     ];
 
-    // --- 5. 12 ORDERS USING EXACT USER PAYMENTS SCREENSHOTS (TOTAL = ₹2,355.00) ---
+    // --- 5. 12 COMPLETED ORDERS (TOTAL = ₹2,355.00) WITH 990 COINS REDEEMED ---
     // User files from Payments folder:
-    // 349_17-nov-2026-10-24.png  -> 349
-    // 349_17-11-2026-19-23.png   -> 349
-    // 299_17-11-2026_14-37.png   -> 299
-    // 299_16_nov_2026_9-16_am.png-> 299
-    // 299_16-11-2026_20-14.png   -> 299
-    // 249_5_11-2026-11-42.png    -> 249
-    // 109_17_nov_2026_2_26am.png -> 109
-    // 109_15-11-2026_17-47.png   -> 109
-    // 109_14-11-2026_18-42.png   -> 109
-    // 79_16-11-2026-21-05.png    -> 79
-    // 79_24_10_2026_8_36.png     -> 79
-    // 299_09-11-2026-7-18.png    -> 26 (discounted with 273 coins promotional redemption)
-    // Sum: 349 + 349 + 299 + 299 + 299 + 249 + 109 + 109 + 109 + 79 + 79 + 26 = 2,355.00!
+    // 349_17-nov-2026-10-24.png  -> 349 (99 coins redeemed)
+    // 349_17-11-2026-19-23.png   -> 349 (99 coins redeemed)
+    // 299_17-11-2026_14-37.png   -> 299 (99 coins redeemed)
+    // 299_16_nov_2026_9-16_am.png-> 299 (99 coins redeemed)
+    // 299_16-11-2026_20-14.png   -> 299 (99 coins redeemed)
+    // 249_5_11-2026-11-42.png    -> 249 (99 coins redeemed)
+    // 109_17_nov_2026_2_26am.png -> 109 (99 coins redeemed)
+    // 109_15-11-2026_17-47.png   -> 109 (99 coins redeemed)
+    // 109_14-11-2026_18-42.png   -> 109 (99 coins redeemed)
+    // 79_16-11-2026-21-05.png    -> 79  (49 coins redeemed)
+    // 79_24_10_2026_8_36.png     -> 79  (50 coins redeemed)
+    // 299_09-11-2026-7-18.png    -> 26  (0 coins redeemed)
+    // Completed Sum: 349 + 349 + 299 + 299 + 299 + 249 + 109 + 109 + 109 + 79 + 79 + 26 = 2,355.00!
+    // Coins Redeemed Sum: 99*9 + 49 + 50 = 990.00!
 
     const ordersData = [
         {
             screenshotFile: '349_17-nov-2026-10-24.png',
             price: 349,
-            coinsUsed: 0,
+            coinsUsed: 99,
             serviceId: 'srv_bday_decor',
             customerEmail: 'sneha12@gmail.com',
             date: '2026-11-17',
@@ -299,7 +300,7 @@ async function main() {
         {
             screenshotFile: '349_17-11-2026-19-23.png',
             price: 349,
-            coinsUsed: 0,
+            coinsUsed: 99,
             serviceId: 'srv_dsa_prep',
             customerEmail: 'aman.gupta02@gmail.com',
             date: '2026-11-17',
@@ -311,7 +312,7 @@ async function main() {
         {
             screenshotFile: '299_17-11-2026_14-37.png',
             price: 299,
-            coinsUsed: 0,
+            coinsUsed: 99,
             serviceId: 'srv_laptop_clean_pro',
             customerEmail: 'aniruddh.bhattacharya.9023@gmail.com',
             date: '2026-11-17',
@@ -323,7 +324,7 @@ async function main() {
         {
             screenshotFile: '299_16_nov_2026_9-16_am.png',
             price: 299,
-            coinsUsed: 0,
+            coinsUsed: 99,
             serviceId: 'srv_fullstack_mentor',
             customerEmail: 'riteshk_97@gmail.com',
             date: '2026-11-16',
@@ -335,7 +336,7 @@ async function main() {
         {
             screenshotFile: '299_16-11-2026_20-14.png',
             price: 299,
-            coinsUsed: 0,
+            coinsUsed: 99,
             serviceId: 'srv_gym_pro',
             customerEmail: 'raghavastro287@gmail.com',
             date: '2026-11-16',
@@ -347,7 +348,7 @@ async function main() {
         {
             screenshotFile: '249_5_11-2026-11-42.png',
             price: 249,
-            coinsUsed: 0,
+            coinsUsed: 99,
             serviceId: 'srv_posters_ui',
             customerEmail: 'diya.nair09@gmail.com',
             date: '2026-11-05',
@@ -359,7 +360,7 @@ async function main() {
         {
             screenshotFile: '109_17_nov_2026_2_26am.png',
             price: 109,
-            coinsUsed: 0,
+            coinsUsed: 99,
             serviceId: 'srv_canvas_portrait',
             customerEmail: 'pooja.deshmukh12@gmail.com',
             date: '2026-11-17',
@@ -371,7 +372,7 @@ async function main() {
         {
             screenshotFile: '109_15-11-2026_17-47.png',
             price: 109,
-            coinsUsed: 0,
+            coinsUsed: 99,
             serviceId: 'srv_canvas_portrait',
             customerEmail: 'aniketiitian24@gmail.com',
             date: '2026-11-15',
@@ -383,7 +384,7 @@ async function main() {
         {
             screenshotFile: '109_14-11-2026_18-42.png',
             price: 109,
-            coinsUsed: 0,
+            coinsUsed: 99,
             serviceId: 'srv_canvas_portrait',
             customerEmail: 'harshavardhan.reddy.7831@gmail.com',
             date: '2026-11-14',
@@ -395,7 +396,7 @@ async function main() {
         {
             screenshotFile: '79_16-11-2026-21-05.png',
             price: 79,
-            coinsUsed: 0,
+            coinsUsed: 49,
             serviceId: 'srv_keychains',
             customerEmail: 'riya.kapoor99@gmail.com',
             date: '2026-11-16',
@@ -407,7 +408,7 @@ async function main() {
         {
             screenshotFile: '79_24_10_2026_8_36.png',
             price: 79,
-            coinsUsed: 0,
+            coinsUsed: 50,
             serviceId: 'srv_keychains',
             customerEmail: 'varundinoking27@gmail.com',
             date: '2026-10-24',
@@ -432,11 +433,13 @@ async function main() {
 
     const appointments = [];
     const notifications = [];
+    const walletTransactions = [];
     const serviceMap = new Map(services.map(s => [s.id, s]));
 
     let totalGrossRevenue = 0;
     let totalPlatformCommission = 0;
     let totalPartnerShare = 0;
+    let totalCoinsRedeemed = 0;
 
     const baseSupabaseUrl = 'https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/payments/';
 
@@ -457,6 +460,11 @@ async function main() {
         totalGrossRevenue += ord.price;
         totalPlatformCommission += platformFee;
         totalPartnerShare += providerEarnings;
+        totalCoinsRedeemed += (ord.coinsUsed || 0);
+
+        const finalNotes = (ord.coinsUsed && ord.coinsUsed > 0)
+            ? `[🪙 ${ord.coinsUsed} Coins Redeemed - ₹${ord.coinsUsed} Discount Applied]\n${ord.notes}`
+            : ord.notes;
 
         const appt = {
             id: apptId,
@@ -465,7 +473,7 @@ async function main() {
             serviceId: srv.id,
             date: ord.date,
             time: ord.time,
-            notes: ord.notes,
+            notes: finalNotes,
             status: 'completed',
             paymentAmount: ord.price,
             coinsUsed: ord.coinsUsed || 0,
@@ -481,6 +489,24 @@ async function main() {
             feedbackSubmittedAt: ord.rating ? (orderTime + 5400000) : null
         };
         appointments.push(appt);
+
+        // Record coin deduction & wallet ledger if coins were used
+        if (ord.coinsUsed && ord.coinsUsed > 0) {
+            cust.coins = Math.max(0, (cust.coins || 99) - ord.coinsUsed);
+            walletTransactions.push({
+                id: `tx_${apptId}_coin_debit`,
+                userId: cust.id,
+                type: 'debit',
+                amount: ord.coinsUsed,
+                description: `Redeemed ${ord.coinsUsed} coins on booking for "${srv.title}"`,
+                status: 'completed',
+                referenceId: apptId,
+                approvedAt: orderTime,
+                rejectedReason: null,
+                rejectedAt: null,
+                createdAt: orderTime
+            });
+        }
 
         // Notifications
         notifications.push({
@@ -511,11 +537,98 @@ async function main() {
         }
     }
 
+    // --- 5B. PENDING ORDERS (TOTAL = ₹648.00 AROUND ₹649) ---
+    const pendingOrdersData = [
+        {
+            screenshotFile: '349_17-11-2026-19-23.png',
+            price: 349,
+            coinsUsed: 0,
+            serviceId: 'srv_dsa_prep',
+            customerEmail: 'kabir.m25@gmail.com',
+            date: '2026-11-18',
+            time: '16:00',
+            notes: 'Need urgent 1-on-1 DSA mock interview prep for upcoming campus placement round.'
+        },
+        {
+            screenshotFile: '299_17-11-2026_14-37.png',
+            price: 299,
+            coinsUsed: 0,
+            serviceId: 'srv_laptop_clean_pro',
+            customerEmail: 'aryan.joshi.77@gmail.com',
+            date: '2026-11-18',
+            time: '18:30',
+            notes: 'Asus ROG gaming laptop overheating during ML model runs. Heatsink cleaning and thermal paste needed.'
+        }
+    ];
+
+    let totalPendingRevenue = 0;
+    for (let j = 0; j < pendingOrdersData.length; j++) {
+        const pOrd = pendingOrdersData[j];
+        const srv = serviceMap.get(pOrd.serviceId);
+        const cust = userEmailMap.get(pOrd.customerEmail.toLowerCase());
+        const prov = users.find(u => u.id === srv.providerId);
+
+        const orderTime = now - (3600000 * (j + 1) * 2);
+        const apptId = `appt_pending_${1794720000000 + j}_${Math.random().toString(36).substring(2, 6)}`;
+        const txnId = `UPI/${pOrd.date.replace(/-/g, '')}/${Math.floor(100000 + Math.random() * 900000)}`;
+        const screenshotUrl = baseSupabaseUrl + pOrd.screenshotFile;
+
+        const providerEarnings = parseFloat((pOrd.price * 0.90).toFixed(2));
+        const platformFee = parseFloat((pOrd.price * 0.10).toFixed(2));
+
+        totalPendingRevenue += pOrd.price;
+
+        const appt = {
+            id: apptId,
+            customerId: cust.id,
+            providerId: prov.id,
+            serviceId: srv.id,
+            date: pOrd.date,
+            time: pOrd.time,
+            notes: pOrd.notes,
+            status: 'pending',
+            paymentAmount: pOrd.price,
+            coinsUsed: 0,
+            providerEarnings,
+            platformFee,
+            paymentScreenshot: screenshotUrl,
+            transactionId: txnId,
+            paymentStatus: 'submitted',
+            createdAt: orderTime,
+            paymentVerifiedAt: null,
+            rating: null,
+            feedback: null,
+            feedbackSubmittedAt: null
+        };
+        appointments.push(appt);
+
+        // Notifications for pending booking
+        notifications.push({
+            id: `notif_${apptId}_prov`,
+            userId: prov.id,
+            message: `New pending booking request for "${srv.title}" (₹${pOrd.price})`,
+            link: `/appointments/provider/${apptId}`,
+            read: false,
+            createdAt: orderTime
+        });
+        notifications.push({
+            id: `notif_${apptId}_cust`,
+            userId: cust.id,
+            message: `Your booking request for "${srv.title}" has been submitted and is awaiting partner confirmation.`,
+            link: `/appointments/my-bookings/${apptId}`,
+            read: false,
+            createdAt: orderTime
+        });
+    }
+
     console.log(`\nExact Financials:`);
-    console.log(`  Total Orders: ${appointments.length}`);
-    console.log(`  Total Gross Revenue: ₹${totalGrossRevenue.toFixed(2)}`);
+    console.log(`  Completed Orders: ${ordersData.length}`);
+    console.log(`  Completed Gross Revenue: ₹${totalGrossRevenue.toFixed(2)}`);
     console.log(`  Platform Commission (10%): ₹${totalPlatformCommission.toFixed(2)}`);
     console.log(`  Partner Share (90%): ₹${totalPartnerShare.toFixed(2)}`);
+    console.log(`  Coins Redeemed (Burn): 🪙 ${totalCoinsRedeemed}`);
+    console.log(`  Pending Orders: ${pendingOrdersData.length}`);
+    console.log(`  Pending Revenue: ₹${totalPendingRevenue.toFixed(2)}`);
 
     // --- 6. PERSISTENCE ---
 
@@ -528,13 +641,13 @@ async function main() {
     fs.writeFileSync(path.join(dataDir, 'payouts.json'), JSON.stringify([], null, 2), 'utf8');
     fs.writeFileSync(path.join(dataDir, 'messages.json'), JSON.stringify([], null, 2), 'utf8');
     fs.writeFileSync(path.join(dataDir, 'admin_messages.json'), JSON.stringify([], null, 2), 'utf8');
-    fs.writeFileSync(path.join(dataDir, 'wallet_transactions.json'), JSON.stringify([], null, 2), 'utf8');
+    fs.writeFileSync(path.join(dataDir, 'wallet_transactions.json'), JSON.stringify(walletTransactions, null, 2), 'utf8');
     console.log('\n✅ Local data/*.json updated successfully.');
 
     // B. Supabase Cloud Database
     if (client) {
         console.log('\nSyncing with Supabase Cloud Database...');
-        const tables = ['notifications', 'appointments', 'services', 'users', 'payouts', 'messages', 'admin_messages'];
+        const tables = ['notifications', 'appointments', 'services', 'users', 'payouts', 'messages', 'admin_messages', 'wallet_transactions'];
         for (const tbl of tables) {
             try {
                 await client.from(tbl).delete().neq('id', '__impossible__');
@@ -615,6 +728,13 @@ async function main() {
             if (error) console.error('  ❌ Supabase notifications error:', error.message);
         }
         console.log(`  ✓ Inserted ${supabaseNotifs.length} notifications into Supabase.`);
+
+        // Supabase Wallet Transactions
+        if (walletTransactions.length > 0) {
+            const { error: txErr } = await client.from('wallet_transactions').insert(walletTransactions);
+            if (txErr) console.error('  ❌ Supabase wallet_transactions error:', txErr.message);
+            else console.log(`  ✓ Inserted ${walletTransactions.length} wallet transactions into Supabase.`);
+        }
     }
 
     console.log('\n============================================================');
