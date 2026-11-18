@@ -1,63 +1,14 @@
 [
   {
-    "id": "srv_bday_decor",
-    "title": "Birthday Decoration Setup",
-    "description": "Small-scale birthday room, hostel or college celebration decoration with themed balloon arches, fairy lights, and banners.",
-    "price": 349,
-    "category": "Campus Errands",
-    "image": "/images/banners/banner-partner.jpg",
+    "id": "srv_keychains",
+    "title": "Custom Keychains",
+    "description": "Personalized handmade resin and letter charm keychains. Ideal for gifts, cycles, and hostel keys.",
+    "price": 79,
+    "category": "Arts",
+    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/1794728268550-409321734.png",
     "providerId": "partner_rohanv22",
-    "createdAt": 1793040324347
-  },
-  {
-    "id": "srv_dsa_prep",
-    "title": "C++ & DSA Guidance & Interview Prep",
-    "description": "One-on-one session on Data Structures and Algorithms in C++. Problem solving on LeetCode/Codeforces, tree/graph algorithms, and placement interview strategies.",
-    "price": 349,
-    "category": "Tech & Coding",
-    "image": "/images/banners/banner-tech.jpg",
-    "providerId": "partner_rohanv22",
-    "createdAt": 1793126724347
-  },
-  {
-    "id": "srv_laptop_clean_pro",
-    "title": "Laptop Deep Clean & Thermal Repasting",
-    "description": "Full heatsink dust cleanout, Arctic MX-4 thermal paste application, fan lubrication, and thermal testing.",
-    "price": 299,
-    "category": "Repairs & Tech",
-    "image": "/images/banners/banner-partner.jpg",
-    "providerId": "partner_kartikm94",
-    "createdAt": 1793213124347
-  },
-  {
-    "id": "srv_fullstack_mentor",
-    "title": "Full-Stack Web Dev Mentorship & Code Review",
-    "description": "Code review, Node.js/React architecture guidance, and project debugging session.",
-    "price": 299,
-    "category": "Tech & Coding",
-    "image": "/images/banners/banner-tech.jpg",
-    "providerId": "partner_rohanv22",
-    "createdAt": 1793299524347
-  },
-  {
-    "id": "srv_gym_pro",
-    "title": "Gym Training & Hypertrophy Routine",
-    "description": "Personalized form correction, powerlifting techniques, and meal macros for hostel students.",
-    "price": 299,
-    "category": "Fitness & Sports",
-    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/1793822735299-642578816.png",
-    "providerId": "partner_a97159552",
-    "createdAt": 1793385924347
-  },
-  {
-    "id": "srv_posters_ui",
-    "title": "Fest Posters & UI/UX Mockups",
-    "description": "Custom aesthetic poster designs for campus clubs, societies, and department events. Also offering LaTeX and Figma resume styling for internship season.",
-    "price": 249,
-    "category": "Design & Media",
-    "image": "/images/banners/banner-arts.jpg",
-    "providerId": "partner_priyas88",
-    "createdAt": 1793213124347
+    "status": "published",
+    "createdAt": 1792146164000
   },
   {
     "id": "srv_canvas_portrait",
@@ -67,26 +18,150 @@
     "category": "Arts",
     "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/1793383885141-891238491.jpg",
     "providerId": "partner_ad0102artist",
-    "createdAt": 1793040324347
+    "status": "published",
+    "createdAt": 1792146164000
   },
   {
-    "id": "srv_keychains",
-    "title": "Custom Keychains",
-    "description": "Personalized handmade resin and letter charm keychains. Ideal for gifts, cycles, and hostel keys.",
-    "price": 79,
-    "category": "Arts",
-    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/1794728268550-409321734.png",
+    "id": "srv_posters_ui",
+    "title": "Fest Posters & UI/UX Mockups",
+    "description": "Custom aesthetic poster designs for campus clubs, societies, and department events.",
+    "price": 249,
+    "category": "Design & Media",
+    "image": "/images/banners/banner-arts.jpg",
+    "providerId": "partner_priyas88",
+    "status": "published",
+    "createdAt": 1792146164000
+  },
+  {
+    "id": "srv_laptop_clean_pro",
+    "title": "Laptop Deep Clean & Thermal Repasting",
+    "description": "Thermal repasting and heatsink dust cleaning for gaming & coding laptops.",
+    "price": 299,
+    "category": "Repairs & Tech",
+    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/1794728399587-894721984.png",
+    "providerId": "partner_kartikm94",
+    "status": "published",
+    "createdAt": 1792146164000
+  },
+  {
+    "id": "srv_fullstack_mentor",
+    "title": "Full-Stack Web Dev Mentorship & Code Review",
+    "description": "1-on-1 code review, bug debugging, and project structuring for web development.",
+    "price": 299,
+    "category": "Tech & Coding",
+    "image": "/images/banners/banner-tech.jpg",
     "providerId": "partner_rohanv22",
-    "createdAt": 1793385924347
+    "status": "published",
+    "createdAt": 1792146164000
+  },
+  {
+    "id": "srv_gym_pro",
+    "title": "Gym Training & Hypertrophy Routine",
+    "description": "Personalized compound lifting form corrections and nutrition plans for campus gym.",
+    "price": 299,
+    "category": "Fitness & Sports",
+    "image": "/images/banners/banner-gym.jpg",
+    "providerId": "partner_a97159552",
+    "status": "published",
+    "createdAt": 1792146164000
+  },
+  {
+    "id": "srv_bday_decor",
+    "title": "Birthday Decoration Setup",
+    "description": "Complete hostel room surprise birthday balloon and fairy light decoration.",
+    "price": 349,
+    "category": "Campus Errands",
+    "image": "/images/banners/banner-decor.jpg",
+    "providerId": "partner_rohanv22",
+    "status": "published",
+    "createdAt": 1792146164000
+  },
+  {
+    "id": "srv_dsa_prep",
+    "title": "C++ & DSA Guidance & Interview Prep",
+    "description": "Intensive mock coding round, dynamic programming concepts, and LeetCode guidance.",
+    "price": 349,
+    "category": "Tech & Coding",
+    "image": "/images/banners/banner-dsa.jpg",
+    "providerId": "partner_rohanv22",
+    "status": "published",
+    "createdAt": 1792146164000
   },
   {
     "id": "srv_quick_consult",
     "title": "Campus Errand & Quick Academic Consultation",
-    "description": "Quick proofreading, project submission check, or urgent hostel errand delivery.",
+    "description": "Hostel emergency delivery, document collection, and quick assignment proofreading.",
     "price": 26,
     "category": "Campus Errands",
     "image": "/images/banners/banner-partner.jpg",
     "providerId": "partner_kartikm94",
-    "createdAt": 1793645124347
+    "status": "published",
+    "createdAt": 1792146164000
+  },
+  {
+    "id": "srv_lab_report",
+    "title": "Lab Report Formatting & Print Delivery",
+    "description": "LaTeX/Word formatting for engineering lab reports, clean graphs, and hostel room delivery.",
+    "price": 39,
+    "category": "Academics",
+    "image": "/images/banners/banner-lab.jpg",
+    "providerId": "partner_kartikm94",
+    "status": "published",
+    "createdAt": 1792146164000
+  },
+  {
+    "id": "srv_handwritten_notes",
+    "title": "Handwritten Engineering Physics & Math Notes",
+    "description": "Crisp, colored, syllabus-mapped handwritten revision formulas and previous year question solutions.",
+    "price": 49,
+    "category": "Academics",
+    "image": "/images/banners/banner-notes.jpg",
+    "providerId": "partner_ananyasen",
+    "status": "published",
+    "createdAt": 1792146164000
+  },
+  {
+    "id": "srv_cycle_repair",
+    "title": "Campus Bicycle Flat Tire & Brake Tuning",
+    "description": "Doorstep puncture fix, brake wire tightening, and chain lubrication at hostel bicycle stands.",
+    "price": 59,
+    "category": "Repairs & Tech",
+    "image": "/images/banners/banner-cycle.jpg",
+    "providerId": "partner_vikramsingh24",
+    "status": "published",
+    "createdAt": 1792146164000
+  },
+  {
+    "id": "srv_slide_deck",
+    "title": "PPT Seminar Presentation Design",
+    "description": "Modern minimalist slides with clean typography, charts, and animations for course presentations.",
+    "price": 69,
+    "category": "Design & Media",
+    "image": "/images/banners/banner-slides.jpg",
+    "providerId": "partner_priyas88",
+    "status": "published",
+    "createdAt": 1792146164000
+  },
+  {
+    "id": "srv_laundry_drop",
+    "title": "Hostel Bulk Laundry Pickup & Press Drop",
+    "description": "Door-to-door hostel laundry collection, detergent wash, iron pressing, and folded return.",
+    "price": 45,
+    "category": "Campus Errands",
+    "image": "/images/banners/banner-laundry.jpg",
+    "providerId": "partner_a97159552",
+    "status": "published",
+    "createdAt": 1792146164000
+  },
+  {
+    "id": "srv_calculator_rental",
+    "title": "Scientific Calculator (fx-991CW) Exam Rental",
+    "description": "Fully functional, approved non-programmable scientific calculator rental for midsem and endsem exams.",
+    "price": 35,
+    "category": "Academics",
+    "image": "/images/banners/banner-calc.jpg",
+    "providerId": "partner_yashvardhan26",
+    "status": "published",
+    "createdAt": 1792146164000
   }
 ]

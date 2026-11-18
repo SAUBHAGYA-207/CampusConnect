@@ -1,1 +1,79 @@
-[]
+[
+  {
+    "id": "msg_1",
+    "senderId": "cust_amit_kumar",
+    "receiverId": "partner_rohanv22",
+    "message": "Bhai resin keychain ka order daala hai, initial \"A\" rakhna please.",
+    "createdAt": 1792845600000
+  },
+  {
+    "id": "msg_2",
+    "senderId": "partner_rohanv22",
+    "receiverId": "cust_amit_kumar",
+    "message": "Haan bhai done! Letter A black background me ready kar dunga kal dopahar tak.",
+    "createdAt": 1792846500000
+  },
+  {
+    "id": "msg_3",
+    "senderId": "cust_amit_kumar",
+    "receiverId": "partner_rohanv22",
+    "message": "Bohot badhiya! Payment ka screenshot submit kar diya hai check kar lo.",
+    "createdAt": 1792854420000
+  },
+  {
+    "id": "msg_4",
+    "senderId": "partner_rohanv22",
+    "receiverId": "cust_amit_kumar",
+    "message": "Mil gaya bhai! Kal room pe drop karwa dunga.",
+    "createdAt": 1792854900000
+  },
+  {
+    "id": "msg_5",
+    "senderId": "cust_rohit_verma",
+    "receiverId": "partner_kartikm94",
+    "message": "Kartik bhai, laptop bohot heat ho raha hai Matlab chalane pe. Repasting kab tak ho payegi?",
+    "createdAt": 1794224700000
+  },
+  {
+    "id": "msg_6",
+    "senderId": "partner_kartikm94",
+    "receiverId": "cust_rohit_verma",
+    "message": "Bhai Arctic MX-4 thermal paste hai mere paas. Aaj sham 7 baje room pe le aao, 45 min me done.",
+    "createdAt": 1794225600000
+  },
+  {
+    "id": "msg_7",
+    "senderId": "cust_rohit_verma",
+    "receiverId": "partner_kartikm94",
+    "message": "Perfect, booking karke ₹299 transfer kar diya hai Google Pay se.",
+    "createdAt": 1794232200000
+  },
+  {
+    "id": "msg_8",
+    "senderId": "partner_kartikm94",
+    "receiverId": "cust_rohit_verma",
+    "message": "Haan bhai verified! Aa jao room 214.",
+    "createdAt": 1794232500000
+  },
+  {
+    "id": "msg_9",
+    "senderId": "cust_saubhagya_ji_jaiswal",
+    "receiverId": "partner_a97159552",
+    "message": "Aman bhai gym workout split aur progressive overload ka plan chahiye tha end-sems ke baad ke liye.",
+    "createdAt": 1794838800000
+  },
+  {
+    "id": "msg_10",
+    "senderId": "partner_a97159552",
+    "receiverId": "cust_saubhagya_ji_jaiswal",
+    "message": "Haan bhai, abhi endsem exams chal rahe hain na, parso exam khatam hote hi customized PDF aur diet chart share karta hu!",
+    "createdAt": 1794839700000
+  },
+  {
+    "id": "msg_11",
+    "senderId": "cust_saubhagya_ji_jaiswal",
+    "receiverId": "partner_a97159552",
+    "message": "Cool bhai no rush, ₹299 send karke proof attach kar diya hai. All the best for exams!",
+    "createdAt": 1794840300000
+  }
+]

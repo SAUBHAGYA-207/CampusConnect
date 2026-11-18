@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "id": "payout_rohan_1794993362053",
+    "partnerId": "partner_rohanv22",
+    "partnerEmail": "rohanv_22@gmail.com",
+    "amount": 350,
+    "status": "pending",
+    "partnerUpiId": "rohanverma@paytm",
+    "partnerQrImage": null,
+    "notes": "First payout request for keychains & mentorship earnings. Please settle to Paytm UPI.",
+    "proofImage": null,
+    "utrNumber": null,
+    "clearedByAdminEmail": null,
+    "clearedAt": null,
+    "createdAt": 1794821400000
+  }
+]
