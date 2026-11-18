@@ -75,24 +75,27 @@ exports.createAppointment = async (customerId, serviceId, date, time, notes, pay
 
     const price = Number(service.price) || 0;
     
-    // E-Wallet coin redemption handling
+    // E-Wallet coin redemption handling (5 coins = ₹1)
     const walletService = require('./walletService');
     const requestedCoins = Math.max(0, parseInt(paymentData.coinsUsed, 10) || 0);
     let coinsToDeduct = 0;
+    let coinDiscount = 0;
 
     if (requestedCoins > 0) {
         const availableUserCoins = await walletService.getUserCoins(customerId);
-        coinsToDeduct = Math.min(requestedCoins, availableUserCoins, price);
+        // Max deductible coins covers up to price * 5 (5 coins per rupee)
+        coinsToDeduct = Math.min(requestedCoins, availableUserCoins, price * 5);
+        coinDiscount = Math.floor(coinsToDeduct / 5);
         if (coinsToDeduct > 0) {
             await walletService.deductCoins(
                 customerId,
                 coinsToDeduct,
-                `Redeemed ${coinsToDeduct} coins on booking for "${service.title}"`
+                `Redeemed ${coinsToDeduct} coins (₹${coinDiscount} discount) on booking for "${service.title}"`
             );
         }
     }
 
-    const finalPayablePrice = Math.max(0, price - coinsToDeduct);
+    const finalPayablePrice = Math.max(0, price - coinDiscount);
 
     // 90% provider earnings, 10% platform commission calculated from service price
     const providerEarnings = parseFloat((price * 0.90).toFixed(2));
@@ -100,7 +103,7 @@ exports.createAppointment = async (customerId, serviceId, date, time, notes, pay
 
     let finalNotes = (notes || '').trim();
     if (coinsToDeduct > 0) {
-        finalNotes = `[🪙 ${coinsToDeduct} Coins Redeemed - ₹${coinsToDeduct} Discount Applied]\n` + finalNotes;
+        finalNotes = `[🪙 ${coinsToDeduct} Coins Redeemed - ₹${coinDiscount} Discount Applied]\n` + finalNotes;
     }
     if (referenceData && referenceData.referenceMediaUrl) {
         const refTag = `\n\n<!--CC_REF_MEDIA:${JSON.stringify({
@@ -171,6 +174,13 @@ exports.createAppointment = async (customerId, serviceId, date, time, notes, pay
         );
     } catch (e) {
         console.error('Error creating notification:', e);
+    }
+
+    // Check and award service milestones (5 orders = 50 coins, 10 orders = 100 coins, >15 orders = 5 coins/order)
+    try {
+        await walletService.checkAndAwardServiceMilestones(serviceId);
+    } catch (mErr) {
+        console.warn('Could not check service milestones on booking creation:', mErr.message);
     }
 
     return normalizeAppointment(newAppointment);
@@ -374,6 +384,13 @@ exports.updateStatus = async (appointmentId, userId, role, newStatus) => {
             );
         } catch (fbErr) {
             console.error('Error sending service completed feedback email:', fbErr);
+        }
+
+        // Award service milestones if targets reached
+        try {
+            await walletService.checkAndAwardServiceMilestones(appt.serviceId);
+        } catch (mErr) {
+            console.warn('Could not check service milestones on completion:', mErr.message);
         }
     }
     

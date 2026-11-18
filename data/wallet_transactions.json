@@ -3,8 +3,8 @@
     "id": "tx_appt_comp_1794710000001_uty0_coin_debit",
     "userId": "cust_amit_kumar",
     "type": "debit",
-    "amount": 49,
-    "description": "Redeemed 49 promo coins on booking for \"Custom Keychains\"",
+    "amount": 50,
+    "description": "Redeemed 50 coins (₹10 discount) on booking for \"Custom Keychains\"",
     "status": "completed",
     "referenceId": "appt_comp_1794710000001_uty0",
     "createdAt": 1792854360000
@@ -13,8 +13,8 @@
     "id": "tx_appt_comp_1794710000002_dc2g_coin_debit",
     "userId": "cust_sneha_patel13",
     "type": "debit",
-    "amount": 49,
-    "description": "Redeemed 49 promo coins on booking for \"Fest Posters & UI/UX Mockups\"",
+    "amount": 50,
+    "description": "Redeemed 50 coins (₹10 discount) on booking for \"Fest Posters & UI/UX Mockups\"",
     "status": "completed",
     "referenceId": "appt_comp_1794710000002_dc2g",
     "createdAt": 1793859120000
@@ -23,8 +23,8 @@
     "id": "tx_appt_comp_1794710000003_ah2q_coin_debit",
     "userId": "cust_rohit_verma",
     "type": "debit",
-    "amount": 49,
-    "description": "Redeemed 49 promo coins on booking for \"Laptop Deep Clean & Thermal Repasting\"",
+    "amount": 50,
+    "description": "Redeemed 50 coins (₹10 discount) on booking for \"Laptop Deep Clean & Thermal Repasting\"",
     "status": "completed",
     "referenceId": "appt_comp_1794710000003_ah2q",
     "createdAt": 1794232080000
@@ -33,8 +33,8 @@
     "id": "tx_appt_comp_1794710000005_wsjp_coin_debit",
     "userId": "cust_aman_gupta12",
     "type": "debit",
-    "amount": 49,
-    "description": "Redeemed 49 promo coins on booking for \"Face On Canvas\"",
+    "amount": 50,
+    "description": "Redeemed 50 coins (₹10 discount) on booking for \"Face On Canvas\"",
     "status": "completed",
     "referenceId": "appt_comp_1794710000005_wsjp",
     "createdAt": 1794745020000
@@ -43,8 +43,8 @@
     "id": "tx_appt_comp_1794710000006_57ec_coin_debit",
     "userId": "cust_ritesh_kumar14",
     "type": "debit",
-    "amount": 49,
-    "description": "Redeemed 49 promo coins on booking for \"Full-Stack Web Dev Mentorship & Code Review\"",
+    "amount": 50,
+    "description": "Redeemed 50 coins (₹10 discount) on booking for \"Full-Stack Web Dev Mentorship & Code Review\"",
     "status": "completed",
     "referenceId": "appt_comp_1794710000006_57ec",
     "createdAt": 1794800760000
@@ -53,8 +53,8 @@
     "id": "tx_appt_comp_1794710000007_il6s_coin_debit",
     "userId": "cust_diya_nair16",
     "type": "debit",
-    "amount": 49,
-    "description": "Redeemed 49 promo coins on booking for \"Custom Keychains\"",
+    "amount": 50,
+    "description": "Redeemed 50 coins (₹10 discount) on booking for \"Custom Keychains\"",
     "status": "completed",
     "referenceId": "appt_comp_1794710000007_il6s",
     "createdAt": 1794843300000
@@ -63,8 +63,8 @@
     "id": "tx_appt_comp_1794710000008_oxqr_coin_debit",
     "userId": "cust_pooja_deshmukh17",
     "type": "debit",
-    "amount": 49,
-    "description": "Redeemed 49 promo coins on booking for \"Face On Canvas\"",
+    "amount": 50,
+    "description": "Redeemed 50 coins (₹10 discount) on booking for \"Face On Canvas\"",
     "status": "completed",
     "referenceId": "appt_comp_1794710000008_oxqr",
     "createdAt": 1794905760000
@@ -73,8 +73,8 @@
     "id": "tx_appt_comp_1794720000016_2l6a_coin_debit",
     "userId": "cust_neha_choudhury20",
     "type": "debit",
-    "amount": 49,
-    "description": "Redeemed 49 promo coins on booking for \"Campus Bicycle Flat Tire & Brake Tuning\"",
+    "amount": 50,
+    "description": "Redeemed 50 coins (₹10 discount) on booking for \"Campus Bicycle Flat Tire & Brake Tuning\"",
     "status": "completed",
     "referenceId": "appt_comp_1794720000016_2l6a",
     "createdAt": 1793101500000
@@ -83,8 +83,8 @@
     "id": "tx_appt_comp_1794720000018_663u_coin_debit",
     "userId": "cust_aarav_mehta22",
     "type": "debit",
-    "amount": 49,
-    "description": "Redeemed 49 promo coins on booking for \"Custom Keychains\"",
+    "amount": 50,
+    "description": "Redeemed 50 coins (₹10 discount) on booking for \"Custom Keychains\"",
     "status": "completed",
     "referenceId": "appt_comp_1794720000018_663u",
     "createdAt": 1793255400000
@@ -93,20 +93,80 @@
     "id": "tx_appt_comp_1794720000023_h5b4_coin_debit",
     "userId": "cust_kunal_saxena27",
     "type": "debit",
-    "amount": 49,
-    "description": "Redeemed 49 promo coins on booking for \"Handwritten Engineering Physics & Math Notes\"",
+    "amount": 50,
+    "description": "Redeemed 50 coins (₹10 discount) on booking for \"Handwritten Engineering Physics & Math Notes\"",
     "status": "completed",
     "referenceId": "appt_comp_1794720000023_h5b4",
     "createdAt": 1793630700000
   },
   {
-    "id": "tx_appt_comp_1794720000029_du0g_coin_debit",
-    "userId": "cust_meenakshi_sundaram33",
-    "type": "debit",
-    "amount": 49,
-    "description": "Redeemed 49 promo coins on booking for \"Campus Bicycle Flat Tire & Brake Tuning\"",
+    "id": "tx_milestone_5_srv_quick_consult",
+    "userId": "partner_kartikm94",
+    "type": "credit",
+    "amount": 50,
+    "description": "🎉 Milestone Reward: 5 orders reached on \"Campus Errand & Quick Academic Consultation\"! (+50 Coins)",
     "status": "completed",
-    "referenceId": "appt_comp_1794720000029_du0g",
-    "createdAt": 1793876400000
+    "referenceId": "milestone_5_srv_quick_consult",
+    "createdAt": 1793529601000
+  },
+  {
+    "userId": "1795016749525v311r",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1795016755870,
+    "id": "1795016756953v892ao"
+  },
+  {
+    "userId": "17950167663273qug8b",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1795016768681,
+    "id": "1795016769056dcrgik"
+  },
+  {
+    "userId": "17950168549811magyd",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1795016863666,
+    "id": "1795016863818gxktvs"
+  },
+  {
+    "userId": "1795016874018r6ys3c",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1795016876065,
+    "id": "1795016876321cyp0eb"
+  },
+  {
+    "userId": "1795016877755dje4b",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1795016879637,
+    "id": "1795016880111cme22h"
+  },
+  {
+    "userId": "1795016894358z3w8qp",
+    "type": "credit",
+    "amount": 99,
+    "description": "🎉 Welcome Bonus: 99 Coins credited to your E-Wallet!",
+    "status": "completed",
+    "referenceId": "welcome_bonus",
+    "createdAt": 1795016895866,
+    "id": "1795016896016vvdr1b"
   }
 ]

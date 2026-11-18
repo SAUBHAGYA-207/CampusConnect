@@ -72,7 +72,7 @@
                 <span class="badge bg-warning text-dark fw-bold" style="font-size: 0.65rem;">🪙 Burn</span>
             </div>
             <div class="fs-3 fw-bold text-white mt-1">−₹<%= stats.totalCoinsBurnedValue %></div>
-            <small class="text-white-50" style="font-size: 0.7rem;">🪙 <%= stats.totalCoinsBurned %> coins redeemed (₹1/coin)</small>
+            <small class="text-white-50" style="font-size: 0.7rem;">🪙 <%= stats.totalCoinsBurned %> coins redeemed (5 coins = ₹1)</small>
         </div>
     </div>
 
@@ -331,9 +331,9 @@
                                     <td class="px-3 py-3 text-end">
                                         <div class="d-flex justify-content-end gap-2 align-items-center">
                                             <% if (s.status === 'under_processing') { %>
-                                                <form action="/admin/services/<%= s.id %>/verify" method="POST" class="m-0 p-0" onsubmit="return confirm('Verify and publish service? Partner will receive 10 coins.')">
+                                                <form action="/admin/services/<%= s.id %>/verify" method="POST" class="m-0 p-0" onsubmit="return confirm('Verify and publish service?')">
                                                     <button type="submit" class="btn btn-sm btn-success fw-bold shadow-sm">
-                                                        ✓ Verify (+10 Coins)
+                                                        ✓ Verify & Publish
                                                     </button>
                                                 </form>
                                             <% } %>
@@ -394,8 +394,8 @@
                                                 🔥 <%= app.coinsUsed %> Coin Burn
                                             </div>
                                             <% if (app.status === 'completed') { %>
-                                                <div class="small fw-semibold <%= ((Number(app.platformFee || 0)) - Number(app.coinsUsed)) >= 0 ? 'text-success' : 'text-danger' %>" style="font-size: 0.68rem;">
-                                                    Net: ₹<%= ((Number(app.platformFee !== undefined ? app.platformFee : (Number(app.paymentAmount || 0) * 0.10))) - Number(app.coinsUsed)).toFixed(2) %>
+                                                <div class="small fw-semibold <%= ((Number(app.platformFee !== undefined ? app.platformFee : (Number(app.paymentAmount || 0) * 0.10))) - (Number(app.coinsUsed) / 5)) >= 0 ? 'text-success' : 'text-danger' %>" style="font-size: 0.68rem;">
+                                                    Net: ₹<%= ((Number(app.platformFee !== undefined ? app.platformFee : (Number(app.paymentAmount || 0) * 0.10))) - (Number(app.coinsUsed) / 5)).toFixed(2) %>
                                                 </div>
                                             <% } %>
                                         <% } %>

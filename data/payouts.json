@@ -3,7 +3,7 @@
     "id": "payout_kartik_1794821000000",
     "partnerId": "partner_kartikm94",
     "partnerEmail": "kartik.m94@gmail.com",
-    "amount": 500,
+    "amount": 400,
     "status": "pending",
     "partnerUpiId": "kartikm@oksbi",
     "partnerQrImage": null,
@@ -48,7 +48,7 @@
     "id": "payout_yash_1794822500000",
     "partnerId": "partner_yashvardhan26",
     "partnerEmail": "yash.vardhan26@gmail.com",
-    "amount": 200,
+    "amount": 50,
     "status": "pending",
     "partnerUpiId": "yashvardhan@oksbi",
     "partnerQrImage": null,
@@ -73,5 +73,20 @@
     "clearedByAdminEmail": null,
     "clearedAt": null,
     "createdAt": 1794912000000
+  },
+  {
+    "partnerId": "test_customer_1795016884188",
+    "partnerEmail": "Unknown Customer",
+    "amount": 1000,
+    "status": "pending",
+    "type": "refund",
+    "partnerUpiId": null,
+    "notes": "Refund for cancelled booking #17950168 (Maths Tutoring Service)",
+    "appointmentId": "17950168899672t9kt9",
+    "adminPaymentProof": null,
+    "adminTransactionId": null,
+    "clearedAt": null,
+    "createdAt": 1795016891541,
+    "id": "1795016891541gopvym"
   }
 ]

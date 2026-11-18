@@ -109,19 +109,6 @@ exports.createService = async (providerId, serviceData) => {
 
     const added = await servicesStorage.add(payload);
 
-    // Record 10 under-processing coins reward for partner listing (credited once verified by admin)
-    try {
-        const walletService = require('./walletService');
-        await walletService.addUnderProcessingCoins(
-            providerId,
-            10,
-            `10 Coins for service listing: "${serviceData.title}" (Under Processing)`,
-            added.id
-        );
-    } catch (e) {
-        console.warn('Could not record under-processing coins for listing:', e.message);
-    }
-
     return normalizeService(added);
 };
 

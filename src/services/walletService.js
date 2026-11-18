@@ -212,6 +212,77 @@ async function getUnderProcessingHistory(userId) {
         .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 }
 
+/**
+ * Check and award milestones for a listed service:
+ * - 5 orders: 50 coins
+ * - 10 orders: 100 coins
+ * - After 15 orders: 5 coins per order
+ */
+async function checkAndAwardServiceMilestones(serviceId) {
+    if (!serviceId) return;
+    try {
+        const servicesStorage = new JsonStorage('services');
+        const appointmentsStorage = new JsonStorage('appointments');
+        const service = await servicesStorage.getById(serviceId);
+        if (!service || !service.providerId) return;
+
+        const allAppointments = await appointmentsStorage.getAll();
+        const validAppointments = allAppointments.filter(
+            a => a.serviceId === serviceId && a.status !== 'cancelled' && a.status !== 'rejected'
+        );
+        const orderCount = validAppointments.length;
+        const allTx = await walletTransactionsStorage.getAll();
+
+        // 1. Milestone: 5 orders -> 50 coins
+        if (orderCount >= 5) {
+            const refId5 = `milestone_5_${serviceId}`;
+            const alreadyAwarded5 = allTx.some(t => t.referenceId === refId5);
+            if (!alreadyAwarded5) {
+                await addCoins(
+                    service.providerId,
+                    50,
+                    `🎉 Milestone Reward: 5 orders reached on "${service.title}"! (+50 Coins)`,
+                    refId5
+                );
+            }
+        }
+
+        // 2. Milestone: 10 orders -> 100 coins
+        if (orderCount >= 10) {
+            const refId10 = `milestone_10_${serviceId}`;
+            const alreadyAwarded10 = allTx.some(t => t.referenceId === refId10);
+            if (!alreadyAwarded10) {
+                await addCoins(
+                    service.providerId,
+                    100,
+                    `🎉 Milestone Reward: 10 orders reached on "${service.title}"! (+100 Coins)`,
+                    refId10
+                );
+            }
+        }
+
+        // 3. Milestone: after 15 orders -> 5 coins per order
+        if (orderCount > 15) {
+            const sorted = [...validAppointments].sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+            for (let i = 15; i < sorted.length; i++) {
+                const appt = sorted[i];
+                const refIdOrder = `order_reward_after15_${appt.id}`;
+                const alreadyAwarded = allTx.some(t => t.referenceId === refIdOrder);
+                if (!alreadyAwarded) {
+                    await addCoins(
+                        service.providerId,
+                        5,
+                        `🪙 Order Reward: Order #${i + 1} reached on "${service.title}"! (+5 Coins)`,
+                        refIdOrder
+                    );
+                }
+            }
+        }
+    } catch (err) {
+        console.warn('Could not process service milestone rewards:', err.message);
+    }
+}
+
 module.exports = {
     getUserCoins,
     addCoins,
@@ -220,5 +291,6 @@ module.exports = {
     approveUnderProcessingCoins,
     rejectUnderProcessingCoins,
     getTransactionHistory,
-    getUnderProcessingHistory
+    getUnderProcessingHistory,
+    checkAndAwardServiceMilestones
 };

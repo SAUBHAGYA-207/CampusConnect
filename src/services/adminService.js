@@ -43,11 +43,13 @@ exports.getPlatformStats = async () => {
         const service = app.service || serviceMap.get(app.serviceId);
         const servicePrice = service ? Number(service.price) : 0;
         const coinsUsed = getAppointmentCoinsUsed(app, service);
+        // 5 coins = 1 rupee discount
+        const coinDiscountRupees = parseFloat((coinsUsed / 5).toFixed(2));
         const cashAmount = (app.paymentAmount !== undefined && app.paymentAmount !== null && !isNaN(Number(app.paymentAmount)))
             ? Number(app.paymentAmount)
-            : Math.max(0, servicePrice - coinsUsed);
+            : Math.max(0, servicePrice - coinDiscountRupees);
 
-        const totalOrderValue = (servicePrice > 0) ? servicePrice : (cashAmount + coinsUsed);
+        const totalOrderValue = (servicePrice > 0) ? servicePrice : (cashAmount + coinDiscountRupees);
         const partnerEarnings = (app.providerEarnings !== undefined && app.providerEarnings !== null)
             ? Number(app.providerEarnings)
             : parseFloat((totalOrderValue * 0.90).toFixed(2));
@@ -55,7 +57,7 @@ exports.getPlatformStats = async () => {
             ? Number(app.platformFee)
             : parseFloat((totalOrderValue * 0.10).toFixed(2));
 
-        return { totalOrderValue, cashAmount, coinsUsed, partnerEarnings, platformFee };
+        return { totalOrderValue, cashAmount, coinsUsed, coinDiscountRupees, partnerEarnings, platformFee };
     }
 
     // 1. Pending (ordered but yet to confirm)
@@ -94,6 +96,7 @@ exports.getPlatformStats = async () => {
     });
 
     // 4. Coin Burn across active & completed appointments (excluding cancelled/rejected)
+    // Rate: 5 coins = 1 rupee
     const activeAndCompletedApps = allAppointments.filter(a => a.status !== 'cancelled' && a.status !== 'rejected');
     let totalCoinsBurned = 0;
     activeAndCompletedApps.forEach(a => {
@@ -101,11 +104,14 @@ exports.getPlatformStats = async () => {
         totalCoinsBurned += getAppointmentCoinsUsed(a, service);
     });
 
-    // 5. Profit: 10% of complete order minus coin burn
-    // Platform earns 10% commission on complete orders. Coin burn represents the promotional discounts funded by the platform.
-    const profitCompletedMinusBurn = completedPlatformCommission - totalCoinsBurned;
-    const profitCompletedMinusRealizedBurn = completedPlatformCommission - completedCoinsBurned;
-    const profitAllConfirmedMinusBurn = (confirmedPlatformFee + completedPlatformCommission) - totalCoinsBurned;
+    const totalCoinsBurnedRupees = totalCoinsBurned / 5;
+    const completedCoinsBurnedRupees = completedCoinsBurned / 5;
+
+    // 5. Profit: 10% of complete order minus coin burn (5 coins = 1 rupee)
+    // Platform earns 10% commission on complete orders. Coin burn represents promotional discounts funded by platform.
+    const profitCompletedMinusBurn = completedPlatformCommission - totalCoinsBurnedRupees;
+    const profitCompletedMinusRealizedBurn = completedPlatformCommission - completedCoinsBurnedRupees;
+    const profitAllConfirmedMinusBurn = (confirmedPlatformFee + completedPlatformCommission) - totalCoinsBurnedRupees;
 
     // Payout stats
     const clearedPayouts = allPayouts.filter(p => p.status === 'cleared');
@@ -118,7 +124,7 @@ exports.getPlatformStats = async () => {
     const unsettledPartnerLiability = Math.max(0, completedPartnerShare - totalClearedPayouts);
 
     // Net profit on realized bookings
-    const actualNetProfit = completedPlatformCommission - completedCoinsBurned;
+    const actualNetProfit = completedPlatformCommission - completedCoinsBurnedRupees;
 
     return {
         totalUsers: customers.length,
@@ -137,9 +143,9 @@ exports.getPlatformStats = async () => {
         confirmedRevenue: confirmedRevenue.toFixed(2),
         completedRevenue: completedRevenue.toFixed(2),
 
-        // Coin Burn (Redeemed)
+        // Coin Burn (Redeemed at 5 coins = ₹1)
         totalCoinsBurned: totalCoinsBurned,
-        totalCoinsBurnedValue: totalCoinsBurned.toFixed(2),
+        totalCoinsBurnedValue: totalCoinsBurnedRupees.toFixed(2),
         completedCoinsBurned: completedCoinsBurned,
         confirmedCoinsBurned: confirmedCoinsUsed,
         pendingCoinsBurned: pendingCoinsUsed,
@@ -160,7 +166,7 @@ exports.getPlatformStats = async () => {
         totalPlatformCommission: completedPlatformCommission.toFixed(2),
         totalPartnerShare: completedPartnerShare.toFixed(2),
         totalAllTimeCoinsUsed: totalCoinsBurned,
-        totalAllTimeCoinsBurnValue: totalCoinsBurned.toFixed(2),
+        totalAllTimeCoinsBurnValue: totalCoinsBurnedRupees.toFixed(2),
         inFlightCoinsBurned: Math.max(0, totalCoinsBurned - completedCoinsBurned),
         actualNetProfit: actualNetProfit.toFixed(2),
 
@@ -189,15 +195,11 @@ exports.verifyServiceByAdmin = async (serviceId) => {
         status: 'published'
     });
 
-    // Release the 10 coins reward to the partner
-    const walletService = require('./walletService');
-    await walletService.approveUnderProcessingCoins(serviceId, `10 Coins for verified service listing: "${service.title}" (Verified ✓)`);
-
     const partner = await usersStorage.getById(service.providerId);
     if (partner) {
         await createNotification(
             partner.id,
-            `🎉 Your service "${service.title}" has been verified by Super Admin! 10 coins added to your wallet.`,
+            `🎉 Your service "${service.title}" has been verified by Super Admin and is now live!`,
             '/dashboard'
         );
     }

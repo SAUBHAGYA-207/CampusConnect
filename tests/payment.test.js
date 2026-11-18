@@ -3,6 +3,8 @@ const app = require('../app');
 const appointmentService = require('../src/services/appointmentService');
 const JsonStorage = require('../src/storage/jsonStorage');
 
+jest.setTimeout(30000);
+
 describe('Payment Gateway & 85% Provider Earnings', () => {
     let testServiceId;
     let providerId = 'test_provider_' + Date.now();

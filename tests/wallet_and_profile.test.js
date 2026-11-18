@@ -87,8 +87,8 @@ describe('E-Wallet, Coins & Profile UPI OTP System', () => {
         });
     });
 
-    describe('2. Service Listing Under Processing & Admin Verification (10 Coins)', () => {
-        it('should create new service with status "under_processing" and log 10 coins pending reward', async () => {
+    describe('2. Service Listing Under Processing & Admin Verification (No Listing Coins)', () => {
+        it('should create new service with status "under_processing" without per-listing coin issuance', async () => {
             const service = await serviceService.createService(partnerId, {
                 title: 'Python Coding Help',
                 description: 'Assisting in assignment and debugging',
@@ -100,38 +100,30 @@ describe('E-Wallet, Coins & Profile UPI OTP System', () => {
             createdServiceId = service.id;
             expect(service.status).toBe('under_processing');
 
-            // Partner should have 10 coins in under-processing history
+            // Partner should NOT have any listing reward in under-processing history
             const underProcess = await walletService.getUnderProcessingHistory(partnerId);
             const listingReward = underProcess.find(t => String(t.referenceId) === String(service.id));
-            expect(listingReward).toBeDefined();
-            expect(listingReward.amount).toBe(10);
-            expect(listingReward.status).toBe('under_processing');
+            expect(listingReward).toBeUndefined();
         });
 
-        it('should unlock and credit 10 coins to partner when admin verifies the service', async () => {
+        it('should verify and publish the service without per-listing coins', async () => {
             const initialPartnerCoins = await walletService.getUserCoins(partnerId);
 
             const verifiedService = await adminService.verifyServiceByAdmin(createdServiceId);
             expect(verifiedService.status).toBe('published');
 
-            // 10 coins added to partner's wallet balance
+            // No listing coins added to partner's wallet balance
             const updatedCoins = await walletService.getUserCoins(partnerId);
-            expect(updatedCoins).toBe(initialPartnerCoins + 10);
-
-            // Transaction moved to completed history
-            const history = await walletService.getTransactionHistory(partnerId);
-            const verifiedTx = history.find(t => String(t.referenceId) === String(createdServiceId));
-            expect(verifiedTx).toBeDefined();
-            expect(verifiedTx.status).toBe('completed');
+            expect(updatedCoins).toBe(initialPartnerCoins);
         });
     });
 
-    describe('3. Booking Service: 10% Booking Bonus & Coin Redemption', () => {
-        it('should allow customer to redeem wallet coins on order and award 10% coins to both customer and partner', async () => {
+    describe('3. Booking Service: 10% Booking Bonus & 5 Coins = ₹1 Discount', () => {
+        it('should allow customer to redeem wallet coins on order (5 coins = ₹1) and award 10% coins to both customer and partner', async () => {
             const customerCoinsBefore = await walletService.getUserCoins(customerId);
             const partnerCoinsBefore = await walletService.getUserCoins(partnerId);
 
-            const coinsToRedeem = 50; // User redeems 50 coins
+            const coinsToRedeem = 50; // User redeems 50 coins = ₹10 discount
 
             const appt = await appointmentService.createAppointment(
                 customerId,
@@ -149,8 +141,8 @@ describe('E-Wallet, Coins & Profile UPI OTP System', () => {
             createdAppointmentId = appt.id;
             expect(appt).toBeDefined();
             expect(appt.coinsUsed).toBe(50);
-            // Original price was ₹500, with 50 coins redeemed -> ₹450 payable
-            expect(appt.paymentAmount).toBe(450);
+            // Original price was ₹500, with 50 coins redeemed (5 coins = ₹1) -> ₹10 discount -> ₹490 payable
+            expect(appt.paymentAmount).toBe(490);
 
             // 10% of booking price (₹500) = 50 coins awarded
             const expectedBonus = Math.round(500 * 0.10); // 50 coins
@@ -176,7 +168,7 @@ describe('E-Wallet, Coins & Profile UPI OTP System', () => {
                 partnerId,
                 {
                     title: 'Quick Help Session',
-                    price: 50,
+                    price: 10,
                     category: 'Teach',
                     description: 'Help for 15 mins'
                 }
@@ -184,6 +176,7 @@ describe('E-Wallet, Coins & Profile UPI OTP System', () => {
 
             let appt;
             try {
+                // 50 coins redeemed at 5 coins = ₹1 provides ₹10 discount, fully covering ₹10 service
                 appt = await appointmentService.createAppointment(
                     customerId,
                     cheapService.id,
@@ -314,7 +307,7 @@ describe('E-Wallet, Coins & Profile UPI OTP System', () => {
         beforeAll(async () => {
             coinBookingService = await serviceService.createService(partnerId, {
                 title: 'Coin Refund Test Service',
-                price: 40,
+                price: 8,
                 category: 'Teach',
                 description: 'Service for testing coin refunds'
             });
@@ -364,9 +357,10 @@ describe('E-Wallet, Coins & Profile UPI OTP System', () => {
             expect(updatedAppt.refundProcessed).toBe(true);
             expect(updatedAppt.coinsRefunded).toBe(true);
 
-            // Customer coins should be refunded (40 coins credited back, minus 4 bonus coins reversed = +36 net from afterBooking)
+            // Customer coins should be refunded (40 coins credited back, minus bonus coins reversed)
             const customerCoinsAfterReject = await walletService.getUserCoins(customerId);
-            expect(customerCoinsAfterReject).toBe(customerCoinsAfterBooking + 40 - Math.round(40 * 0.10));
+            const bookingBonus = Math.max(1, Math.round(8 * 0.10));
+            expect(customerCoinsAfterReject).toBe(customerCoinsAfterBooking + 40 - bookingBonus);
 
             // Verify wallet transaction log has refund
             const history = await walletService.getTransactionHistory(customerId);

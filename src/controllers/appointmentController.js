@@ -51,7 +51,9 @@ exports.postBookAppointment = async (req, res, next) => {
         const service = await serviceService.getServiceById(serviceId);
         const parsedCoinsUsed = coinsUsed ? Math.max(0, parseInt(coinsUsed, 10)) : 0;
         const originalPrice = service ? Number(service.price) : 0;
-        const finalPayable = Math.max(0, originalPrice - parsedCoinsUsed);
+        // 5 coins = 1 rupee discount
+        const coinDiscount = Math.floor(parsedCoinsUsed / 5);
+        const finalPayable = Math.max(0, originalPrice - coinDiscount);
 
         let screenshotUrl = null;
         if (finalPayable === 0 && parsedCoinsUsed > 0) {

@@ -273,7 +273,8 @@
                             <!-- 6. E-Wallet Coin Redemption -->
                             <% 
                                 const userCoins = (typeof user !== 'undefined' && user && user.coins !== undefined) ? Number(user.coins) : 99; 
-                                const maxDeductibleCoins = Math.min(userCoins, Number(service.price));
+                                const maxDeductibleCoins = Math.min(userCoins, Number(service.price) * 5);
+                                const maxCoinDiscount = Math.floor(maxDeductibleCoins / 5);
                             %>
                             <div class="card p-3 mb-3 border-0 rounded-3 shadow-sm" style="background: linear-gradient(135deg, #FEF3C7 0%, #FFFBEB 100%); border: 1.5px solid #FDE68A !important;">
                                 <div class="d-flex justify-content-between align-items-center">
@@ -281,7 +282,7 @@
                                         <span class="fs-4">🪙</span>
                                         <div>
                                             <strong class="d-block text-dark small">Redeem E-Wallet Coins</strong>
-                                            <small class="text-muted" style="font-size: 0.75rem;">You have <strong><%= userCoins %> Coins</strong> (1 Coin = ₹1 discount)</small>
+                                            <small class="text-muted" style="font-size: 0.75rem;">You have <strong><%= userCoins %> Coins</strong> (5 Coins = ₹1 discount)</small>
                                         </div>
                                     </div>
                                     <div class="form-check form-switch m-0">
@@ -295,11 +296,11 @@
                                     </div>
                                     <div class="d-flex justify-content-between text-success fw-bold mb-1">
                                         <span>Coin Discount Applied:</span>
-                                        <span>- ₹<span id="displayCoinsDiscount"><%= maxDeductibleCoins %></span> (<%= maxDeductibleCoins %> Coins)</span>
+                                        <span>- ₹<span id="displayCoinsDiscount"><%= maxCoinDiscount %></span> (<%= maxDeductibleCoins %> Coins)</span>
                                     </div>
                                     <div class="d-flex justify-content-between fw-bold text-dark pt-1 border-top">
                                         <span>Final Payable via UPI:</span>
-                                        <span class="fs-6 text-success">₹<span id="displayFinalPayable"><%= Math.max(0, Number(service.price) - maxDeductibleCoins) %></span></span>
+                                        <span class="fs-6 text-success">₹<span id="displayFinalPayable"><%= Math.max(0, Number(service.price) - maxCoinDiscount) %></span></span>
                                     </div>
                                 </div>
                                 <input type="hidden" name="coinsUsed" id="coinsUsedInput" value="0">
@@ -628,7 +629,8 @@
             if (useCoinsCheck && useCoinsCheck.checked) {
                 if (coinDetails) coinDetails.classList.remove('d-none');
                 if (coinsInput) coinsInput.value = maxCoins;
-                const finalVal = Math.max(0, parseFloat(servicePrice) - maxCoins);
+                const coinDiscountVal = Math.floor(maxCoins / 5);
+                const finalVal = Math.max(0, parseFloat(servicePrice) - coinDiscountVal);
                 if (btnPaymentText) {
                     if (finalVal === 0) {
                         btnPaymentText.innerText = `🪙 Complete Booking with Coins (₹0 to pay) →`;
