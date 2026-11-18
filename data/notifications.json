@@ -1182,5 +1182,101 @@
     "read": false,
     "createdAt": 1795017124044,
     "id": "17950171240446qhnvd"
+  },
+  {
+    "id": "notif_appt_pend_20261118_lab01_prov",
+    "userId": "partner_kartikm94",
+    "message": "New pending booking request for \"Lab Report Formatting & Print Delivery\" (₹39) from Aditya Vardhan Mishra",
+    "link": "/appointments/provider/appt_pend_20261118_lab01",
+    "read": false,
+    "createdAt": 1795014795173
+  },
+  {
+    "id": "notif_appt_pend_20261118_lab01_cust",
+    "userId": "cust_aditya_vardhan_mishra28",
+    "message": "Your booking request for \"Lab Report Formatting & Print Delivery\" has been submitted and is awaiting partner confirmation.",
+    "link": "/appointments/my-bookings/appt_pend_20261118_lab01",
+    "read": false,
+    "createdAt": 1795014795173
+  },
+  {
+    "id": "notif_appt_pend_20261118_cycl02_prov",
+    "userId": "partner_vikramsingh24",
+    "message": "New pending booking request for \"Campus Bicycle Flat Tire & Brake Tuning\" (₹59) from Shivam Choudhary",
+    "link": "/appointments/provider/appt_pend_20261118_cycl02",
+    "read": false,
+    "createdAt": 1795016295173
+  },
+  {
+    "id": "notif_appt_pend_20261118_cycl02_cust",
+    "userId": "cust_shivam_choudhary29",
+    "message": "Your booking request for \"Campus Bicycle Flat Tire & Brake Tuning\" has been submitted and is awaiting partner confirmation.",
+    "link": "/appointments/my-bookings/appt_pend_20261118_cycl02",
+    "read": false,
+    "createdAt": 1795016295173
+  },
+  {
+    "id": "notif_appt_pend_20261118_deck03_prov",
+    "userId": "partner_priyas88",
+    "message": "New pending booking request for \"PPT Seminar Presentation Design\" (₹69) from Harshavardhan Reddy",
+    "link": "/appointments/provider/appt_pend_20261118_deck03",
+    "read": false,
+    "createdAt": 1795017195173
+  },
+  {
+    "id": "notif_appt_pend_20261118_deck03_cust",
+    "userId": "cust_harshavardhan_reddy30",
+    "message": "Your booking request for \"PPT Seminar Presentation Design\" has been submitted and is awaiting partner confirmation.",
+    "link": "/appointments/my-bookings/appt_pend_20261118_deck03",
+    "read": false,
+    "createdAt": 1795017195173
+  },
+  {
+    "id": "notif_appt_pend_20261118_calc04_prov",
+    "userId": "partner_yashvardhan26",
+    "message": "New pending booking request for \"Scientific Calculator (fx-991CW) Exam Rental\" (₹35) from Aniruddh Bhattacharya",
+    "link": "/appointments/provider/appt_pend_20261118_calc04",
+    "read": false,
+    "createdAt": 1795018395173
+  },
+  {
+    "id": "notif_appt_pend_20261118_calc04_cust",
+    "userId": "cust_aniruddh_bhattacharya31",
+    "message": "Your booking request for \"Scientific Calculator (fx-991CW) Exam Rental\" has been submitted and is awaiting partner confirmation.",
+    "link": "/appointments/my-bookings/appt_pend_20261118_calc04",
+    "read": false,
+    "createdAt": 1795018395173
+  },
+  {
+    "id": "notif_appt_pend_20261118_lndr05_prov",
+    "userId": "partner_a97159552",
+    "message": "New pending booking request for \"Hostel Bulk Laundry Pickup & Press Drop\" (₹45) from Pratyush Srivastava",
+    "link": "/appointments/provider/appt_pend_20261118_lndr05",
+    "read": false,
+    "createdAt": 1795019295173
+  },
+  {
+    "id": "notif_appt_pend_20261118_lndr05_cust",
+    "userId": "cust_pratyush_srivastava32",
+    "message": "Your booking request for \"Hostel Bulk Laundry Pickup & Press Drop\" has been submitted and is awaiting partner confirmation.",
+    "link": "/appointments/my-bookings/appt_pend_20261118_lndr05",
+    "read": false,
+    "createdAt": 1795019295173
+  },
+  {
+    "id": "notif_appt_pend_20261118_note06_prov",
+    "userId": "partner_ananyasen",
+    "message": "New pending booking request for \"Handwritten Engineering Physics & Math Notes\" (₹49) from Subhashree Mohapatra",
+    "link": "/appointments/provider/appt_pend_20261118_note06",
+    "read": false,
+    "createdAt": 1795020195173
+  },
+  {
+    "id": "notif_appt_pend_20261118_note06_cust",
+    "userId": "cust_subhashree_mohapatra35",
+    "message": "Your booking request for \"Handwritten Engineering Physics & Math Notes\" has been submitted and is awaiting partner confirmation.",
+    "link": "/appointments/my-bookings/appt_pend_20261118_note06",
+    "read": false,
+    "createdAt": 1795020195173
   }
 ]
