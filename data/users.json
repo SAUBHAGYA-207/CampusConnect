@@ -826,5 +826,17 @@
     "isVerified": true,
     "coins": 99,
     "createdAt": 1793720724347
+  },
+  {
+    "email": "admin@campusconnect.com",
+    "password": "$/.8lL6VeqriGooOrUdRadudRhGHfrEuOs7x/305nZwbhmyHX.akMm",
+    "role": "admin",
+    "isVerified": true,
+    "id": "17949894684260v1fgh",
+    "otp": null,
+    "otpExpires": null,
+    "partnerUpiId": null,
+    "partnerQrImage": null,
+    "createdAt": null
   }
 ]
