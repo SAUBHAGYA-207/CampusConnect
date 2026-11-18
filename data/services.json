@@ -104,7 +104,7 @@
     "description": "LaTeX/Word formatting for engineering lab reports, clean graphs, and hostel room delivery.",
     "price": 39,
     "category": "Academics",
-    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/service_lab_report.png",
+    "image": "/images/banners/banner-lab.jpg",
     "providerId": "partner_kartikm94",
     "status": "published",
     "createdAt": 1792146164000
@@ -115,7 +115,7 @@
     "description": "Crisp, colored, syllabus-mapped handwritten revision formulas and previous year question solutions.",
     "price": 49,
     "category": "Academics",
-    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/service_handwritten_notes.png",
+    "image": "/images/banners/banner-notes.jpg",
     "providerId": "partner_ananyasen",
     "status": "published",
     "createdAt": 1792146164000
@@ -126,7 +126,7 @@
     "description": "Doorstep puncture fix, brake wire tightening, and chain lubrication at hostel bicycle stands.",
     "price": 59,
     "category": "Repairs & Tech",
-    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/service_cycle_repair.png",
+    "image": "/images/banners/banner-cycle.jpg",
     "providerId": "partner_vikramsingh24",
     "status": "published",
     "createdAt": 1792146164000
@@ -137,7 +137,7 @@
     "description": "Modern minimalist slides with clean typography, charts, and animations for course presentations.",
     "price": 69,
     "category": "Design & Media",
-    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/service_slide_deck.png",
+    "image": "/images/banners/banner-slides.jpg",
     "providerId": "partner_priyas88",
     "status": "published",
     "createdAt": 1792146164000
@@ -148,7 +148,7 @@
     "description": "Door-to-door hostel laundry collection, detergent wash, iron pressing, and folded return.",
     "price": 45,
     "category": "Campus Errands",
-    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/service_laundry_drop.png",
+    "image": "/images/banners/banner-laundry.jpg",
     "providerId": "partner_a97159552",
     "status": "published",
     "createdAt": 1792146164000
@@ -159,7 +159,7 @@
     "description": "Fully functional, approved non-programmable scientific calculator rental for midsem and endsem exams.",
     "price": 35,
     "category": "Academics",
-    "image": "https://fadtcomdiqasxjzrpgbj.supabase.co/storage/v1/object/public/campusconnect/services/service_calculator_rental.png",
+    "image": "/images/banners/banner-calc.jpg",
     "providerId": "partner_yashvardhan26",
     "status": "published",
     "createdAt": 1792146164000

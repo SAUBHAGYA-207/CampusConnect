@@ -1,1 +1,102 @@
-[]
+[
+  {
+    "id": "tx_appt_comp_1794720000009_5axl_coin_debit",
+    "userId": "cust_sneha_patel13",
+    "type": "debit",
+    "amount": 15,
+    "description": "Redeemed 15 promo coins on booking for \"Campus Errand & Quick Academic Consultation\"",
+    "status": "completed",
+    "referenceId": "appt_comp_1794720000009_5axl",
+    "createdAt": 1792561500000
+  },
+  {
+    "id": "tx_appt_comp_1794720000010_714p_coin_debit",
+    "userId": "cust_ritesh_kumar14",
+    "type": "debit",
+    "amount": 20,
+    "description": "Redeemed 20 promo coins on booking for \"Scientific Calculator (fx-991CW) Exam Rental\"",
+    "status": "completed",
+    "referenceId": "appt_comp_1794720000010_714p",
+    "createdAt": 1792641600000
+  },
+  {
+    "id": "tx_appt_comp_1794720000011_lvsw_coin_debit",
+    "userId": "cust_aniket_kumar15",
+    "type": "debit",
+    "amount": 15,
+    "description": "Redeemed 15 promo coins on booking for \"Lab Report Formatting & Print Delivery\"",
+    "status": "completed",
+    "referenceId": "appt_comp_1794720000011_lvsw",
+    "createdAt": 1792754100000
+  },
+  {
+    "id": "tx_appt_comp_1794720000012_1pth_coin_debit",
+    "userId": "cust_diya_nair16",
+    "type": "debit",
+    "amount": 10,
+    "description": "Redeemed 10 promo coins on booking for \"Campus Errand & Quick Academic Consultation\"",
+    "status": "completed",
+    "referenceId": "appt_comp_1794720000012_1pth",
+    "createdAt": 1792831800000
+  },
+  {
+    "id": "tx_appt_comp_1794720000013_6qp8_coin_debit",
+    "userId": "cust_pooja_deshmukh17",
+    "type": "debit",
+    "amount": 25,
+    "description": "Redeemed 25 promo coins on booking for \"Handwritten Engineering Physics & Math Notes\"",
+    "status": "completed",
+    "referenceId": "appt_comp_1794720000013_6qp8",
+    "createdAt": 1792935600000
+  },
+  {
+    "id": "tx_appt_comp_1794720000014_z56l_coin_debit",
+    "userId": "cust_riya_kapoor18",
+    "type": "debit",
+    "amount": 10,
+    "description": "Redeemed 10 promo coins on booking for \"Campus Errand & Quick Academic Consultation\"",
+    "status": "completed",
+    "referenceId": "appt_comp_1794720000014_z56l",
+    "createdAt": 1792989000000
+  },
+  {
+    "id": "tx_appt_comp_1794720000015_gyy0_coin_debit",
+    "userId": "cust_meera_iyer19",
+    "type": "debit",
+    "amount": 20,
+    "description": "Redeemed 20 promo coins on booking for \"Hostel Bulk Laundry Pickup & Press Drop\"",
+    "status": "completed",
+    "referenceId": "appt_comp_1794720000015_gyy0",
+    "createdAt": 1793019600000
+  },
+  {
+    "id": "tx_appt_comp_1794720000016_2l6a_coin_debit",
+    "userId": "cust_neha_choudhury20",
+    "type": "debit",
+    "amount": 25,
+    "description": "Redeemed 25 promo coins on booking for \"Campus Bicycle Flat Tire & Brake Tuning\"",
+    "status": "completed",
+    "referenceId": "appt_comp_1794720000016_2l6a",
+    "createdAt": 1793101500000
+  },
+  {
+    "id": "tx_appt_comp_1794720000017_p49z_coin_debit",
+    "userId": "cust_shreya_reddy21",
+    "type": "debit",
+    "amount": 10,
+    "description": "Redeemed 10 promo coins on booking for \"Campus Errand & Quick Academic Consultation\"",
+    "status": "completed",
+    "referenceId": "appt_comp_1794720000017_p49z",
+    "createdAt": 1793182200000
+  },
+  {
+    "id": "tx_appt_comp_1794720000018_663u_coin_debit",
+    "userId": "cust_aarav_mehta22",
+    "type": "debit",
+    "amount": 30,
+    "description": "Redeemed 30 promo coins on booking for \"Custom Keychains\"",
+    "status": "completed",
+    "referenceId": "appt_comp_1794720000018_663u",
+    "createdAt": 1793255400000
+  }
+]

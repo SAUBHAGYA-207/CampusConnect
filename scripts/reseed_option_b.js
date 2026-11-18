@@ -562,6 +562,10 @@ async function main() {
         { price: 35, srvId: 'srv_calculator_rental', date: '2026-11-10', time: '22:15', notes: 'Next-day end-sem exam calculator reservation.' }
     ];
 
+    // Exactly 10 Users Use Promo Coins on 10 Completed Orders
+    const coinRedemptions = [15, 20, 15, 10, 25, 10, 20, 25, 10, 30]; // Sum = 180 coins
+    const walletTransactions = [];
+
     microPrices.forEach((mo, idx) => {
         orderIndex++;
         const srv = serviceMap.get(mo.srvId);
@@ -572,6 +576,23 @@ async function main() {
         const providerEarnings = parseFloat((mo.price * 0.90).toFixed(2));
         const platformFee = parseFloat((mo.price * 0.10).toFixed(2));
 
+        const coinsUsed = (idx < 10) ? coinRedemptions[idx] : 0;
+        let finalNotes = mo.notes;
+        if (coinsUsed > 0) {
+            finalNotes = `[🪙 ${coinsUsed} Coins Redeemed - ₹${coinsUsed} Discount Applied]\n${mo.notes}`;
+            cust.coins = Math.max(0, (cust.coins || 49) - coinsUsed);
+            walletTransactions.push({
+                id: `tx_${apptId}_coin_debit`,
+                userId: cust.id,
+                type: 'debit',
+                amount: coinsUsed,
+                description: `Redeemed ${coinsUsed} promo coins on booking for "${srv.title}"`,
+                status: 'completed',
+                referenceId: apptId,
+                createdAt: orderTime
+            });
+        }
+
         appointments.push({
             id: apptId,
             customerId: cust.id,
@@ -579,10 +600,10 @@ async function main() {
             serviceId: srv.id,
             date: mo.date,
             time: mo.time,
-            notes: mo.notes,
+            notes: finalNotes,
             status: 'completed',
             paymentAmount: mo.price,
-            coinsUsed: 0,
+            coinsUsed,
             providerEarnings,
             platformFee,
             paymentScreenshot: baseSupabaseUrl + '109_14-11-2026_18-42.png',
@@ -785,7 +806,7 @@ async function main() {
     fs.writeFileSync(path.join(dataDir, 'messages.json'), JSON.stringify(messages, null, 2), 'utf8');
     fs.writeFileSync(path.join(dataDir, 'payouts.json'), JSON.stringify(payouts, null, 2), 'utf8');
     fs.writeFileSync(path.join(dataDir, 'notifications.json'), JSON.stringify([], null, 2), 'utf8');
-    fs.writeFileSync(path.join(dataDir, 'wallet_transactions.json'), JSON.stringify([], null, 2), 'utf8');
+    fs.writeFileSync(path.join(dataDir, 'wallet_transactions.json'), JSON.stringify(walletTransactions, null, 2), 'utf8');
     console.log('\n✅ Local data/*.json updated successfully!');
 
     // --- 9. SYNC WITH SUPABASE CLOUD DATABASE ---
@@ -886,6 +907,13 @@ async function main() {
         const { error: payErr } = await client.from('payouts').insert(supaPayouts);
         if (payErr) console.error('  ❌ Supabase payouts error:', payErr.message);
         else console.log(`  ✓ Inserted ${supaPayouts.length} payouts into Supabase.`);
+
+        // Wallet Transactions (Promo coin redemption logs)
+        if (walletTransactions.length > 0) {
+            const { error: wtErr } = await client.from('wallet_transactions').insert(walletTransactions);
+            if (wtErr) console.error('  ❌ Supabase wallet_transactions error:', wtErr.message);
+            else console.log(`  ✓ Inserted ${walletTransactions.length} wallet transactions into Supabase.`);
+        }
     }
 
     console.log('\n============================================================');
