@@ -366,7 +366,7 @@
     "role": "customer",
     "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
     "isVerified": true,
-    "coins": 49,
+    "coins": 0,
     "upiId": "amit.kumar@paytm",
     "createdAt": 1792146164000
   },
@@ -377,7 +377,7 @@
     "role": "customer",
     "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
     "isVerified": true,
-    "coins": 49,
+    "coins": 0,
     "upiId": "rohitverma@okaxis",
     "createdAt": 1792146164000
   },
@@ -399,7 +399,7 @@
     "role": "customer",
     "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
     "isVerified": true,
-    "coins": 49,
+    "coins": 0,
     "upiId": "aman.gupta12@oksbi",
     "createdAt": 1792146164000
   },
@@ -410,7 +410,7 @@
     "role": "customer",
     "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
     "isVerified": true,
-    "coins": 34,
+    "coins": 0,
     "upiId": "sneha.patel13@oksbi",
     "createdAt": 1792147964000
   },
@@ -421,7 +421,7 @@
     "role": "customer",
     "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
     "isVerified": true,
-    "coins": 29,
+    "coins": 0,
     "upiId": "ritesh.kumar14@oksbi",
     "createdAt": 1792149764000
   },
@@ -432,7 +432,7 @@
     "role": "customer",
     "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
     "isVerified": true,
-    "coins": 34,
+    "coins": 49,
     "upiId": "aniket.kumar15@oksbi",
     "createdAt": 1792151564000
   },
@@ -443,7 +443,7 @@
     "role": "customer",
     "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
     "isVerified": true,
-    "coins": 39,
+    "coins": 0,
     "upiId": "diya.nair16@oksbi",
     "createdAt": 1792153364000
   },
@@ -454,7 +454,7 @@
     "role": "customer",
     "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
     "isVerified": true,
-    "coins": 24,
+    "coins": 0,
     "upiId": "pooja.deshmukh17@oksbi",
     "createdAt": 1792155164000
   },
@@ -465,7 +465,7 @@
     "role": "customer",
     "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
     "isVerified": true,
-    "coins": 39,
+    "coins": 49,
     "upiId": "riya.kapoor18@oksbi",
     "createdAt": 1792156964000
   },
@@ -476,7 +476,7 @@
     "role": "customer",
     "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
     "isVerified": true,
-    "coins": 29,
+    "coins": 49,
     "upiId": "meera.iyer19@oksbi",
     "createdAt": 1792158764000
   },
@@ -487,7 +487,7 @@
     "role": "customer",
     "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
     "isVerified": true,
-    "coins": 24,
+    "coins": 0,
     "upiId": "neha.choudhury20@oksbi",
     "createdAt": 1792160564000
   },
@@ -498,7 +498,7 @@
     "role": "customer",
     "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
     "isVerified": true,
-    "coins": 39,
+    "coins": 49,
     "upiId": "shreya.reddy21@oksbi",
     "createdAt": 1792162364000
   },
@@ -509,7 +509,7 @@
     "role": "customer",
     "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
     "isVerified": true,
-    "coins": 19,
+    "coins": 0,
     "upiId": "aarav.mehta22@oksbi",
     "createdAt": 1792164164000
   },
@@ -564,7 +564,7 @@
     "role": "customer",
     "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
     "isVerified": true,
-    "coins": 49,
+    "coins": 0,
     "upiId": "kunal.saxena27@oksbi",
     "createdAt": 1792173164000
   },
@@ -630,7 +630,7 @@
     "role": "customer",
     "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
     "isVerified": true,
-    "coins": 49,
+    "coins": 0,
     "upiId": "meenakshi.sundaram33@oksbi",
     "createdAt": 1792183964000
   },
