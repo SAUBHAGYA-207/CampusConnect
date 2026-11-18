@@ -988,5 +988,181 @@
     "coins": 99,
     "upiId": "chirag.paswan65@oksbi",
     "createdAt": 1792241564000
+  },
+  {
+    "id": "cust_vishal_sinha66",
+    "name": "Vishal Sinha",
+    "email": "vishal.sinha.iitp@gmail.com",
+    "role": "customer",
+    "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
+    "isVerified": true,
+    "coins": 99,
+    "upiId": "vishalsinha@oksbi",
+    "createdAt": 1793500000000
+  },
+  {
+    "id": "cust_ankita_choudhury67",
+    "name": "Ankita Choudhury",
+    "email": "ankita.choudhury22@gmail.com",
+    "role": "customer",
+    "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
+    "isVerified": true,
+    "coins": 99,
+    "upiId": "ankitac@okaxis",
+    "createdAt": 1793514400000
+  },
+  {
+    "id": "cust_saurabh_pandey68",
+    "name": "Saurabh Pandey",
+    "email": "saurabh.pandey98@gmail.com",
+    "role": "customer",
+    "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
+    "isVerified": true,
+    "coins": 99,
+    "upiId": "saurabhp@paytm",
+    "createdAt": 1793528800000
+  },
+  {
+    "id": "cust_kritika_sharma69",
+    "name": "Kritika Sharma",
+    "email": "kritika.sharma07@gmail.com",
+    "role": "customer",
+    "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
+    "isVerified": true,
+    "coins": 99,
+    "upiId": "kritikas@okicici",
+    "createdAt": 1793543200000
+  },
+  {
+    "id": "cust_manish_gupta70",
+    "name": "Manish Gupta",
+    "email": "manish.gupta.tech@gmail.com",
+    "role": "customer",
+    "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
+    "isVerified": true,
+    "coins": 99,
+    "upiId": "manishg@oksbi",
+    "createdAt": 1793557600000
+  },
+  {
+    "id": "cust_ritika_sen71",
+    "name": "Ritika Sen",
+    "email": "ritika.sen24@gmail.com",
+    "role": "customer",
+    "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
+    "isVerified": true,
+    "coins": 99,
+    "upiId": "ritikasen@ibl",
+    "createdAt": 1793572000000
+  },
+  {
+    "id": "cust_vivek_mishra72",
+    "name": "Vivek Mishra",
+    "email": "vivek.mishra.patna@gmail.com",
+    "role": "customer",
+    "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
+    "isVerified": true,
+    "coins": 99,
+    "upiId": "vivekm@okaxis",
+    "createdAt": 1793586400000
+  },
+  {
+    "id": "cust_swati_keshari73",
+    "name": "Swati Keshari",
+    "email": "swati.keshari19@gmail.com",
+    "role": "customer",
+    "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
+    "isVerified": true,
+    "coins": 99,
+    "upiId": "swatikes@paytm",
+    "createdAt": 1793600800000
+  },
+  {
+    "id": "cust_abhishek_tiwari74",
+    "name": "Abhishek Tiwari",
+    "email": "abhishek.tiwari85@gmail.com",
+    "role": "customer",
+    "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
+    "isVerified": true,
+    "coins": 99,
+    "upiId": "abhishekt@oksbi",
+    "createdAt": 1793615200000
+  },
+  {
+    "id": "cust_simran_kaur75",
+    "name": "Simran Kaur",
+    "email": "simran.kaur.iitp@gmail.com",
+    "role": "customer",
+    "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
+    "isVerified": true,
+    "coins": 99,
+    "upiId": "simrank@okicici",
+    "createdAt": 1793629600000
+  },
+  {
+    "id": "cust_deepak_verma76",
+    "name": "Deepak Verma",
+    "email": "deepak.verma26@gmail.com",
+    "role": "customer",
+    "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
+    "isVerified": true,
+    "coins": 99,
+    "upiId": "deepakv@paytm",
+    "createdAt": 1793644000000
+  },
+  {
+    "id": "cust_pallavi_roy77",
+    "name": "Pallavi Roy",
+    "email": "pallavi.roy14@gmail.com",
+    "role": "customer",
+    "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
+    "isVerified": true,
+    "coins": 99,
+    "upiId": "pallavir@okaxis",
+    "createdAt": 1793658400000
+  },
+  {
+    "id": "cust_nishant_kumar78",
+    "name": "Nishant Kumar",
+    "email": "nishant.k.patna@gmail.com",
+    "role": "customer",
+    "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
+    "isVerified": true,
+    "coins": 99,
+    "upiId": "nishantk@oksbi",
+    "createdAt": 1793672800000
+  },
+  {
+    "id": "cust_priyanka_das79",
+    "name": "Priyanka Das",
+    "email": "priyanka.das92@gmail.com",
+    "role": "customer",
+    "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
+    "isVerified": true,
+    "coins": 99,
+    "upiId": "priyankad@paytm",
+    "createdAt": 1793687200000
+  },
+  {
+    "id": "cust_rohan_bhatt80",
+    "name": "Rohan Bhatt",
+    "email": "rohan.bhatt21@gmail.com",
+    "role": "customer",
+    "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
+    "isVerified": true,
+    "coins": 99,
+    "upiId": "rohanb@okaxis",
+    "createdAt": 1793701600000
+  },
+  {
+    "id": "cust_aishwarya_nair81",
+    "name": "Aishwarya Nair",
+    "email": "aishwarya.nair88@gmail.com",
+    "role": "customer",
+    "password": "$2a$10$gejQpPcrNIfUkF.yluGYeuGP3Iu/z0IcTv1qISFZ4aqLsohRxoJaS",
+    "isVerified": true,
+    "coins": 99,
+    "upiId": "aishwaryan@okicici",
+    "createdAt": 1793716000000
   }
 ]
